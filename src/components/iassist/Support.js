@@ -555,8 +555,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const closePanes = () => {
         // Size = pageSize;
 
-        closePane();
 
+        console.log()
+        closePane();
 
         setShowChat(false);
 

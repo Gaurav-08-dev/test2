@@ -67,7 +67,7 @@ const SupportContainer = ( {btnId} ) => {
                 span.style.marginLeft = '3px';
                 span.style.borderRadius = '50%';
                 span.style.top = '6px';
-                btn.append(span);
+                if(btn) btn.append(span);
             }
         }
   
@@ -77,8 +77,8 @@ const SupportContainer = ( {btnId} ) => {
         // if (OpenSupport) {
 
         // console.log(document.getElementById('iassist-css'))
-            document.getElementById('iassist-css').remove();
-            document.getElementById('iassist-html').remove();
+            if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
+            if(document.getElementById('iassist-html'))document.getElementById('iassist-html').remove();
 
             setOpenSupport(false);
         // }
