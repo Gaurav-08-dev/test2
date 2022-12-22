@@ -1,10 +1,10 @@
 // import logo from './logo.svg';
+import React from "react";
 import './App.css';
 // import Support from './components/iassist/Support';
 // import { useState } from 'react';
 import './style/Global.scss';
 import SupportContainer from './components/iassist/SupportContainer';
-import React from "react"
 
 let buttonId = 'iassistNavigate';
 

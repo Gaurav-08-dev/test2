@@ -963,7 +963,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             )
                         })}
 
-                        {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
+                        {/* {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />} */}
                         {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
 
                         }
