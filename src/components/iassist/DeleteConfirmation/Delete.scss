@@ -1,0 +1,21 @@
+.del-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #232931 0% 0% no-repeat padding-box;
+    padding: 10px;
+    z-index: 1;
+    .details {
+        font-size: 11px;
+    }
+    .confirm-btn {
+        color: #fff;
+        background: #FF0000;
+        margin: 10px;
+        margin-left: 40px;
+    }
+    button  {
+        border-radius: 2px;
+    }
+}
