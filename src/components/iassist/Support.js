@@ -458,11 +458,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         }
 
-        if (allTopics.length === 0) {
+        // if (allTopics.length === 0) {
 
-            getTopics();
+        //     getTopics();
 
-        }
+        // }
         
         const onScroll = async (event) => {
 
