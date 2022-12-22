@@ -556,6 +556,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         closePane();
 
+
         setShowChat(false);
 
         setTopicClick(false);

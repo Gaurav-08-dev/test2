@@ -74,17 +74,36 @@ const SupportContainer = ( {btnId} ) => {
     const closePane = () => {
         // open = false;
         // if (OpenSupport) {
+            document.getElementById('iassist-css').remove();
+            document.getElementById('iassist-html').remove();
+
             setOpenSupport(false);
         // }
         
     }
-    const handleClick = (e) => {
-        console.log(e);
-        e.stopPropagation();
-        e.preventDefault();
-        if (!OpenSupport)
-        setOpenSupport(true)
-    }
+    // const handleClick = (e) => {
+    //     console.log(e);
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     if (!OpenSupport)
+    //     setOpenSupport(true)
+    // }
+    useEffect(() => {
+        
+        if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
+            if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
+                simplifyToken();
+            }
+            
+            setTimeout(() => {
+            connectSocket();
+
+        }, 200);
+           
+       }
+
+    },[])
+
     useEffect(() => {
 
         const user = getUserDetailsFromToken(token);
@@ -112,22 +131,7 @@ const SupportContainer = ( {btnId} ) => {
 
     }, [])
 
-    useEffect(() => {
-        
-        if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
-            if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
-                simplifyToken();
-            }
-            
-            setTimeout(() => {
-            console.log(webSocket)
-            connectSocket();
-
-        }, 200);
-           
-       }
-
-    },[])
+    
     return (
         <div id="support-main-conatiner">
        
