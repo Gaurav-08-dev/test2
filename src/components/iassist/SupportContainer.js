@@ -77,7 +77,7 @@ const SupportContainer = ( {btnId} ) => {
         // if (OpenSupport) {
 
         console.log(document.getElementById('iassist-css'))
-            document.getElementById('iassist-css').remove();
+            document.getElementById('iassist-css').removeChild();
             document.getElementById('iassist-html').remove();
 
             setOpenSupport(false);
@@ -136,13 +136,13 @@ const SupportContainer = ( {btnId} ) => {
 
     
     return (
+       <ClickOutsideListener onOutsideClick={closePane}>
         <div id="support-main-conatiner">
        
-       <ClickOutsideListener onOutsideClick={closePane}>
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
-            </ClickOutsideListener>
 
         </div>
+            </ClickOutsideListener>
     )
 }
 
