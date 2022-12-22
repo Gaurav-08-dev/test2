@@ -136,7 +136,7 @@ const SupportContainer = ( {btnId} ) => {
 
     
     return (
-       <ClickOutsideListener onOutsideClick={closePane}>
+       <ClickOutsideListener onOutsideClick={setOpenSupport}>
         <div id="support-main-conatiner">
        
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
