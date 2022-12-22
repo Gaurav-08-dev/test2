@@ -76,6 +76,7 @@ const SupportContainer = ( {btnId} ) => {
         // open = false;
         // if (OpenSupport) {
 
+        console.log(document.getElementById('iassist-css'))
             document.getElementById('iassist-css').removeChild();
             document.getElementById('iassist-html').remove();
 
