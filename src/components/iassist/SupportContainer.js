@@ -2,6 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
+import ClickOutsideListener from './ClickOutsideListener'
 
 let open = false;
 let webSocket;
@@ -74,7 +75,7 @@ const SupportContainer = ( {btnId} ) => {
     const closePane = () => {
         // open = false;
         // if (OpenSupport) {
-            console.log(document.getElementById('iassist-css'))
+
             document.getElementById('iassist-css').removeChild();
             document.getElementById('iassist-html').remove();
 
@@ -136,7 +137,9 @@ const SupportContainer = ( {btnId} ) => {
     return (
         <div id="support-main-conatiner">
        
+       <ClickOutsideListener onOutsideClick={closePane}>
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
+            </ClickOutsideListener>
 
         </div>
     )
