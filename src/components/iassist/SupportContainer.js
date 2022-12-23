@@ -6,7 +6,10 @@ import ClickOutsideListener from './ClickOutsideListener';
 
 let open = false;
 let webSocket;
-let token = Constants.jwt_token;
+// console.log()
+let token = document.getElementById("test-div").getAttribute("data-token")
+// Constants.jwt_token;
+
 const SupportContainer = ( {btnId} ) => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
