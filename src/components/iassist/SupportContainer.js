@@ -82,6 +82,8 @@ const SupportContainer = ( {btnId} ) => {
         // console.log(document.getElementById('iassist-css'))
             if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
             if(document.getElementById('iassist-html'))document.getElementById('iassist-html').remove();
+            if(document.getElementById('test-div'))document.getElementById('test-div').remove();
+
 
             setOpenSupport(false);
         // }
@@ -117,7 +119,6 @@ const SupportContainer = ( {btnId} ) => {
 
         simplifyToken();
 
-        console.log(btnId)
         // let buttonIassistNavigate = document.getElementById(btnId);
         // buttonIassistNavigate.addEventListener('click', handleClick)
 
