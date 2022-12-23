@@ -158,6 +158,13 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
                 suggestIndex = -1;
 
             }
+            let container = document.getElementById('create-chat-room');
+
+            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target))) {
+
+                closePanes();
+
+            }
 
         })
 
@@ -588,7 +595,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
             <>
 
                 {!showVideo && !chatRoom &&
-                    <div className='support-wrapper'>
+                    <div className='support-wrapper' id='create-chat-room'>
 
                         <div className='header-wrapper'>
 
