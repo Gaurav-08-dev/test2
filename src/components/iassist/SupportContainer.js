@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
-import ClickOutsideListener from './ClickOutsideListener'
+import ClickOutsideListener from './ClickOutsideListener';
 
 let open = false;
 let webSocket;
