@@ -1876,7 +1876,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                             fontColor={'#fff'}
                                                             onChangeFontColor={() => { }}
                                                             functionRef={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
-                                                            isToolBarVisible={true} //to show/hide the toolbar options
+                                                            isToolBarVisible={false} //to show/hide the toolbar options
                                                             toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                                             formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
                                                             onChangeOfKeepStyle={() => { }} //handle to change the format style variable
@@ -1934,7 +1934,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 fontColor={'#fff'}
                                 onChangeFontColor={() => { }}
                                 functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
-                                isToolBarVisible={true} //to show/hide the toolbar options
+                                isToolBarVisible={false} //to show/hide the toolbar options
                                 toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                 formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
                                 onChangeOfKeepStyle={() => { }} //handle to change the format style variable
@@ -1965,7 +1965,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 fontColor={'#fff'}
                                 onChangeFontColor={() => { }}
                                 functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
-                                isToolBarVisible={true} //to show/hide the toolbar options
+                                isToolBarVisible={false} //to show/hide the toolbar options
                                 toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                 formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
                                 onChangeOfKeepStyle={() => { }} //handle to change the format style variable
