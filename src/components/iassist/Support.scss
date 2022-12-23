@@ -496,8 +496,10 @@
         display: block;
         width: 11px;
         height: 11px;
-        mask: url("../../images/icon-close.svg") no-repeat center center;
-        background: #b1b2b3;
+        background: url("../../images/icon-close.svg") no-repeat center center;
+        background-position: center;
+        background-size: cover;
+        // background: #b1b2b3;
       }
     }
   }
