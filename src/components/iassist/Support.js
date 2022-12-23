@@ -17,7 +17,7 @@ import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
 import Delete from './DeleteConfirmation/Delete';
 
-
+console.log(document.getElementById("test-div").getAttribute("data-token"))
 // let webSocket;
 let pageNumber = 1;
 const pageSize = 10;
