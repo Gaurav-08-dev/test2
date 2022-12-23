@@ -3,7 +3,7 @@ import React from "react";
 import './App.css';
 // import Support from './components/iassist/Support';
 // import { useState } from 'react';
-import './style/Global.scss';
+// import './style/Global.scss';
 import SupportContainer from './components/iassist/SupportContainer';
 
 let buttonId = 'iassistNavigate';
