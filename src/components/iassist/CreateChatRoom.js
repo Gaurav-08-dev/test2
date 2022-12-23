@@ -160,7 +160,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
             }
             let container = document.getElementById('create-chat-room');
 
-            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target))) {
+            if ((container && !(container.contains(event.target)))) {
 
                 closePanes();
 
@@ -595,7 +595,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
             <>
 
                 {!showVideo && !chatRoom &&
-                    <div id='create-chat-room' className='support-wrapper'>
+                    <div id='create-chat-room' className='create-chat-room'>
 
                         <div className='header-wrapper'>
 
