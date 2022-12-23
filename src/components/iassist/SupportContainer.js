@@ -2,13 +2,10 @@ import React, { memo, useEffect, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
-import ClickOutsideListener from './ClickOutsideListener';
 
-let open = false;
+
 let webSocket;
-// console.log()
-let token = document.getElementById("test-div").getAttribute("data-token")
-// Constants.jwt_token;
+let token = document.getElementById("test-div").getAttribute("data-token");
 
 const SupportContainer = ( {btnId} ) => {
 
@@ -35,7 +32,7 @@ const SupportContainer = ( {btnId} ) => {
                 const jwt_token = getTokenClient();
                 console.log("here")
                 webSocket= new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token);
-        setOpenSupport(true)
+                setOpenSupport(true)
 
             }
             console.log('listen connection');
@@ -76,26 +73,16 @@ const SupportContainer = ( {btnId} ) => {
   
 
     const closePane = () => {
-        // open = false;
-        // if (OpenSupport) {
-
-        // console.log(document.getElementById('iassist-css'))
+        
             if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
             if(document.getElementById('iassist-html'))document.getElementById('iassist-html').remove();
             if(document.getElementById('test-div'))document.getElementById('test-div').remove();
 
 
             setOpenSupport(false);
-        // }
         
     }
-    // const handleClick = (e) => {
-    //     console.log(e);
-    //     e.stopPropagation();
-    //     e.preventDefault();
-    //     if (!OpenSupport)
-    //     setOpenSupport(true)
-    // }
+  
     useEffect(() => {
         
         if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
@@ -119,11 +106,6 @@ const SupportContainer = ( {btnId} ) => {
 
         simplifyToken();
 
-        // let buttonIassistNavigate = document.getElementById(btnId);
-        // buttonIassistNavigate.addEventListener('click', handleClick)
-
-        
-
         document.addEventListener('mouseup', (event) => {
             let container = document.getElementById('support-main-conatiner');
             let buttonIcon = document.getElementById(btnId);
@@ -140,13 +122,11 @@ const SupportContainer = ( {btnId} ) => {
 
     
     return (
-    //    <ClickOutsideListener onOutsideClick={setOpenSupport}>
         <div id="support-main-conatiner">
        
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>
-            // </ClickOutsideListener>
     )
 }
 
