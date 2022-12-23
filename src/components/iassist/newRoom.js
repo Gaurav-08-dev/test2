@@ -537,15 +537,15 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            // let chatContainer = document.getElementById('main-chat-container');
+            let chatContainer = document.getElementById('main-chat-container');
 
-            // if (chatContainer && !(chatContainer.contains(event.target))) {
+            if (chatContainer && !(chatContainer.contains(event.target))) {
 
-            //     Size.current = pageSize;
+                Size.current = pageSize;
 
-            //     ws.close();
+                close();
 
-            // }
+            }
 
         })
 
