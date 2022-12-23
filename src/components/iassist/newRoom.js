@@ -1551,7 +1551,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         <>
 
-            {!showVideo && <div className='support-wrapper' id='main-chat-container'>
+            {!showVideo && <div id='main-chat-container' className='support-wrapper'>
 
                 <div className='header-wrapper'>
 
