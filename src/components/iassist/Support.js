@@ -974,9 +974,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             </div>}
 
-            {/* {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} topicData={editTopic} socketDetail={webSocket}/>}
+             {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} topicData={editTopic} socketDetail={webSocket}/>}
 
-            {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket}/>} */}
+            {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket}/>} 
         
         </>
     )

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import alertService from '../../../services/alertService';
 import APIService from '../../../services/apiService';
 import { getToken, getUser } from '../../../utils/Common';
 import * as Constants from '../../Constants';
 import Avatar from '../../Avatar/Avatar';
 import './UserList.scss'
-import React from 'react';
+
 
 // user => user array list
 // position => 'absolute' or 'relative'

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Feedback.scss';
 import * as Constants from '../../Constants';
 import { getTokenClient } from '../../../utils/Common';

@@ -1,3 +1,4 @@
+import React from 'react';
 import './PlayButton.scss';
 
 const VideoLoader = ({ handleClick, file }) => {

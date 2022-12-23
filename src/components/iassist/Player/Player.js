@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React,{ useEffect, useRef, useState } from 'react';
 import './Player.scss';
 import VideoLoader from './videoLoader';
 

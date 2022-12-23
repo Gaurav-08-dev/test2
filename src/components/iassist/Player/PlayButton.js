@@ -1,4 +1,4 @@
-
+import React from 'react';
 import './PlayButton.scss';
 
 const PlayButton = ({ handleClick, file }) => {
