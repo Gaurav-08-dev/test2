@@ -146,9 +146,11 @@
 
       i {
         &:before {
+          -webkit-mask:url("../../images/icon-close.svg") no-repeat center center;
           mask: url("../../images/icon-close.svg") no-repeat center center;
           mask-size: 10px;
           background-color: #000;
+
         }
       }
     }
