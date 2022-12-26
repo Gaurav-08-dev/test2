@@ -613,6 +613,14 @@
       color: rgb(51, 143, 230);
       font-size: 12px;
     }
+
+    .unread-button-wrapper{
+      background-color: #9b9b9b29;
+      border-radius: 2px;
+    }
+    .unselected{
+      background-color: none;
+    }
   }
   // .react-speedselect-container {
   //   .select-dropdown {
