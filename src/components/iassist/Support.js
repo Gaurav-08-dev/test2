@@ -256,6 +256,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const getTopicsBasedOnFilter = async (searchQuery) => {
 
+        disableUnreadButton=true;
+
         setInitialLoad(false);
 
         pageNumber = 1;
