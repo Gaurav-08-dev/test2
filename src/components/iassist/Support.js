@@ -315,6 +315,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     }
 
+        disableUnreadButton=false;
+
                     setFetchButton(!fetchButton);
 
                     setShowLoader(false);
@@ -323,6 +325,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             })
             .catch(err => {
+                disableUnreadButton=false;
 
                 setShowLoader(false);
 
