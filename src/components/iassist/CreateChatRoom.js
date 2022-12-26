@@ -162,7 +162,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
             if ((container && !(container.contains(event.target)))) {
 
-                closePanes();
+                closePanes()
 
             }
 

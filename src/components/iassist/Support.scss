@@ -160,6 +160,8 @@
       color: #fff;
       i {
         &:before {
+          -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
+
           mask: url("../../images/icon-run.svg") no-repeat center center;
           mask-size: 10px;
           background-color: #000;
@@ -288,6 +290,8 @@
         .button {
           content: "";
           mask: url("../../images/icon-filters.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-filters.svg") no-repeat center center;
+
           min-width: 12px;
           width: 12px;
           height: 12px;
@@ -327,6 +331,8 @@
           .btn {
             content: "";
             mask: url("../../images/icon-search.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-search.svg") no-repeat center center;
+
             min-width: 12px;
             width: 12px;
             height: 12px;
@@ -360,6 +366,9 @@
           content: "";
           mask: url("../../images/icon-plus-lite.svg") no-repeat center
           center;
+          -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat center
+          center;
+
           mask-size: 8px;
           width: 4px;
           height: 8px;
@@ -411,6 +420,8 @@
             &::before {
               content: "";
               mask: url("../../images/icon-plus-lite.svg") no-repeat center
+                center;
+                -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat center
                 center;
               width: 8px;
               height: 8px;
@@ -497,6 +508,8 @@
         width: 11px;
         height: 11px;
         mask: url("../../images/icon-close.svg") no-repeat center center;
+        -webkit-mask: url("../../images/icon-close.svg") no-repeat center center;
+
         background: #b1b2b3;
       }
     }
@@ -862,6 +875,8 @@
           .topic-chat-notify {
             cursor: pointer;
             mask: url("../../images/icon-message.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-message.svg") no-repeat center center;
+
             min-width: 12px;
             mask-size: 12px;
             width: 12px;
@@ -896,6 +911,7 @@
           .option {
             cursor: pointer;
             mask: url("../../images/icon-dots.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-dots.svg") no-repeat center center;
             min-width: 12px;
             mask-size: 12px;
             width: 12px;
@@ -935,6 +951,7 @@
             &::before {
               content: "";
               mask: url("../../images/icon-reopen.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-reopen.svg") no-repeat center center;
               mask-size: 10px;
               width: 10px;
               height: 10px;
@@ -959,6 +976,7 @@
             &::before {
               content: "";
               mask: url("../../images/icon-run.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
               mask-size: 10px;
               width: 10px;
               height: 10px;
@@ -982,6 +1000,8 @@
             &::before {
               content: "";
               mask: url("../../images/icon-delete.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-delete.svg") no-repeat center center;
+
               mask-size: 10px;
               width: 10px;
               height: 10px;
@@ -1047,6 +1067,7 @@
       &::after {
         content: "";
         mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
+        -webkit-mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
         mask-size: 9px;
         width: 10px;
         height: 10px;
@@ -1171,6 +1192,7 @@
           width: 13px;
           height: 13px;
           mask: url("../../images/icon-close.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-close.svg") no-repeat center center;
           mask-size: 8px;
         }
       }
@@ -1268,6 +1290,7 @@
             .before {
               content: "";
               mask: url("../../images/icon-search.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-search.svg") no-repeat center center;
               min-width: 12px;
               width: 12px;
               height: 12px;
