@@ -278,6 +278,8 @@
         &::before {
           content: "";
           mask: url("../../images/icon-arrow-left.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-arrow-left.svg") no-repeat center center;
+
           width: 20px;
           height: 11px;
           background-color: #b1b2b3;
