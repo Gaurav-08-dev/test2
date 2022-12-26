@@ -13,6 +13,8 @@ const SupportContainer = ( {btnId} ) => {
 
     const simplifyToken = async() => {
         let token = localStorage.getItem(tokenConstant + '_token');
+        const user = getUserDetailsFromToken(token);
+        setUserData(user?.identity);
         if (token) {
             const tokens = `Bearer ${token}`;
             let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
@@ -102,8 +104,7 @@ const SupportContainer = ( {btnId} ) => {
 
     useEffect(() => {
 
-        const user = getUserDetailsFromToken(token);
-        setUserData(user?.identity);
+        
 
         simplifyToken();
 
