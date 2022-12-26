@@ -444,11 +444,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     let result = response;
 
-                    if (result.message === 'Success') {
+                    // if (result.message === 'Success') {
 
-                        setReporters(result.data);
+                        setReporters(result);
 
-                    }
+                    // }
 
                 }
 
