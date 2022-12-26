@@ -5,23 +5,31 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 
 let webSocket;
-let token = document.getElementById("test-div").getAttribute("data-token");
+let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
+let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
-const SupportContainer = ( {btnId} ) => {
+console.log(btnId);
+
+const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
 
     const simplifyToken = async() => {
-        const tokens = `Bearer ${token}`;
-        let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
-            method: 'GET',
-            headers: {
-                'Authorization': tokens
-            }
-        })
-      let result = await res.json();
-      setUserToken(result.token)
-      connectSocket();
+        let token = localStorage.getItem(tokenConstant + '_token');
+        const user = getUserDetailsFromToken(token);
+        setUserData(user?.identity);
+        if (token) {
+            const tokens = `Bearer ${token}`;
+            let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': tokens
+                }
+            })
+            let result = await res.json();
+            setUserToken(result.token)
+            connectSocket();
+        }
 
     }
 
@@ -99,8 +107,7 @@ const SupportContainer = ( {btnId} ) => {
 
     useEffect(() => {
 
-        const user = getUserDetailsFromToken(token);
-        setUserData(user?.identity);
+        
 
         simplifyToken();
 
