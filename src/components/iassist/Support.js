@@ -236,11 +236,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         if (dates === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&reporter=${reporter_id}${searchStringFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&reporter=${reporter_id}${searchStringFlag}&unread=${unRead}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&date=${dates}&reporter=${reporter_id}${searchStringFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&date=${dates}&reporter=${reporter_id}${searchStringFlag}&unread=${unRead}`;
 
         }
 
