@@ -1,4 +1,5 @@
-.support-wrapper, .create-chat-room {
+.support-wrapper,
+.create-chat-room {
   width: 450px;
   position: fixed;
   top: 35px;
@@ -13,7 +14,6 @@
   //overflow-y: scroll;
   z-index: 100000;
 
-       
   .react-speedselect-container {
     border: none !important;
     display: flex;
@@ -100,7 +100,6 @@
     }
   }
 
-
   .btn-with-icon {
     display: block;
     position: relative;
@@ -146,13 +145,13 @@
 
       i {
         &:before {
-          -webkit-mask:url("../../images/icon-close.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-close.svg") no-repeat center
+            center;
           mask: url("../../images/icon-close.svg") no-repeat center center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
 
           background-color: #000;
-
         }
       }
     }
@@ -207,7 +206,7 @@
     width: 100%;
     position: relative;
     z-index: 1;
-   // gap: 62px;
+    // gap: 62px;
     font-size: 11px;
     top: 0;
     background: #2f3741 0% 0% no-repeat padding-box;
@@ -278,7 +277,8 @@
         &::before {
           content: "";
           mask: url("../../images/icon-arrow-left.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-arrow-left.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-arrow-left.svg") no-repeat center
+            center;
 
           width: 20px;
           height: 11px;
@@ -297,7 +297,8 @@
         .button {
           content: "";
           mask: url("../../images/icon-filters.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-filters.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-filters.svg") no-repeat center
+            center;
 
           min-width: 12px;
           width: 12px;
@@ -338,7 +339,8 @@
           .btn {
             content: "";
             mask: url("../../images/icon-search.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-search.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-search.svg") no-repeat center
+              center;
 
             min-width: 12px;
             width: 12px;
@@ -357,49 +359,48 @@
             color: #fff;
           }
         }
-    }
-    .author-list {
-      display: flex;
-      cursor: pointer;
-      //gap: 4px;
-      .add-icon-wrapper {
-        background: #B1B2B3;
+      }
+      .author-list {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 2px;
-        padding: 1px;
-        .add-icon {
-          content: "";
-          mask: url("../../images/icon-plus-lite.svg") no-repeat center
-          center;
-          -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat center
-          center;
+        cursor: pointer;
+        //gap: 4px;
+        .add-icon-wrapper {
+          background: #b1b2b3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 2px;
+          padding: 1px;
+          .add-icon {
+            content: "";
+            mask: url("../../images/icon-plus-lite.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat
+              center center;
 
-          mask-size: 8px;
-          -webkit-mask-size: 8px;
+            mask-size: 8px;
+            -webkit-mask-size: 8px;
 
-          width: 4px;
-          height: 8px;
-          background-color: #000000;
-          margin: 0;
+            width: 4px;
+            height: 8px;
+            background-color: #000000;
+            margin: 0;
+          }
+        }
+        img {
+          border-radius: 2px;
+          object-fit: cover;
+          padding-right: 3px;
+          margin: -3px 0;
+        }
+        .number {
+          border-radius: 2px;
+          padding: 3px;
+          background-color: grey;
+          font-size: 9px;
+          width: 20px;
+          height: 20px;
         }
       }
-      img {
-        border-radius: 2px;
-        object-fit: cover;
-        padding-right: 3px;
-        margin: -3px 0;
-      }
-      .number {
-        border-radius: 2px;
-        padding: 3px;
-        background-color: grey;
-        font-size: 9px;
-        width: 20px;
-        height: 20px;
-      }
-    }
       .btn-new-topic-wrapper {
         &:before {
           display: none;
@@ -430,8 +431,8 @@
               content: "";
               mask: url("../../images/icon-plus-lite.svg") no-repeat center
                 center;
-                -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat center
-                center;
+              -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat
+                center center;
               width: 8px;
               height: 8px;
               background-color: #000000;
@@ -614,11 +615,11 @@
       font-size: 12px;
     }
 
-    .unread-button-wrapper{
+    .unread-button-wrapper {
       background-color: #9b9b9b29;
       border-radius: 2px;
     }
-    .unselected{
+    .unselected {
       background-color: none;
     }
   }
@@ -685,7 +686,8 @@
         .btn {
           content: "";
           mask: url("../../images/icon-search.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-search.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-search.svg") no-repeat center
+            center;
 
           min-width: 12px;
           width: 12px;
@@ -767,8 +769,8 @@
           background-color: #232931;
           color: #b1b2b3 !important;
           margin: 0;
-height: 0;
-padding: 0 8px;
+          height: 0;
+          padding: 0 8px;
         }
 
         // .select-box {
@@ -782,7 +784,10 @@ padding: 0 8px;
         //   }
         // }
 
-        .create-chat-room .react-speedselect-container .support-wrapper .react-speedselect-container{
+        .create-chat-room
+          .react-speedselect-container
+          .support-wrapper
+          .react-speedselect-container {
           background-color: none;
         }
 
@@ -822,7 +827,8 @@ padding: 0 8px;
         width: 12px;
         height: 12px;
         mask: url("../../images/icon-arrow-desc.svg") no-repeat center center;
-        -webkit-mask: url("../../images/icon-arrow-desc.svg") no-repeat center center;
+        -webkit-mask: url("../../images/icon-arrow-desc.svg") no-repeat center
+          center;
 
         background: #fff;
         margin: 1px 6px;
@@ -864,7 +870,7 @@ padding: 0 8px;
     .topic {
       position: relative;
       margin: 10px 8px;
-    //   padding: 7px 10px;
+      //   padding: 7px 10px;
       background: #1a1f26;
       font-size: 11px;
       display: flex;
@@ -878,7 +884,7 @@ padding: 0 8px;
       }
 
       .topic-header {
-      padding: 7px 10px;
+        padding: 7px 10px;
 
         margin-bottom: 8px;
         position: relative;
@@ -903,11 +909,12 @@ padding: 0 8px;
           .topic-chat-notify {
             cursor: pointer;
             mask: url("../../images/icon-message.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-message.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-message.svg") no-repeat center
+              center;
 
             min-width: 12px;
             mask-size: 12px;
-          -webkit-mask-size: 12px;
+            -webkit-mask-size: 12px;
 
             width: 12px;
             height: 12px;
@@ -941,10 +948,11 @@ padding: 0 8px;
           .option {
             cursor: pointer;
             mask: url("../../images/icon-dots.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-dots.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+              center;
             min-width: 12px;
             mask-size: 12px;
-          -webkit-mask-size: 12px;
+            -webkit-mask-size: 12px;
 
             width: 12px;
             height: 12px;
@@ -954,10 +962,10 @@ padding: 0 8px;
         }
       }
 
-      .header-meta-divider{
-          height: 0.5px;
-          background-color: #646464;
-          width: 100%;
+      .header-meta-divider {
+        height: 0.5px;
+        background-color: #646464;
+        width: 100%;
       }
       .topic-meta {
         // display: flex;
@@ -983,9 +991,10 @@ padding: 0 8px;
             &::before {
               content: "";
               mask: url("../../images/icon-reopen.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-reopen.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-reopen.svg") no-repeat center
+                center;
               mask-size: 10px;
-          -webkit-mask-size: 10px;
+              -webkit-mask-size: 10px;
 
               width: 10px;
               height: 10px;
@@ -1010,9 +1019,10 @@ padding: 0 8px;
             &::before {
               content: "";
               mask: url("../../images/icon-run.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-run.svg") no-repeat center
+                center;
               mask-size: 10px;
-          -webkit-mask-size: 10px;
+              -webkit-mask-size: 10px;
 
               width: 10px;
               height: 10px;
@@ -1036,10 +1046,11 @@ padding: 0 8px;
             &::before {
               content: "";
               mask: url("../../images/icon-delete.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-delete.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-delete.svg") no-repeat center
+                center;
 
               mask-size: 10px;
-          -webkit-mask-size: 10px;
+              -webkit-mask-size: 10px;
 
               width: 10px;
               height: 10px;
@@ -1105,7 +1116,8 @@ padding: 0 8px;
       &::after {
         content: "";
         mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
-        -webkit-mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
+        -webkit-mask: url("../../images/icon-down-arrow.svg") no-repeat center
+          center;
         mask-size: 9px;
         -webkit-mask-size: 9px;
 
@@ -1116,7 +1128,7 @@ padding: 0 8px;
         transform: rotate(-90deg);
       }
     }
-    
+
     .reply-rotate {
       &::after {
         margin: 3px 4px;
@@ -1232,10 +1244,10 @@ padding: 0 8px;
           width: 13px;
           height: 13px;
           mask: url("../../images/icon-close.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-close.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-close.svg") no-repeat center
+            center;
           mask-size: 8px;
           -webkit-mask-size: 8px;
-
         }
       }
       textarea.field-control {
@@ -1249,10 +1261,9 @@ padding: 0 8px;
       }
     }
 
-    .field-with-label:hover{
+    .field-with-label:hover {
       cursor: text;
     }
-
 
     .field-with-label-description {
       textarea {
@@ -1332,7 +1343,8 @@ padding: 0 8px;
             .before {
               content: "";
               mask: url("../../images/icon-search.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-search.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-search.svg") no-repeat center
+                center;
               min-width: 12px;
               width: 12px;
               height: 12px;
@@ -1455,7 +1467,7 @@ padding: 0 8px;
               mask: url("../../images/icon-dots.svg") no-repeat center center;
               background-color: #fff;
               mask-size: 12px;
-          -webkit-mask-size: 12px;
+              -webkit-mask-size: 12px;
 
               transform: rotate(90deg);
               min-height: 16px;
@@ -1539,7 +1551,7 @@ padding: 0 8px;
               content: "";
               mask: url("../../images/icon-record.svg") no-repeat center center;
               mask-size: 10px;
-          -webkit-mask-size: 10px;
+              -webkit-mask-size: 10px;
 
               width: 10px;
               height: 10px;
@@ -1558,7 +1570,7 @@ padding: 0 8px;
               mask: url("../../images/icon-screenshot.svg") no-repeat center
                 center;
               mask-size: 10px;
-          -webkit-mask-size: 10px;
+              -webkit-mask-size: 10px;
 
               width: 10px;
               height: 10px;
@@ -1599,7 +1611,7 @@ padding: 0 8px;
               content: "Delete";
               mask: url("../../images/icon-delete.svg") no-repeat center center;
               mask-size: 10px;
-          -webkit-mask-size: 10px;
+              -webkit-mask-size: 10px;
 
               width: 10px;
               height: 10px;
@@ -1916,13 +1928,13 @@ padding: 0 8px;
                 flex-wrap: wrap;
                 gap: 10px;
                 .content-wrapper-media {
-                    .wrapper-media {
-                      position: relative;
+                  .wrapper-media {
+                    position: relative;
                     video,
                     img {
                       //margin-bottom: 10px;
                       margin-top: 10px;
-                    // max-width: 133px;
+                      // max-width: 133px;
                       height: 78px;
                       width: 133px;
                       //height: 78px;
@@ -1952,8 +1964,8 @@ padding: 0 8px;
                   content: "";
                   mask: url("../../images/icon-down-arrow.svg") no-repeat center
                     center;
-                    -webkit-mask: url("../../images/icon-down-arrow.svg") no-repeat center
-                    center;
+                  -webkit-mask: url("../../images/icon-down-arrow.svg")
+                    no-repeat center center;
                   min-width: 10px;
                   width: 7px;
                   height: 9px;
@@ -1982,7 +1994,8 @@ padding: 0 8px;
           cursor: pointer;
           align-items: flex-end;
           mask: url("../../images/icon-dots.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-dots.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+            center;
 
           background-color: #fff;
           mask-size: 12px;
@@ -2073,13 +2086,13 @@ padding: 0 8px;
                   flex-wrap: wrap;
                   gap: 10px;
                   .content-wrapper-media {
-                      .wrapper-media {
-                        position: relative;
+                    .wrapper-media {
+                      position: relative;
                       video,
                       img {
                         //margin-bottom: 10px;
                         margin-top: 10px;
-                      // max-width: 133px;
+                        // max-width: 133px;
                         //max-height: 78px;
                         width: 133px;
                         height: 78px;
@@ -2123,11 +2136,12 @@ padding: 0 8px;
             align-items: flex-end;
             //margin-left:60px;
             mask: url("../../images/icon-dots.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-dots.svg") no-repeat center center;
+            -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+              center;
 
             background-color: #fff;
             mask-size: 12px;
-          -webkit-mask-size: 12px;
+            -webkit-mask-size: 12px;
 
             //transform: rotate(90deg);
             min-height: 16px;
@@ -2168,8 +2182,8 @@ padding: 0 8px;
             content: "";
             mask: url("../../images/icon-notes copy.svg") no-repeat center
               center;
-              -webkit-mask: url("../../images/icon-notes copy.svg") no-repeat center
-              center;
+            -webkit-mask: url("../../images/icon-notes copy.svg") no-repeat
+              center center;
             min-width: 12px;
             width: 12px;
             height: 12px;
@@ -2178,7 +2192,8 @@ padding: 0 8px;
             margin: 0 7px;
           }
 
-          input, textarea {
+          input,
+          textarea {
             background: transparent;
             border: none;
             padding: 0;
@@ -2234,7 +2249,8 @@ padding: 0 8px;
           cursor: pointer;
           content: "";
           mask: url("../../images/icon-send.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-send.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-send.svg") no-repeat center
+            center;
 
           min-width: 12px;
           width: 12px;
@@ -2257,7 +2273,8 @@ padding: 0 8px;
           margin-right: 3px;
         }
 
-        input, textarea {
+        input,
+        textarea {
           background: #000000;
           border: none;
           margin: 5px 10px;
@@ -2272,7 +2289,6 @@ padding: 0 8px;
         }
       }
     }
-    
 
     .bottom-wrapper {
       display: flex;
@@ -2303,10 +2319,10 @@ padding: 0 8px;
             content: "";
             mask: url("../../images/icon-record-filled.svg") no-repeat center
               center;
-              -webkit-mask: url("../../images/icon-record-filled.svg") no-repeat center
-              center;
+            -webkit-mask: url("../../images/icon-record-filled.svg") no-repeat
+              center center;
             mask-size: 10px;
-          -webkit-mask-size: 10px;
+            -webkit-mask-size: 10px;
 
             width: 10px;
             height: 10px;
@@ -2324,10 +2340,10 @@ padding: 0 8px;
             content: "";
             mask: url("../../images/icon-screenshot-filled.svg") no-repeat
               center center;
-              -webkit-mask: url("../../images/icon-screenshot-filled.svg") no-repeat
-              center center;
+            -webkit-mask: url("../../images/icon-screenshot-filled.svg")
+              no-repeat center center;
             mask-size: 10px;
-          -webkit-mask-size: 10px;
+            -webkit-mask-size: 10px;
 
             width: 10px;
             height: 10px;
@@ -2343,7 +2359,8 @@ padding: 0 8px;
           cursor: pointer;
           content: "";
           mask: url("../../images/icon-plus.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-plus.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-plus.svg") no-repeat center
+            center;
           min-width: 12px;
           width: 17px;
           height: 17px;
@@ -2424,7 +2441,8 @@ padding: 0 8px;
         button {
           content: "";
           mask: url("../../images/icon-delete.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-delete.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-delete.svg") no-repeat center
+            center;
 
           mask-size: 10px;
           -webkit-mask-size: 10px;
@@ -2644,7 +2662,8 @@ padding: 0 8px;
           align-items: flex-end;
           margin-left: 60px;
           mask: url("../../images/icon-dots.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-dots.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+            center;
 
           background-color: #fff;
           mask-size: 12px;

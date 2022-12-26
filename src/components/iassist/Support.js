@@ -235,13 +235,15 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         let searchStringFlag = searchString ? `&topic_search=${searchString}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
+        let unReadFlag=unRead?`&unread=${unRead}`:''
+
         if (dates === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&reporter=${reporter_id}${searchStringFlag}&unread=${unRead}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&reporter=${reporter_id}${searchStringFlag}${unReadFlag}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&date=${dates}&reporter=${reporter_id}${searchStringFlag}&unread=${unRead}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&date=${dates}&reporter=${reporter_id}${searchStringFlag}${unReadFlag}`;
 
         }
 
