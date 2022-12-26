@@ -92,6 +92,8 @@
                     display: block;
                     width: 11px; height: 11px;
                     mask: url("../../../images/icon-close.svg") no-repeat center center;
+                    -webkit-mask: url("../../../images/icon-close.svg") no-repeat center center;
+
                     background: #fff;
                     margin-right: 10px;
                 }
@@ -118,6 +120,8 @@
                         .btn{
                             content: '';
                             mask: url("../../../images/icon-search.svg") no-repeat center center;
+                            -webkit-mask: url("../../../images/icon-search.svg") no-repeat center center;
+
                             min-width: 12px;
                             width: 12px;
                             height: 12px;

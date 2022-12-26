@@ -675,6 +675,8 @@
         .btn {
           content: "";
           mask: url("../../images/icon-search.svg") no-repeat center center;
+          -webkit-mask: url("../../images/icon-search.svg") no-repeat center center;
+
           min-width: 12px;
           width: 12px;
           height: 12px;
@@ -803,6 +805,8 @@
         width: 12px;
         height: 12px;
         mask: url("../../images/icon-arrow-desc.svg") no-repeat center center;
+        -webkit-mask: url("../../images/icon-arrow-desc.svg") no-repeat center center;
+
         background: #fff;
         margin: 1px 6px;
       }
