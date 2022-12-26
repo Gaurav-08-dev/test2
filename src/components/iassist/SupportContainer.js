@@ -6,6 +6,7 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
+let token;
 
 console.log(tokenConstant + '    efsdf sdfsd');
 
@@ -14,7 +15,7 @@ const SupportContainer = ( {btnId} ) => {
     const [OpenSupport, setOpenSupport] = useState(false);
 
     const simplifyToken = async() => {
-        let token = localStorage.getItem(tokenConstant + '_token');
+        token = localStorage.getItem(tokenConstant + '_token');
         const user = getUserDetailsFromToken(token);
         setUserData(user?.identity);
         if (token) {
