@@ -5,23 +5,26 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 
 let webSocket;
-let token = document.getElementById("test-div").getAttribute("data-token");
+let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
 
 const SupportContainer = ( {btnId} ) => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
 
     const simplifyToken = async() => {
-        const tokens = `Bearer ${token}`;
-        let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
-            method: 'GET',
-            headers: {
-                'Authorization': tokens
-            }
-        })
-      let result = await res.json();
-      setUserToken(result.token)
-      connectSocket();
+        let token = localStorage.getItem(tokenConstant + '_token');
+        if (token) {
+            const tokens = `Bearer ${token}`;
+            let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': tokens
+                }
+            })
+            let result = await res.json();
+            setUserToken(result.token)
+            connectSocket();
+        }
 
     }
 
