@@ -1550,6 +1550,7 @@
             &::before {
               content: "";
               mask: url("../../images/icon-record.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-record.svg") no-repeat center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 
@@ -1567,8 +1568,8 @@
 
             &::before {
               content: "";
-              mask: url("../../images/icon-screenshot.svg") no-repeat center
-                center;
+              mask: url("../../images/icon-screenshot.svg") no-repeat center center;
+              -webkit-mask: url("../../images/icon-screenshot.svg") no-repeat center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 
