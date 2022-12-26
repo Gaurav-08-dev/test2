@@ -36,7 +36,7 @@ let allTopics = [];
 let activity = [];
 let unReadList = [];
 let chatId = '';
-let refresh = false;
+let refresh = false,unRead=false, disableUnreadButton=false;
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
@@ -57,7 +57,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const [editTopic, setEditTopic] = useState([]); //TODO: discuss for this option
 
     const bodyRef = useRef();
-    
+
     const [searchString, setSearchString] = useState('');
 
     const [showLoader, setShowLoader] = useState(false);
@@ -81,13 +81,13 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const [type, setType] = useState([]);
 
     const [reporters, setReporters] = useState([]);
-    
+
     const [typeLabel, setTypeLabel] = useState('All');
 
     const [reporterLabel, setReportersLabel] = useState('Select');
 
     const [date, setDate] = useState(new Date());
-  
+
     const allUser = useRef([]);
 
     const allAccount = useRef([]);
@@ -134,7 +134,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     // }
 
     const getTopics = async (isDelete) => {
-        
+
         if (tabData) {
 
             setStatusTab(tabData);
@@ -166,7 +166,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                     let result = response;
 
                     for (let key in result) {
-                        
+
                         let data = result[key];
 
                         if (key === 'topic_data') {
@@ -174,9 +174,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             data?.map((topicValue, index) => {
                                 allTopics.push(topicValue);
                             })
-                           
+
                         } else if (key === 'unread_data') {
-                            
+
                             data?.map((unread, index) => {
                                 unReadList.push(unread);
                             })
@@ -206,7 +206,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             })
 
                         }
-                        
+
                     }
 
                     setFetchButton(!fetchButton);
@@ -249,7 +249,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
 
     const searchTopic = (e) => {
-    
+
         getTopicsBasedOnFilter(e);
 
     }
@@ -276,15 +276,15 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                     let result = response;
 
                     for (let key in result) {
-                        
+
                         let data = result[key];
 
                         if (key === 'topic_data') {
-                            
+
                             allTopics = data;
 
                         } else if (key === 'unread_data') {
-                            
+
                             unReadList = data;
 
                         } else if (key === 'pagination') {
@@ -294,19 +294,19 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             totalPage = data.no_of_pages;
 
                         } else if (key === 'message' && data === 'no tickets found') {
-                            
+
                             allTopics = [];
 
                         } else if (key === 'user_data') {
-                            
+
                             allUser.current = data;
 
                         } else if (key === 'account_data') {
-                            
+
                             allAccount.current = data;
 
                         } else if (key === 'activity') {
-                            
+
                             activity = data;
 
                         }
@@ -429,12 +429,12 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             .catch(err => {
 
                 alertService.showToast('error', err.msg);
-                
+
             });
     }
 
     useEffect(() => {
-        
+
         if (type.length === 0) {
 
             fetchTypeData();
@@ -462,7 +462,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             getTopics();
 
         }
-        
+
         const onScroll = async (event) => {
 
             if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
@@ -519,7 +519,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }, [])
 
     const clearData = () => {
-        
+
         allTopics = [];
 
         activity = [];
@@ -533,7 +533,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const openChat = (event, topic, index) => {
 
         let data = checkLastActivity(topic.id);
-        
+
         setLastActivity(data);
 
         let checkIndex = unReadList.find((list) => {
@@ -593,7 +593,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                         getTopics('delete');
 
                     }
-                    
+
                     alertService.showToast('success', result.message);
 
                     setConfirmDelete(false);
@@ -712,6 +712,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
+    const showUnread = ()=>{
+
+        unRead=!unRead;
+        getTopicsBasedOnFilter()
+    }
     const clearFilter = () => {
 
         if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date') {
@@ -742,15 +747,15 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const debouncedResults = useMemo(() => {
         return debounce(onInputChange, 500);
-      }, []);
+    }, []);
 
     useEffect(() => {
 
         return () => {
-          debouncedResults.cancel();
+            debouncedResults.cancel();
         };
 
-      }, [searchString]);
+    }, [searchString]);
 
     return (
 
@@ -768,22 +773,22 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         <div className='header-other-functionality-wrapper'>
 
-                                <div className='topic-filter-search'>
+                            <div className='topic-filter-search'>
 
-                                    <div className='search'>
+                                <div className='search'>
 
-                                        <button className='btn' onClick={searchTopic} title='search'></button>
-                                        
-                                        <input type={'text'} 
-                                               title='Search' 
-                                               onChange={(e)=>{e.persist(); debouncedResults(e)}} 
-                                               placeholder='Search' 
-                                            //    onKeyDown={handleKeyDown}    
-                                        />
+                                    <button className='btn' onClick={searchTopic} title='search'></button>
 
-                                    </div>
+                                    <input type={'text'}
+                                        title='Search'
+                                        onChange={(e) => { e.persist(); debouncedResults(e) }}
+                                        placeholder='Search'
+                                    //    onKeyDown={handleKeyDown}    
+                                    />
 
                                 </div>
+
+                            </div>
 
                             <div className={'filter-btn' + (showMultipleFilters ? ' filter-bg' : '')}>
 
@@ -795,8 +800,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                 <button onClick={() => {
                                     clearData();
-                                    setTopicClick(true)}} disabled={disableButton}><span className='add-new-ticket'></span>Ticket</button>
-                                    
+                                    setTopicClick(true)
+                                }} disabled={disableButton}><span className='add-new-ticket'></span>Ticket</button>
+
                             </div>
 
                             <button className='header-close' disabled={disableButton} onClick={() => closePanes()}></button>
@@ -813,7 +819,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 <div className={'calendar-wrapper-separator'}>
 
                                     <label className={'label'} onClick={() => setIsOpenCalendar(true)}>
-                                        
+
                                         {dates}
 
                                     </label>
@@ -839,15 +845,15 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             <div className='type'>
 
                                 <SpeedSelect options={type} selectLabel={typeLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => ondropDownChange(value, 'type')} />
-                            
+
                             </div>
 
                             <div className='reporter'>
 
                                 <SpeedSelect options={reporters} selectLabel={reporterLabel} prominentLabel='Reporter' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='first_name' onSelect={(value) => ondropDownChange(value, 'reporter')} />
-                            
-                            </div>
 
+                            </div>
+                            <div className={unRead ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton} onClick={() => showUnread()}>Unread</button></div>
                             <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>clear</button>
 
                         </div>}
@@ -888,7 +894,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             </button>
 
                         </div>
-                        
+
                     </div>
 
                     <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
@@ -923,7 +929,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                     {<div className='topic-meta'>
 
-                                        {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics}/>}
+                                        {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} />}
                                         {feedBackId !== topic.id && (statusTab === 'open') &&
                                             <div className='topic-buttons'>
 
@@ -942,7 +948,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                             </div>}
 
-                                        {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics}/>}
+                                        {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} />}
                                         {(statusTab === 'resolved') && <div className='topic-buttons'>
 
                                             {getTopicId.id !== topic.id && <button className='reopen' disabled={disableButton} onClick={() => {
@@ -954,7 +960,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                             }}>Re-Open</button>}
 
                                         </div>}
-                                        
+
                                     </div>}
 
                                 </div>
@@ -972,10 +978,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             </div>}
 
-             {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} topicData={editTopic} socketDetail={webSocket}/>}
+            {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} topicData={editTopic} socketDetail={webSocket} />}
 
-            {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket}/>} 
-        
+            {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket} />}
+
         </>
     )
 }
