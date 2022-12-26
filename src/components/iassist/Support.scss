@@ -149,6 +149,8 @@
           -webkit-mask:url("../../images/icon-close.svg") no-repeat center center;
           mask: url("../../images/icon-close.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
+
           background-color: #000;
 
         }
@@ -164,6 +166,7 @@
 
           mask: url("../../images/icon-run.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
           background-color: #000;
           //   font-weight: 500;
         }
@@ -179,6 +182,8 @@
         height: 16px;
         &:before {
           mask-size: 9px;
+          -webkit-mask-size: 9px;
+
           width: 7px;
           height: 7px;
           margin: 4px auto 0;
@@ -370,6 +375,8 @@
           center;
 
           mask-size: 8px;
+          -webkit-mask-size: 8px;
+
           width: 4px;
           height: 8px;
           background-color: #000000;
@@ -879,6 +886,8 @@
 
             min-width: 12px;
             mask-size: 12px;
+          -webkit-mask-size: 12px;
+
             width: 12px;
             height: 12px;
             background-color: #b1b2b3;
@@ -914,6 +923,8 @@
             -webkit-mask: url("../../images/icon-dots.svg") no-repeat center center;
             min-width: 12px;
             mask-size: 12px;
+          -webkit-mask-size: 12px;
+
             width: 12px;
             height: 12px;
             background-color: #fff;
@@ -953,6 +964,8 @@
               mask: url("../../images/icon-reopen.svg") no-repeat center center;
               -webkit-mask: url("../../images/icon-reopen.svg") no-repeat center center;
               mask-size: 10px;
+          -webkit-mask-size: 10px;
+
               width: 10px;
               height: 10px;
               background-color: #fff;
@@ -978,6 +991,8 @@
               mask: url("../../images/icon-run.svg") no-repeat center center;
               -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
               mask-size: 10px;
+          -webkit-mask-size: 10px;
+
               width: 10px;
               height: 10px;
               background-color: #fff;
@@ -1003,6 +1018,8 @@
               -webkit-mask: url("../../images/icon-delete.svg") no-repeat center center;
 
               mask-size: 10px;
+          -webkit-mask-size: 10px;
+
               width: 10px;
               height: 10px;
               background-color: #fff;
@@ -1069,6 +1086,8 @@
         mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
         -webkit-mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
         mask-size: 9px;
+        -webkit-mask-size: 9px;
+
         width: 10px;
         height: 10px;
         background-color: #fff;
@@ -1194,6 +1213,8 @@
           mask: url("../../images/icon-close.svg") no-repeat center center;
           -webkit-mask: url("../../images/icon-close.svg") no-repeat center center;
           mask-size: 8px;
+          -webkit-mask-size: 8px;
+
         }
       }
       textarea.field-control {
@@ -1413,6 +1434,8 @@
               mask: url("../../images/icon-dots.svg") no-repeat center center;
               background-color: #fff;
               mask-size: 12px;
+          -webkit-mask-size: 12px;
+
               transform: rotate(90deg);
               min-height: 16px;
             }
@@ -1495,6 +1518,8 @@
               content: "";
               mask: url("../../images/icon-record.svg") no-repeat center center;
               mask-size: 10px;
+          -webkit-mask-size: 10px;
+
               width: 10px;
               height: 10px;
               background-color: #fff;
@@ -1512,6 +1537,8 @@
               mask: url("../../images/icon-screenshot.svg") no-repeat center
                 center;
               mask-size: 10px;
+          -webkit-mask-size: 10px;
+
               width: 10px;
               height: 10px;
               background-color: #fff;
@@ -1551,6 +1578,8 @@
               content: "Delete";
               mask: url("../../images/icon-delete.svg") no-repeat center center;
               mask-size: 10px;
+          -webkit-mask-size: 10px;
+
               width: 10px;
               height: 10px;
               background-color: #fff;
@@ -1677,6 +1706,8 @@
           content: "";
           mask: url("../../images/icon-run.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
+
           width: 10px;
           height: 10px;
           background-color: #000;
@@ -1701,6 +1732,8 @@
           content: "";
           mask: url("../../images/icon-run.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
+
           width: 10px;
           height: 10px;
           background-color: #000;
@@ -1928,6 +1961,8 @@
           mask: url("../../images/icon-dots.svg") no-repeat center center;
           background-color: #fff;
           mask-size: 12px;
+          -webkit-mask-size: 12px;
+
           //transform: rotate(90deg);
           min-height: 16px;
         }
@@ -2065,6 +2100,8 @@
             mask: url("../../images/icon-dots.svg") no-repeat center center;
             background-color: #fff;
             mask-size: 12px;
+          -webkit-mask-size: 12px;
+
             //transform: rotate(90deg);
             min-height: 16px;
           }
@@ -2236,6 +2273,8 @@
             mask: url("../../images/icon-record-filled.svg") no-repeat center
               center;
             mask-size: 10px;
+          -webkit-mask-size: 10px;
+
             width: 10px;
             height: 10px;
             background-color: #000;
@@ -2253,6 +2292,8 @@
             mask: url("../../images/icon-screenshot-filled.svg") no-repeat
               center center;
             mask-size: 10px;
+          -webkit-mask-size: 10px;
+
             width: 10px;
             height: 10px;
             background-color: #000;
@@ -2294,6 +2335,8 @@
           content: "";
           mask: url("../../images/icon-run.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
+
           width: 10px;
           height: 10px;
           background-color: #fff;
@@ -2318,6 +2361,8 @@
           content: "";
           mask: url("../../images/icon-run.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
+
           width: 10px;
           height: 10px;
           background-color: #fff;
@@ -2341,6 +2386,8 @@
           content: "";
           mask: url("../../images/icon-delete.svg") no-repeat center center;
           mask-size: 10px;
+          -webkit-mask-size: 10px;
+
           width: 10px;
           height: 10px;
           background-color: #fff;
@@ -2558,6 +2605,8 @@
           mask: url("../../images/icon-dots.svg") no-repeat center center;
           background-color: #fff;
           mask-size: 12px;
+          -webkit-mask-size: 12px;
+
           transform: rotate(90deg);
           min-height: 16px;
         }
