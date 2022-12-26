@@ -7,6 +7,8 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
 
+console.log(tokenConstant + '    efsdf sdfsd');
+
 const SupportContainer = ( {btnId} ) => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
