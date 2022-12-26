@@ -6,7 +6,7 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
-const btnId = ocument.getElementById("test-div").getAttribute("data-ButtonId");
+const btnId = document.getElementById("test-div").getAttribute("data-ButtonId");
 
 const SupportContainer = () => {
 
