@@ -37,6 +37,7 @@ let activity = [];
 let unReadList = [];
 let chatId = '';
 let refresh = false,unRead=false, disableUnreadButton=false;
+let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
@@ -335,6 +336,22 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
+    const changeValue = (unread) => {
+
+        if (unread) {
+            let btn = document.getElementById(btnId);
+            let span = document.createElement('span');
+            span.style.backgroundColor = 'red';
+            span.style.position = 'absolute';
+            span.style.width = '6px';
+            span.style.height = '6px';
+            span.style.marginLeft = '3px';
+            span.style.borderRadius = '50%';
+            span.style.top = '6px';
+            if(btn) btn.append(span);
+        }
+    }
+
     webSocket.onmessage = function (evt) {
 
         var received_msg = JSON.parse(evt.data);
@@ -343,6 +360,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             refresh = true;
             setRefr(!refr);
             return;
+        } else if(received_msg.type === 'count') {
+            let isUnread = received_msg.unread_tickets_count > 0? true: false;
+            changeValue(isUnread);
         }
 
         unReadList.filter((topic) => {
