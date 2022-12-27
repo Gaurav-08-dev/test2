@@ -597,7 +597,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
                 {!showVideo && !chatRoom &&
                     <div id='create-chat-room' className='create-chat-room'>
 
-                        <div className='header-wrapper'>
+                        <div className='header-wrapper support-wrapper-inner'>
 
                             <div className='header-inner'>
 
