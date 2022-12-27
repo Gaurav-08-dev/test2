@@ -49,6 +49,7 @@ const SupportContainer = () => {
                 var received_msg = JSON.parse(evt.data);
                 if(received_msg.type === 'count') {
                     let isUnread = received_msg.unread_tickets_count > 0? true: false;
+                    localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
                     changeValue(isUnread);
                 }
             };
@@ -68,6 +69,7 @@ const SupportContainer = () => {
             if (unread) {
                 let btn = document.getElementById(btnId);
                 let span = document.createElement('span');
+                span.id = 'iassist-unread';
                 span.style.backgroundColor = 'red';
                 span.style.position = 'absolute';
                 span.style.width = '6px';

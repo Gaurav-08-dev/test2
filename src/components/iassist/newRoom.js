@@ -455,6 +455,18 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     useEffect(() => {
 
+        let unreadDataList = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread'));
+
+        if (unreadDataList?.length > 0 && unreadDataList.includes(chatIds)) {
+            let index = unreadDataList.findIndex((data) => data === chatIds)
+            unreadDataList.splice(index, 1);
+            if (unreadDataList.length === 0) {
+                console.log(document.getElementById('iassist-unread'));
+                if (document.getElementById('iassist-unread'))document.getElementById('iassist-unread').remove();
+            }
+            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(unreadDataList));
+        }
+
         let user = getUser();
 
         setCurrentUserId(user.id);

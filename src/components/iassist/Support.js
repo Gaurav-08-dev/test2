@@ -341,8 +341,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const changeValue = (unread) => {
 
         if (unread) {
+
             let btn = document.getElementById(btnId);
             let span = document.createElement('span');
+            span.id = 'iassist-unread';
             span.style.backgroundColor = 'red';
             span.style.position = 'absolute';
             span.style.width = '6px';
@@ -350,7 +352,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             span.style.marginLeft = '3px';
             span.style.borderRadius = '50%';
             span.style.top = '6px';
+            
             if(btn) btn.append(span);
+            console.log(btn);
         }
     }
 
@@ -364,26 +368,40 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             return;
         } else if(received_msg.type === 'count') {
             let isUnread = received_msg.unread_tickets_count > 0? true: false;
+            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
             changeValue(isUnread);
-        }
-
-        unReadList.filter((topic) => {
-
-            if (allTopics.length > 0) {
-
-                if (topic.topic_id === received_msg.topic_id) {
-
-                    topic.unread_count += 1;
-
-                    setCountChange(!CountChange);
-
-                    return topic;
-
+        } else if (received_msg.type === 'chat') {
+            let user = getUser();
+            if (user.id !== received_msg.user_id) {
+                if (!document.getElementById('iassist-unread')) {
+                    console.log('check');
+                    changeValue(true);
                 }
 
+                unReadList.filter((topic) => {
+
+                    if (allTopics.length > 0) {
+        
+                        if (topic.topic_id === received_msg.topic_id) {
+        
+                            topic.unread_count += 1;
+        
+                            setCountChange(!CountChange);
+        
+                            return topic;
+        
+                        }
+        
+                    }
+        
+                })
+
+                let readList = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread')) || [];
+                readList.push(received_msg.topic_id);
+                localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(readList))
             }
 
-        })
+        }
 
     };
 
@@ -540,7 +558,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         return () => {
             clearData();
             // controller.abort();
-            webSocket.close();
+            // webSocket.close();
         }
 
     }, [])
