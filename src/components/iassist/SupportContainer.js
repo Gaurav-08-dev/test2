@@ -5,10 +5,8 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 
 let webSocket;
-let tokenConstant = 'sight';
-// document.getElementById("test-div").getAttribute("data-token");
-let btnId = 'test-id'
-// document.getElementById("test-div").getAttribute("data-buttonid");
+let tokenConstant =document.getElementById("test-div").getAttribute("data-token");
+let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
 
 
