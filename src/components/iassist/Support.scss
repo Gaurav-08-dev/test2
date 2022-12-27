@@ -601,12 +601,12 @@
     .type,
     .reporter {
       font-size: 11px;
-      // .react-speedselect-container {
-      //   background-color: #fff;
-      //   .select-dropdown {
-      //     max-width: 80px;
-      //   }
-      // }
+      .react-speedselect-container {
+        .select-box {
+          padding: 0 6px !important;
+          padding-right: 14px !important;
+        }
+      }
     }
 
     .clear {

@@ -118,8 +118,6 @@ const SupportContainer = () => {
 
     useEffect(() => {
 
-        
-
         simplifyToken();
 
         document.addEventListener('mouseup', (event) => {
