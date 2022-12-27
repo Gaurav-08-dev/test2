@@ -8,7 +8,7 @@ let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
 let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
-console.log(btnId);
+
 
 const SupportContainer = () => {
 
