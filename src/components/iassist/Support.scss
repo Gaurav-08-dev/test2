@@ -2015,6 +2015,10 @@
           border-radius: 3px;
           z-index: 1;
 
+          &:hover{
+            cursor: pointer;
+          }
+
           li {
             list-style: none;
             color: #fff;
