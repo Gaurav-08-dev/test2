@@ -1,5 +1,4 @@
-#client-home{.support-wrapper,
-.create-chat-room {
+#client-home{
   width: 450px;
   position: fixed;
   top: 35px;
@@ -13,6 +12,8 @@
   text-align: left;
   //overflow-y: scroll;
   z-index: 100000;
+  .support-wrapper,
+.create-chat-room {
 
   .react-speedselect-container {
     border: none !important;
