@@ -1561,6 +1561,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
+    const onClickSteno = () => {
+        if (topic.status_id === 3) {
+            setShowReopen(true);
+        }
+    }
+
     return !navigateHome ? (
 
         <>
@@ -1665,7 +1671,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} ticket={fetchIndivTopic} disabledButton={setShowFeedback} />}
 
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} />}
+                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} fetchIndivTopic={fetchIndivTopic} />}
 
                 <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
@@ -1904,6 +1910,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                             autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                                             minEditorHeight='20px' // Default will be 100px
                                                             maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                            placeHolder="Reply"
                                                         />
 
                                                         <button className='rply-btn' onClick={(e) => sendMessage(e, 'reply', messages.id)} disabled={showVideoLoader}></button>
@@ -1962,6 +1969,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                 minEditorHeight='20px' // Default will be 100px
                                 maxEditorHeight="300px" // Default maxHeight will be 250px
+                                placeHolder={topic.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
+                                onClick={onClickSteno}
                             />
 
                             <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader}></button>
@@ -1993,6 +2002,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                 minEditorHeight='20px' // Default will be 100px
                                 maxEditorHeight="300px" // Default maxHeight will be 250px
+                                placeHolder="Message"
                             />
 
                             <button type='button' className='cancel' onClick={editCancel}>cancel</button>

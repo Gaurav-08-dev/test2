@@ -1,21 +1,20 @@
 {
   "name": "@thanveerahamed/enduser",
   "version": "0.1.2",
-  
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "postcss-normalize": "^10.0.1",
     "crypto-js": "^4.0.0",
     "html-react-parser": "^3.0.4",
     "moment": "^2.24.0",
+    "postcss-normalize": "^10.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "5.0.1",
     "react-speedselect": "^2.2.3",
-    "react-steno": "^1.0.0",
+    "react-steno": "^1.0.5",
     "rxjs": "^6.6.6",
     "sass": "^1.56.2",
     "web-vitals": "^2.1.4"
