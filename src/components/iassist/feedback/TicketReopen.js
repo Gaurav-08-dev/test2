@@ -6,7 +6,7 @@ import APIService from '../../../services/apiService';
 import alertService from '../../../services/alertService';
 
 
-const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic }) => {
+const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic, fetchIndivTopic }) => {
 
     const [suggestion, setSuggestion] = useState('');
 
@@ -102,6 +102,9 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                                     }
 
+                                }
+                                if (fetchIndivTopic) {
+                                    fetchIndivTopic();
                                 }
 
                                 closePane();
