@@ -341,6 +341,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const changeValue = (unread) => {
 
         if (unread) {
+
             let btn = document.getElementById(btnId);
             let span = document.createElement('span');
             span.id = 'iassist-unread';
@@ -351,7 +352,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             span.style.marginLeft = '3px';
             span.style.borderRadius = '50%';
             span.style.top = '6px';
+            
             if(btn) btn.append(span);
+            console.log(btn);
         }
     }
 
@@ -370,7 +373,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         } else if (received_msg.type === 'chat') {
             let user = getUser();
             if (user.id !== received_msg.user_id) {
-                if (!document.getElementById('iassist-unread'))changeValue(true);
+                if (!document.getElementById('iassist-unread')) {
+                    console.log('check');
+                    changeValue(true);
+                }
 
                 unReadList.filter((topic) => {
 
