@@ -23,8 +23,8 @@ let totalPage = 0;
 let Size = pageSize;
 const scrollPadding = 40;
 // const jwt_token = Constants.jwt_token;
-let totalCount = 0;
-let prevSearchText = '';
+// let totalCount = 0;
+// let prevSearchText = '';
 let tabData = 'open';
 let dates = 'Date';
 let defType = { 'name': 'All', 'id': 'All' };
@@ -183,7 +183,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'pagination') {
 
-                            totalCount = data.total_count;
+                            // totalCount = data.total_count;
 
                             totalPage = data.no_of_pages;
 
@@ -293,7 +293,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'pagination') {
 
-                            totalCount = data.total_count;
+                            // totalCount = data.total_count;
 
                             totalPage = data.no_of_pages;
 
