@@ -1439,9 +1439,9 @@
                 padding: 4px 0;
                 cursor: pointer;
               }
-              > li:first-child {
-                padding-top: 0;
-              }
+              // > li:first-child {
+              //   padding-top: 0;
+              // }
               > li:last-child {
                 padding-bottom: 0;
               }
@@ -2019,7 +2019,7 @@
             list-style: none;
             color: #fff;
             right: 10px;
-            padding: 5px;
+            // padding: 5px;
           }
           > li:first-child {
             padding-top: 0;
