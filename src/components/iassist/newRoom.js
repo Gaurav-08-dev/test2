@@ -206,6 +206,16 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     }
 
+                    setTimeout(() => {
+
+                        if (noneRead) {
+            
+                            setNoneRead(undefined);
+            
+                        }
+            
+                    }, 2000);
+
                 }
 
             })
@@ -432,15 +442,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     useEffect(() => {
 
-        setTimeout(() => {
-
-            if (noneRead) {
-
-                setNoneRead(undefined);
-
-            }
-
-        }, 2000);
+       
 
         if (messageList.length === 0) {
 
@@ -462,7 +464,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             unreadDataList.splice(index, 1);
             if (unreadDataList.length === 0) {
                 console.log(document.getElementById('iassist-unread'));
-                if (document.getElementById('iassist-unread'))document.getElementById('iassist-unread').remove();
+                if (document.getElementById('iassist-unread')) document.getElementById('iassist-unread').remove();
             }
             localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(unreadDataList));
         }
@@ -1720,7 +1722,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                 <div className='change-status'>Changed status of this ticket to  <span>Resolved</span></div>
 
-                                                <div className='feedback'> feedback Given <li onClick={() => openFeedbackMessage(messages.id)}>{messages.note.feedback}</li> <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage ? ' rotate' : '')} title='arrowdown'></button></div>
+                                                <div className='feedback'> Feedback Given <li onClick={() => openFeedbackMessage(messages.id)}>{messages.note.feedback}</li> <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage ? ' rotate' : '')} title='arrowdown'></button></div>
 
                                                 {feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
 
@@ -1834,11 +1836,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                                                     </div>}
 
-                                                                                    {checkImage(files) && <div className='wrapper-media'><img src={files.file} onClick={() => {
-                                                                                        playerType = 'image';
-                                                                                        setOpenPopupPlayer(true)
-                                                                                        setPlayerUrl(files.file)
-                                                                                    }}></img>
+                                                                                    {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file}
+                                                                                        onClick={() => {
+                                                                                            playerType = 'image';
+                                                                                            setOpenPopupPlayer(true);
+                                                                                            setPlayerUrl(files.file);
+                                                                                        }}></img>
 
                                                                                         <div className='media-id'>{files?.name}</div>
 

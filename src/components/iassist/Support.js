@@ -6,16 +6,15 @@ import SpeedSelect from 'react-speedselect';
 import CreateChatRoom from './CreateChatRoom';
 import * as Constants from '../Constants';
 import ChatRoom from './newRoom';
-import { getToken, getTokenClient, getUser, getUserDetailsFromToken, setUserToken } from '../../utils/Common';
+import { getTokenClient, getUser } from '../../utils/Common';
 import alertService from '../../services/alertService';
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
 import DatePicker from '../ReactCalendar/DatePicker';
-// import Avatar from '../Avatar/Avatar';
 import Detail from './userlist/Detail';
-import Delete from './DeleteConfirmation/Delete';
+
 
 // let webSocket;
 let pageNumber = 1;
@@ -36,7 +35,7 @@ let allTopics = [];
 let activity = [];
 let unReadList = [];
 let chatId = '';
-let refresh = false,unRead=false, disableUnreadButton=false;
+let refresh = false, unRead = false, disableUnreadButton = false;
 let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
@@ -235,7 +234,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         let searchStringFlag = searchString ? `&topic_search=${searchString}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
-        let unReadFlag=unRead?`&unread=${unRead}`:''
+        let unReadFlag = unRead ? `&unread=${unRead}` : ''
 
         if (dates === 'Date') {
 
@@ -259,7 +258,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const getTopicsBasedOnFilter = async (searchQuery) => {
 
-        disableUnreadButton=true;
+        disableUnreadButton = true;
 
         setInitialLoad(false);
 
@@ -318,7 +317,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     }
 
-        disableUnreadButton=false;
+                    disableUnreadButton = false;
 
                     setFetchButton(!fetchButton);
 
@@ -328,7 +327,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             })
             .catch(err => {
-                disableUnreadButton=false;
+                disableUnreadButton = false;
 
                 setShowLoader(false);
 
@@ -352,8 +351,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             span.style.marginLeft = '3px';
             span.style.borderRadius = '50%';
             span.style.top = '6px';
-            
-            if(btn) btn.append(span);
+
+            if (btn) btn.append(span);
             console.log(btn);
         }
     }
@@ -366,8 +365,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             refresh = true;
             setRefr(!refr);
             return;
-        } else if(received_msg.type === 'count') {
-            let isUnread = received_msg.unread_tickets_count > 0? true: false;
+        } else if (received_msg.type === 'count') {
+            let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
             localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
             changeValue(isUnread);
         } else if (received_msg.type === 'chat') {
@@ -381,19 +380,19 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                 unReadList.filter((topic) => {
 
                     if (allTopics.length > 0) {
-        
+
                         if (topic.topic_id === received_msg.topic_id) {
-        
+
                             topic.unread_count += 1;
-        
+
                             setCountChange(!CountChange);
-        
+
                             return topic;
-        
+
                         }
-        
+
                     }
-        
+
                 })
 
                 let readList = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread')) || [];
@@ -464,7 +463,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     // if (result.message === 'Success') {
 
-                        setReporters(result);
+                    setReporters(result);
 
                     // }
 
@@ -610,51 +609,51 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
-    const deleteTopic = async (e, data) => {
+    // const deleteTopic = async (e, data) => {
 
-        e.stopPropagation();
+    //     e.stopPropagation();
 
-        const jwt_token = getTokenClient();
+    //     const jwt_token = getTokenClient();
 
-        const token = `Bearer ${jwt_token}`;
+    //     const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'topic/?topic_id=' + data, null, false, 'DELETE', controller, token)
-            .then(response => {
+    //     APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'topic/?topic_id=' + data, null, false, 'DELETE', controller, token)
+    //         .then(response => {
 
-                if (response) {
+    //             if (response) {
 
-                    let result = response;
+    //                 let result = response;
 
-                    if (allTopics.length > 10) {
+    //                 if (allTopics.length > 10) {
 
-                        let index = allTopics.findIndex((topic) => {
-                            return topic.id === data;
-                        })
+    //                     let index = allTopics.findIndex((topic) => {
+    //                         return topic.id === data;
+    //                     })
 
-                        allTopics.splice(index, 1);
+    //                     allTopics.splice(index, 1);
 
-                    } else {
+    //                 } else {
 
-                        getTopics('delete');
+    //                     getTopics('delete');
 
-                    }
+    //                 }
 
-                    alertService.showToast('success', result.message);
+    //                 alertService.showToast('success', result.message);
 
-                    setConfirmDelete(false);
+    //                 setConfirmDelete(false);
 
-                }
+    //             }
 
-            })
-            .catch(err => {
+    //         })
+    //         .catch(err => {
 
-                setShowLoader(false);
+    //             setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+    //             alertService.showToast('error', err.msg);
 
-            });
+    //         });
 
-    }
+    // }
 
     const onInputChange = (e) => {
 
@@ -757,9 +756,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
-    const showUnread = ()=>{
+    const showUnread = () => {
 
-        unRead=!unRead;
+        unRead = !unRead;
         getTopicsBasedOnFilter()
     }
     const clearFilter = () => {
@@ -1013,7 +1012,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                             )
                         })}
 
-                        {/* {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />} */}
                         {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
 
                         }
