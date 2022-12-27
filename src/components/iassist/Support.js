@@ -370,6 +370,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         } else if (received_msg.type === 'chat') {
             let user = getUser();
             if (user.id !== received_msg.user_id) {
+                if (!document.getElementById('iassist-unread'))changeValue(true);
+
                 unReadList.filter((topic) => {
 
                     if (allTopics.length > 0) {
