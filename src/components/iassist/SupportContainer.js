@@ -40,7 +40,7 @@ const SupportContainer = () => {
                 const jwt_token = getTokenClient();
                 console.log("here")
                 webSocket= new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token);
-               setOpenSupport(true)
+                //setOpenSupport(true)
 
             }
             console.log('listen connection');
