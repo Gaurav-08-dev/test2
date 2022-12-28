@@ -427,12 +427,7 @@
       .type,
       .reporter {
         font-size: 11px;
-        // .react-speedselect-container {
-        //   background-color: #fff;
-        //   .select-dropdown {
-        //     max-width: 80px;
-        //   }
-        // }
+       
       }
   
       .clear {
@@ -524,40 +519,7 @@
         background: #232931 0% 0% no-repeat padding-box;
         margin-right: 10px;
   
-        // .react-speedselect-container {
-        //   background: none !important;
-        //   .select-box-wrapper {
-        //     .select-box {
-        //       background: none;
-        //       color: #fff;
-  
-        //       .label-wrapper {
-        //         .label {
-        //           color: #fff;
-        //         }
-        //       }
-        //       .dropdown-icon-wrapper {
-        //         border-top: 6px solid #fff;
-        //       }
-        //     }
-        //   }
-        //   .select-dropdown {
-        //     .options {
-        //       padding: 5px 0;
-        //       li {
-        //         padding: 5px 10px;
-        //         label {
-        //           height: auto;
-        //           padding: 0;
-        //           line-height: 1;
-        //         }
-        //         &:hover {
-        //           background: #efefef;
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
+        
       }
   
       .categories-wrapper {
@@ -1811,40 +1773,6 @@
         border-left: 1px solid #777777;
         padding-left: 10px;
 
-        // .react-speedselect-container {
-        //   .select-label-wrapper {
-        //     padding: 0 5px;
-        //     border-radius: 2px;
-        //     background: #444444 0% 0% no-repeat padding-box;
-        //     height: 16px;
-        //     select {
-        //       margin-left: 5px;
-        //     }
-        //   }
-        //   .select-box-wrapper {
-        //     background: #fff;
-        //     .select-box {
-        //       height: 16px;
-        //       .label-wrapper {
-        //         .label {
-        //           color: #000;
-        //         }
-        //       }
-        //     }
-
-        //     .dropdown-icon-wrapper {
-        //       border-top: 6px solid #000;
-        //     }
-        //   }
-
-        //   .select-dropdown {
-        //     width: auto;
-        //     .search-wrapper,
-        //     .search-wrapper .search {
-        //       background: #fff;
-        //     }
-        //   }
-        // }
       }
     }
   }
@@ -2512,83 +2440,7 @@
       line-height: 14px;
     }
   }
-  // .react-speedselect-container {
-  //     border: none !important;
-  //     position: relative;
-  //     background-color: #fff;
-  //     font-size: 11px;
-  //     width: auto;
-
-  //     .select-box-wrapper{
-  //         .select-box{
-  //             height: auto;
-  //             background-color: #fff;
-  //             padding: 2px !important;
-  //             padding-right: 14px !important;
-  //             border: none;
-  //             &:hover{
-  //                 background-color: transparent;
-  //             }
-  //             .label-wrapper{
-  //               display: block;
-  //                 .label{
-  //                     // font-weight: 700;
-  //                     color: #000000;
-  //                     line-height: 14px;
-  //                     text-transform: capitalize;
-  //                     padding: 6px;
-  //                 }
-  //             }
-  //             .dropdown-icon-wrapper{
-  //                 // mask: url('../../public/images/icon-plus-lite.svg') no-repeat 100% center;
-  //                 // height: 10px;
-  //                 // width: 10px;
-  //                 // mask-size: 10px;
-  //                 // background-color: #000;
-  //                     display: block;
-  //                     position: absolute;
-  //                     right: 5px;
-  //                     top: 5px;
-  //                     width: 0;
-  //                     height: 0;
-  //                     border-left: 4px solid transparent;
-  //                     border-right: 4px solid transparent;
-  //                     border-top: 6px solid #202124;
-  //                 div{
-  //                     display: none;
-  //                 }
-  //             }
-  //         }
-  //         // .select-dropdown {
-  //         //     max-width: fit-content;
-  //         //     left: -16px !important;
-  //         //     position: absolute;
-  //         //     max-width: 600px;
-  //         //     width:100px;
-  //         //     min-width: calc(100% - 40px) !important;
-  //         //     z-index: 9;
-  //         //     border: none;
-  //         //     border-radius: 2px;
-  //         //     overflow: hidden;
-  //         //     background: #364149;
-  //         //     box-shadow: 3px 3px 5px 0px rgb(0 0 0 / 45%);
-  //         //     -webkit-box-shadow: 3px 3px 5px 0px rgb(0 0 0 / 45%);
-  //         //     -moz-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.45);
-  //         //     .options {
-  //         //         list-style-type: none;
-  //         //         padding-inline-start: 10px;
-  //         //         li {
-  //         //         padding: 4px 0;
-  //         //             label {
-  //         //                 color: #364149;
-  //         //                 background-color: #fff;
-
-  //         //             }
-  //         //         }
-  //         //     }
-  //         // }
-  //     }
-  // }
+  
 }
 .tag-suggestion-container {
   position: absolute;
