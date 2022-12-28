@@ -5,8 +5,8 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 
 let webSocket;
-let tokenConstant = 'sight';//document.getElementById("test-div").getAttribute("data-token");
-let btnId = 'btn'; //document.getElementById("test-div").getAttribute("data-buttonid");
+let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
+let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
 console.log('btn', btnId);
 
@@ -124,7 +124,9 @@ const SupportContainer = () => {
             let container = document.getElementById('support-main-conatiner');
             let buttonIcon = document.getElementById(btnId);
 
-            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target))) {
+            let recorderWrapper = document.getElementById('video-record-wrapper');
+
+            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target)) && !recorderWrapper) {
 
                 closePane();
 

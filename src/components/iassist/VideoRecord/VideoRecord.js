@@ -101,7 +101,7 @@ const VideoRecord = ({ save, close, message }) => {
                 clearInterval(interval.current);
 
                 closeInterval = true;
-                
+
             }
         }, 1000);
 
@@ -780,7 +780,7 @@ const VideoRecord = ({ save, close, message }) => {
     return (
         <>
 
-            <div className={"video-record-wrapper" + (!showLoadData ? ' main-wrap-position' : '') + (empty ? ' empty' : '')}>
+            <div id="video-record-wrapper" className={"video-record-wrapper" + (!showLoadData ? ' main-wrap-position' : '') + (empty ? ' empty' : '')}>
 
                 {!showLoadData &&
                     <div className="timer-wrapper">
