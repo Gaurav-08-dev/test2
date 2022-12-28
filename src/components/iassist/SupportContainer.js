@@ -40,7 +40,7 @@ const SupportContainer = () => {
                 const jwt_token = getTokenClient();
                 console.log("here")
                 webSocket= new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token);
-               setOpenSupport(true) // when we have to open without click
+            //    setOpenSupport(true) // when we have to open without click
 
             }
             console.log('listen connection');
@@ -138,6 +138,7 @@ const SupportContainer = () => {
     return (
         <div id="support-main-conatiner">
        
+
        {/* <button id="btn">one</button> */}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
