@@ -141,7 +141,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-            <button id="btn">one</button>
+            {/* <button id="btn">one</button> */}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>
