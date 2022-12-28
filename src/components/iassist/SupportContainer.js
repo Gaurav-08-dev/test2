@@ -124,7 +124,9 @@ const SupportContainer = () => {
             let container = document.getElementById('support-main-conatiner');
             let buttonIcon = document.getElementById(btnId);
 
-            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target))) {
+            let recorderWrapper = document.getElementById('video-record-wrapper');
+
+            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target)) && !recorderWrapper) {
 
                 closePane();
 
@@ -139,7 +141,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-       {/* <button id="btn">one</button> */}
+            {/* <button id="btn">one</button> */}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>

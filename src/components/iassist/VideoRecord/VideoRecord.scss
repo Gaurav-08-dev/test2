@@ -59,6 +59,10 @@
             }
         }
 
+        video {
+            margin-right: 10%;
+        }
+
         .video-load-header {
             display: flex;
             gap: 10px;
@@ -95,8 +99,10 @@
                     button {
                         content: 'Delete';
                         mask: url("../../../images/icon-delete.svg") no-repeat center center;
+                        -webkit-mask: url("../../../images/icon-delete.svg") no-repeat center center;
+
                         mask-size: 10px;
-          -webkit-mask-size: 10px;
+                        -webkit-mask-size: 10px;
 
                         width: 10px;
                         height: 10px;
@@ -122,8 +128,10 @@
                     button {
                         content: 'Delete';
                         mask: url("../../../images/icon-save.svg") no-repeat center center;
+                        -webkit-mask: url("../../../images/icon-save.svg") no-repeat center center;
+
                         mask-size: 10px;
-          -webkit-mask-size: 10px;
+                        -webkit-mask-size: 10px;
 
                         width: 10px;
                         height: 10px;
@@ -153,8 +161,10 @@
                     button {
                         content: '';
                         mask: url("../../../images/icon-text-input.svg") no-repeat center center;
+                        -webkit-mask: url("../../../images/icon-text-input.svg") no-repeat center center;
+
                         mask-size: 10px;
-          -webkit-mask-size: 10px;
+                        -webkit-mask-size: 10px;
 
                         width: 10px;
                         height: 10px;
@@ -172,8 +182,10 @@
                     button {
                         content: '';
                         mask: url("../../../images/icon-arrow-indicator.svg") no-repeat center center;
+                        -webkit-mask: url("../../../images/icon-arrow-indicator.svg") no-repeat center center;
+
                         mask-size: 13px;
-          -webkit-mask-size: 13px;
+                        -webkit-mask-size: 13px;
 
                         width: 10px;
                         height: 10px;
@@ -193,8 +205,10 @@
                     button {
                         content: '';
                         mask: url("../../../images/icon-undo_sc.svg") no-repeat center center;
+                        -webkit-mask: url("../../../images/icon-undo_sc.svg") no-repeat center center;
+
                         mask-size: 11px;
-          -webkit-mask-size: 11px;
+                        -webkit-mask-size: 11px;
 
                         width: 10px;
                         height: 10px;
@@ -213,8 +227,10 @@
                     button {
                         content: '';
                         mask: url("../../../images/icon-redo.svg") no-repeat center center;
+                        -webkit-mask: url("../../../images/icon-redo.svg") no-repeat center center;
+
                         mask-size: 11px;
-          -webkit-mask-size: 11px;
+                        -webkit-mask-size: 11px;
 
                         width: 10px;
                         height: 10px;

@@ -8,15 +8,17 @@ import * as Constants from '../../Constants';
 import { getTokenClient } from "../../../utils/Common";
 
 
-let mediaRecorder, time = 5, interval, ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
+let mediaRecorder, time = 5, ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
 let undoStack = [], redoStack = [];
 let selectMedia;
 let backspace = false;
 let stream;
+let closeInterval = false;
 
 const VideoRecord = ({ save, close, message }) => {
 
     const ref = useRef(5);
+    const interval = useRef(null);
 
     const img = useRef();
 
@@ -51,12 +53,20 @@ const VideoRecord = ({ save, close, message }) => {
 
         if (+ref.current === 1) {
 
-            console.log(interval)
-            clearInterval(interval);
+            clearInterval(interval.current);
+
+            closeInterval = true;
+
+            interval.current = null;
+
+            console.log('after', interval.current)
+
 
             start();
 
             setTimer(5)
+
+            ref.current = 5;
 
             return;
             // time = 5;
@@ -81,8 +91,18 @@ const VideoRecord = ({ save, close, message }) => {
 
         }
 
-        interval = setInterval(() => {
-            startCountDown();
+        interval.current = setInterval(() => {
+            if (!closeInterval) {
+
+                startCountDown();
+
+            } else {
+
+                clearInterval(interval.current);
+
+                closeInterval = true;
+
+            }
         }, 1000);
 
     }, [])
@@ -760,7 +780,7 @@ const VideoRecord = ({ save, close, message }) => {
     return (
         <>
 
-            <div className={"video-record-wrapper" + (!showLoadData ? ' main-wrap-position' : '') + (empty ? ' empty' : '')}>
+            <div id="video-record-wrapper" className={"video-record-wrapper" + (!showLoadData ? ' main-wrap-position' : '') + (empty ? ' empty' : '')}>
 
                 {!showLoadData &&
                     <div className="timer-wrapper">
@@ -773,13 +793,17 @@ const VideoRecord = ({ save, close, message }) => {
 
                             <button className="capture" onClick={() => {
                                 start()
-                                clearInterval(interval);
+                                clearInterval(interval.current);
+                                closeInterval = true;
+                                interval.current = null
                             }}>Capture Now</button>
 
                             <button className="cancel" onClick={() => {
                                 close(false);
                                 time = 5;
-                                clearInterval(interval);
+                                clearInterval(interval.current);
+                                closeInterval = true;
+                                interval.current = null;
                             }}>Cancel</button>
 
                         </div>
