@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChatRoom from './newRoom';
-import './Support.scss';
+import './CreateChatRoom.scss';
 
 import * as Constants from '../Constants';
 import SpeedSelect from 'react-speedselect';
