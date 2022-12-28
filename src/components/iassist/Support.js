@@ -498,11 +498,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         }
 
-        if (allTopics.length === 0) {
+        // if (allTopics.length === 0) {
 
             getTopics();
 
-        }
+        // }
 
         const onScroll = async (event) => {
 
@@ -553,7 +553,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         return () => {
             clearData();
-            // controller.abort();
             // webSocket.close();
         }
 
@@ -752,6 +751,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }, [searchString]);
 
+
     return (
 
         <>
@@ -863,7 +863,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 if (tabData !== 'open') {
                                     tabData = 'open';
                                     setStatusTab('open');
-                                    controller.abort();
+                                    
                                     allTopics = [];
                                     clearData();
                                     getTopics();
@@ -878,7 +878,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 if (tabData !== 'resolved') {
                                     tabData = 'resolved';
                                     setStatusTab('resolved');
-                                    controller.abort();
                                     allTopics = [];
                                     clearData();
                                     getTopics();
