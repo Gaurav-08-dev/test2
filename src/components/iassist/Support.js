@@ -22,9 +22,6 @@ const pageSize = 10;
 let totalPage = 0;
 let Size = pageSize;
 const scrollPadding = 40;
-// const jwt_token = Constants.jwt_token;
-// let totalCount = 0;
-// let prevSearchText = '';
 let tabData = 'open';
 let dates = 'Date';
 let defType = { 'name': 'All', 'id': 'All' };
@@ -609,52 +606,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
-    // const deleteTopic = async (e, data) => {
-
-    //     e.stopPropagation();
-
-    //     const jwt_token = getTokenClient();
-
-    //     const token = `Bearer ${jwt_token}`;
-
-    //     APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'topic/?topic_id=' + data, null, false, 'DELETE', controller, token)
-    //         .then(response => {
-
-    //             if (response) {
-
-    //                 let result = response;
-
-    //                 if (allTopics.length > 10) {
-
-    //                     let index = allTopics.findIndex((topic) => {
-    //                         return topic.id === data;
-    //                     })
-
-    //                     allTopics.splice(index, 1);
-
-    //                 } else {
-
-    //                     getTopics('delete');
-
-    //                 }
-
-    //                 alertService.showToast('success', result.message);
-
-    //                 setConfirmDelete(false);
-
-    //             }
-
-    //         })
-    //         .catch(err => {
-
-    //             setShowLoader(false);
-
-    //             alertService.showToast('error', err.msg);
-
-    //         });
-
-    // }
-
     const onInputChange = (e) => {
 
         setSearchString(e.target.value)
@@ -911,7 +862,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 if (tabData !== 'open') {
                                     tabData = 'open';
                                     setStatusTab('open');
-                                    // setAllTopics([]);
+                                    controller.abort();
                                     allTopics = [];
                                     clearData();
                                     getTopics();
@@ -926,7 +877,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 if (tabData !== 'resolved') {
                                     tabData = 'resolved';
                                     setStatusTab('resolved');
-                                    // setAllTopics([]);
+                                    controller.abort();
                                     allTopics = [];
                                     clearData();
                                     getTopics();
