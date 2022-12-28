@@ -756,7 +756,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         <>
 
-            {!TopicClick && !showChat && <div id='client-home' className='support-wrapper'>
+            {!TopicClick && !showChat && 
+            <div id='client-home' className='support-wrapper'>
 
                 <div className='support-wrapper-inner'>
 
@@ -827,7 +828,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                     <DatePicker picker='date'
                                         onChange={(e) => handleDatePicker(e)}
-                                        placeholder={'Select Date*'}
+                                        placeholder={'Select Date'}
                                         date={date}
                                         allowClear={false}
                                         showOkCancelBtns={true}
