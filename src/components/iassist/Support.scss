@@ -455,6 +455,7 @@
       align-items: center;
       justify-content: left;
       gap: 10px;
+      height: 20px;
       //padding: 10px;
   
       .tab-preview {
@@ -469,7 +470,7 @@
           // border-radius: 2px;
           background: transparent;
           color: #fff;
-          max-height: 16.5px;
+          height: inherit;
         }
 
       }
