@@ -730,7 +730,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
                                             {vid.video && <video src={vid.video} controls></video>}
 
-                                            {vid.image && <img src={vid.image}></img>}
+                                            {vid.image && <img alt="" src={vid.image}></img>}
 
                                             <div className='footer'>
 

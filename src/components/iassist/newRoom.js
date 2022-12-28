@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import debounce from "lodash.debounce"
 
-import './Support.scss';
+import './newRoom.scss';
 import * as Constants from '../Constants';
 import { getToken, getTokenClient, getUser, getUserDetailsFromToken } from '../../utils/Common';
 import alertService from '../../services/alertService';
@@ -1620,7 +1620,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                 } else {
 
-                                    if (index == 3) {
+                                    if (index === 3) {
 
                                         return <span className='number' key={index}> +{clientUser.length - 3}</span>
 
@@ -1763,7 +1763,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                             </div>}
 
-                                                            {checkImage(files) && <div className='wrapper-media'><img src={files.file} onClick={() => {
+                                                            {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file} onClick={() => {
                                                                 playerType = 'image';
                                                                 setOpenPopupPlayer(true)
                                                                 setPlayerUrl(files.file)
