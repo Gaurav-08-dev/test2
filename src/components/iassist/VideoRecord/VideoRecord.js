@@ -51,6 +51,7 @@ const VideoRecord = ({ save, close, message }) => {
 
         if (+ref.current === 1) {
 
+            console.log(interval)
             clearInterval(interval);
 
             start();
