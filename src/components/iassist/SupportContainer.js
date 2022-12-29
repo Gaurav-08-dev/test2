@@ -5,8 +5,11 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 
 
 let webSocket;
-let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
-let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
+let tokenConstant = 'sight'
+// document.getElementById("test-div").getAttribute("data-token");
+
+let btnId = 'btn'
+// document.getElementById("test-div").getAttribute("data-buttonid");
 
 console.log('btn', btnId);
 
@@ -141,7 +144,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-            {/* <button id="btn">one</button> */}
+            <button id="btn">one</button>
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>

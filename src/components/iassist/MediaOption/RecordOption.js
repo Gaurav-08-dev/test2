@@ -19,7 +19,7 @@ const RecordOption = (
 
                         {vid.video && <video id='video' src={vid.video} controls></video>}
 
-                        {vid.image && <img id='img' src={vid.image}></img>}
+                        {vid.image && <img id='img' alt='' src={vid.image}></img>}
 
                         {loader && <VideoLoader />}
 

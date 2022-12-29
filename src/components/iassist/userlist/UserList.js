@@ -32,7 +32,7 @@ const UserList = ({ user, clientUser, supportUser, position, height, header, use
 
     const getUsers = async () => {
 
-        let user = getUser();
+        // let user = getUser();
 
         let Id = topic.account_id;
 

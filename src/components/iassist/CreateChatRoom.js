@@ -12,34 +12,33 @@ import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
 
 
-let arr = ['high', 'medium', 'low'];
+
 let suggestIndex = -1;
-let initTag = true;
 let chatId;
 
 const descriptionMaxChar = 150;
 const nameMaxChar = 45;
-const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
+const CreateChatRoom = ({ closePane, socketDetail }) => {
 
     const [priority] = useState(JSON.parse('[{"id":1,"value":"High"},{"id":2,"value":"Medium"},{"id":3,"value":"Low"}]'));
 
-    const [topic, setTopic] = useState(topicData && topicData.name ? topicData.name : '');
+    const [topic, setTopic] = useState('');
 
     const [tags, setTags] = useState('');
 
     const [chatRoom, setChatRoom] = useState(false);
 
-    const [priorities, setPriorities] = useState(topicData ? arr.indexOf(topicData.priority) + 1 : 0);
+    const [priorities, setPriorities] = useState(0);
 
-    const [category, setCategory] = useState(topicData && topicData.category_id ? topicData.category_id : 0);
+    const [category, setCategory] = useState(0);
 
-    const [topicDescriptions, setTopicDescriptions] = useState(topicData && topicData.description ? topicData.description : '');
+    const [topicDescriptions, setTopicDescriptions] = useState('');
 
     const [allCategories, setAllCategories] = useState([]);
 
-    const [catLabel, setCatLabel] = useState(topicData && topicData.topic_category ? topicData.topic_category.name : '');
+    const [catLabel, setCatLabel] = useState('');
 
-    const [priorityLabel, setPriorityLabel] = useState(topicData ? topicData.priority : 'select');
+    const [priorityLabel, setPriorityLabel] = useState('select');
 
     const [tagList, setTagList] = useState([]);
 
@@ -119,22 +118,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
             conatinerWrapper[0].style.top = '65px';
 
         }
-        if (topicData && topicData.topic_dimtags && topicData.id > 0 && initTag) {
-
-            let tagName = [];
-
-            let tagId = [];
-
-            topicData.topic_dimtags.forEach(tags => {
-                tagName = [...tagName, tags.name];
-                tagId = [...tagId, tags.id];
-            })
-
-            setTagList(tagName);
-
-            setTagId(tagId);
-
-        }
+      
         if (allCategories.length === 0) {
 
             fetchTypeData();
@@ -143,13 +127,10 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
         document.addEventListener("mouseup", (event) => {
 
-            let head = document.getElementById('option');
 
             let suggestion = document.getElementById('suggestion');
 
-            if (head && !(head.contains(event.target))) {
-                // setOptionClick(false);
-            }
+
 
             if (suggestion && !(suggestion.contains(event.target))) {
 
@@ -214,7 +195,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
     }
 
     const debouncedChangeHandler = useCallback(
-        debounce(getTagSuggestion, 500)
+    debounce(getTagSuggestion, 500)
         , []);
 
     const handleInputChange = (e, type) => {
@@ -331,8 +312,8 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
         } else {
 
-            err = err.join(" , ").concat(' are Required')
-            { data && alertService.showToast('warn', err); }
+            err = err.join(" , ").concat(' are Required');
+             data && alertService.showToast('warn', err); 
             return false;
 
         }
@@ -341,7 +322,6 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
     const createRoom = async () => {
 
         setDisableCreate(true);
-
         let user = getUser();
 
         let data = {
@@ -382,6 +362,8 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
         if (token && validation) {
 
+            setShowLoading(true);
+
             let res = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -408,6 +390,7 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
                 setChatRoom(true);
 
+
             } else {
 
                 if (result.detail) {
@@ -417,6 +400,9 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
                 }
 
             }
+
+            setShowLoading(false);
+
 
         }
 
@@ -590,193 +576,193 @@ const CreateChatRoom = ({ closePane, topicData, socketDetail }) => {
 
     // if (!navigateSupport) {
 
-        return !navigateSupport ? (
+    return !navigateSupport ? (
 
-            <>
+        <>
 
-                {!showVideo && !chatRoom &&
-                    <div id='create-chat-room' className='create-chat-room'>
+            {!showVideo && !chatRoom &&
+                <div id='create-chat-room' className='create-chat-room'>
 
-                        <div className='header-wrapper'>
+                    <div className='header-wrapper'>
 
-                            <div className='header-inner'>
+                        <div className='header-inner'>
 
-                                <div onClick={() => setNavigateSupport(true)}>iAssist</div>
+                            <div onClick={() => setNavigateSupport(true)}>iAssist</div>
 
-                                <div className="breadcrumb">
+                            <div className="breadcrumb">
 
-                                    <ul>
+                                <ul>
 
-                                        <li>New Ticket</li>
+                                    <li>New Ticket</li>
 
-                                    </ul>
-
-                                </div>
-
-                            </div>
-
-                            <div className='header-other-functionality-wrapper'>
-
-                                <button onClick={() => closePane()} className='header-close'></button>
+                                </ul>
 
                             </div>
 
                         </div>
 
-                        {showLoading && <LoadingScreen />}
+                        <div className='header-other-functionality-wrapper'>
 
-                        <div className='create-wrapper'>
-
-                            <span className='title-main'>Topic</span>
-
-                            <div className='field-with-label' onClick={() => titleRef.current.focus()}>
-
-                                <textarea ref={titleRef} rows={topicRow} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></textarea>
-
-                                <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
-
-                            </div>
-
-                            <label className='title-main' >Tags</label>
-
-                            <div className='field-with-label tags' onClick={() => tagRef.current.focus()}>
-
-                                {tagList.length > 0 && tagList.map((tag, index) => (
-                                    <div className={'tag-box'} key={index}>
-
-                                        <div className={'tag-text'}>{tag}</div>
-
-                                        <button className={'close-btn'} onClick={(e) => removeTag(e, tag)}></button>
-
-                                    </div>
-
-                                ))}
-                                <div className='field-block'>
-
-                                    <input className='field-control' ref={tagRef} value={tags} onChange={(e) => handleInputChange(e, 'tag')} onKeyUp={onKeyDownEvent} onBlur={handleFocusOut} />
-
-                                </div>
-
-                                {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
-
-                                    <>
-
-                                        {tagSuggestion.length > 0 && tagSuggestion.map((suggest, index) => {
-                                            return (<li style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
-                                        })}
-
-                                    </>
-
-                                </div>}
-
-                            </div>
-
-                            <span className='title-main'>Description</span>
-
-                            <div className='field-with-label field-with-label-description'>
-
-                                {/* <label>Description</label> */}
-                                <textarea value={topicDescriptions} rows={row} onChange={(e) => handleInputChange(e, 'description')}></textarea>
-
-                                <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
-
-                            </div>
-
-                            <div className='filter-wrapper'>
-
-                                <div className='categories-wrapper'>
-
-                                    <div className='category'>
-
-                                        <SpeedSelect options={allCategories} selectLabel={catLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => categorySelect(value, 'Category')} />
-
-                                    </div>
-
-                                    <div className='category'>
-
-                                        <SpeedSelect options={priority} selectLabel={priorityLabel} prominentLabel='Priority' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='value' onSelect={(value) => selectPriority(value, 'priority')} />
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div className='record-wrapper'>
-
-                                <div className='record-header'>
-
-                                    <div className='text'>Capture current tab</div>
-
-                                    <div className='record-button'>
-
-                                        <button onClick={() => {
-                                            setDisplayMessage('Record');
-                                            setShowVideo(true);
-                                        }} className='record'>Record</button>
-
-                                        <button onClick={() => {
-                                            setDisplayMessage('Shot');
-                                            setShowVideo(true);
-                                        }} className='shot'>Screenshot</button>
-
-                                    </div>
-
-                                </div>
-
-                                {videoUrl.length > 0 && <div className='video-content-wrapper'>
-                                    {videoUrl.map((vid, index) => {
-                                        return <div key={vid.id} className='vid-content'>
-
-                                            {vid.video && <video src={vid.video} controls></video>}
-
-                                            {vid.image && <img alt="" src={vid.image}></img>}
-
-                                            <div className='footer'>
-
-                                                <div className='id'>{vid.id} </div>
-
-                                                <button onClick={() => {
-                                                    videoUrl.splice(index, 1)
-                                                    setDeleteSavedItem(!deleteSavedItem);
-                                                }}></button>
-
-                                            </div>
-
-                                        </div>
-
-                                    })}
-
-                                </div>}
-
-                                {videoUrl.length === 0 && <span className='not-found'>No file attached</span>}
-
-                            </div>
-
-                            <div className='submit-wrapper'>
-
-                                {topicData.length === 0 && <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>}
-
-                                {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
-
-                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCreate} onClick={() => setNavigateSupport(true)}><i></i><span>Cancel</span></button>
-
-                            </div>
+                            <button onClick={() => closePane()} className='header-close'></button>
 
                         </div>
 
                     </div>
 
-                }
-                {!showVideo && chatRoom &&
-                    <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail}/>
-                }
+                    {showLoading && <LoadingScreen />}
 
-                {showVideo && !chatRoom && <VideoRecord save={saveAndClose} close={setShowVideo} message={displayMessage} />}
+                    <div className='create-wrapper'>
 
-            </>
+                        <span className='title-main'>Topic</span>
 
-        ) : (<Support closePane={closePane} webSocket={socketDetail}/>)
+                        <div className='field-with-label' onClick={() => titleRef.current.focus()}>
+
+                            <textarea ref={titleRef} rows={topicRow} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></textarea>
+
+                            <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
+
+                        </div>
+
+                        <label className='title-main' >Tags</label>
+
+                        <div className='field-with-label tags' onClick={() => tagRef.current.focus()}>
+
+                            {tagList.length > 0 && tagList.map((tag, index) => (
+                                <div className={'tag-box'} key={index}>
+
+                                    <div className={'tag-text'}>{tag}</div>
+
+                                    <button className={'close-btn'} onClick={(e) => removeTag(e, tag)}></button>
+
+                                </div>
+
+                            ))}
+                            <div className='field-block'>
+
+                                <input className='field-control' ref={tagRef} value={tags} onChange={(e) => handleInputChange(e, 'tag')} onKeyUp={onKeyDownEvent} onBlur={handleFocusOut} />
+
+                            </div>
+
+                            {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
+
+                                <>
+
+                                    {tagSuggestion.length > 0 && tagSuggestion.map((suggest, index) => {
+                                        return (<li style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
+                                    })}
+
+                                </>
+
+                            </div>}
+
+                        </div>
+
+                        <span className='title-main'>Description</span>
+
+                        <div className='field-with-label field-with-label-description'>
+
+                            {/* <label>Description</label> */}
+                            <textarea value={topicDescriptions} rows={row} onChange={(e) => handleInputChange(e, 'description')}></textarea>
+
+                            <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
+
+                        </div>
+
+                        <div className='filter-wrapper'>
+
+                            <div className='categories-wrapper'>
+
+                                <div className='category'>
+
+                                    <SpeedSelect options={allCategories} selectLabel={catLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => categorySelect(value, 'Category')} />
+
+                                </div>
+
+                                <div className='category'>
+
+                                    <SpeedSelect options={priority} selectLabel={priorityLabel} prominentLabel='Priority' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='value' onSelect={(value) => selectPriority(value, 'priority')} />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div className='record-wrapper'>
+
+                            <div className='record-header'>
+
+                                <div className='text'>Capture current tab</div>
+
+                                <div className='record-button'>
+
+                                    <button onClick={() => {
+                                        setDisplayMessage('Record');
+                                        setShowVideo(true);
+                                    }} className='record'>Record</button>
+
+                                    <button onClick={() => {
+                                        setDisplayMessage('Shot');
+                                        setShowVideo(true);
+                                    }} className='shot'>Screenshot</button>
+
+                                </div>
+
+                            </div>
+
+                            {videoUrl.length > 0 && <div className='video-content-wrapper'>
+                                {videoUrl.map((vid, index) => {
+                                    return <div key={vid.id} className='vid-content'>
+
+                                        {vid.video && <video src={vid.video} controls></video>}
+
+                                        {vid.image && <img alt="" src={vid.image}></img>}
+
+                                        <div className='footer'>
+
+                                            <div className='id'>{vid.id} </div>
+
+                                            <button onClick={() => {
+                                                videoUrl.splice(index, 1)
+                                                setDeleteSavedItem(!deleteSavedItem);
+                                            }}></button>
+
+                                        </div>
+
+                                    </div>
+
+                                })}
+
+                            </div>}
+
+                            {videoUrl.length === 0 && <span className='not-found'>No file attached</span>}
+
+                        </div>
+
+                        <div className='submit-wrapper'>
+                            {/* topicData.length === 0 && */}
+                            <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
+
+                            {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
+
+                            <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCreate} onClick={() => setNavigateSupport(true)}><i></i><span>Cancel</span></button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            }
+            {!showVideo && chatRoom &&
+                <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail} />
+            }
+
+            {showVideo && !chatRoom && <VideoRecord save={saveAndClose} close={setShowVideo} message={displayMessage} />}
+
+        </>
+
+    ) : (<Support closePane={closePane} webSocket={socketDetail} />)
     // } else {
 
     //     return (<Support closePane={closePane} />)

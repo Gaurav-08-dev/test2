@@ -8,7 +8,7 @@ import * as Constants from '../../Constants';
 import { getTokenClient } from "../../../utils/Common";
 
 
-let mediaRecorder, time = 5, ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
+let  time = 5, ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
 let undoStack = [], redoStack = [];
 let selectMedia;
 let backspace = false;
@@ -44,9 +44,9 @@ const VideoRecord = ({ save, close, message }) => {
 
     const [textBoxValue, setTextBoxValue] = useState('');
 
-    const [videoText, setVideoText] = useState('');
+    // const [videoText, setVideoText] = useState('');
 
-    const [recordedVidUrl, setRecordedVidUrl] = useState('');
+    // const [recordedVidUrl, setRecordedVidUrl] = useState('');
 
 
     const startCountDown = () => {
@@ -245,7 +245,7 @@ const VideoRecord = ({ save, close, message }) => {
         setVideoUrl(URL.createObjectURL(myFile));
 
         // this is use To edit video
-        setRecordedVidUrl(URL.createObjectURL(myFile))
+        // setRecordedVidUrl(URL.createObjectURL(myFile))
 
         setVideoBlob(myFile);
 
@@ -329,7 +329,8 @@ const VideoRecord = ({ save, close, message }) => {
 
             if (stream) {
 
-                mediaRecorder = createRecorder(stream, mimeType);
+                // mediaRecorder = 
+                createRecorder(stream, mimeType);
 
                 time = 5;
 
@@ -395,7 +396,7 @@ const VideoRecord = ({ save, close, message }) => {
 
         if (!backspace) {
 
-            let event = e;
+            // let event = e;
 
             backspace = false;
 
@@ -501,7 +502,7 @@ const VideoRecord = ({ save, close, message }) => {
                     });
                     setVideoUrl(URL.createObjectURL(myFile));
 
-                    setRecordedVidUrl(URL.createObjectURL(myFile))
+                    // setRecordedVidUrl(URL.createObjectURL(myFile))
 
                     setShowLoadData(true);
 
@@ -681,9 +682,9 @@ const VideoRecord = ({ save, close, message }) => {
                 let mouseY = parseInt(e.clientY - offsetY);
 
                 // Put your mousemove stuff here
-                var dx = mouseX - startX;
+                // var dx = mouseX - startX;
 
-                var dy = mouseY - startY;
+                // var dy = mouseY - startY;
 
                 startX = mouseX;
 
@@ -706,9 +707,9 @@ const VideoRecord = ({ save, close, message }) => {
                 let mouseY = parseInt(e.clientY - offsetY);
 
                 // Put your mousemove stuff here
-                var dx = mouseX - startX;
+                // var dx = mouseX - startX;
 
-                var dy = mouseY - startY;
+                // var dy = mouseY - startY;
 
                 endX = mouseX;
 

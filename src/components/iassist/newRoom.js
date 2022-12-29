@@ -1036,7 +1036,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const getTimeZone = (date, isDateFormat) => {
+    const getTimeZone = (date, isDateFormat) => { //* change with other timeZone function in support center
 
         date = date.replace('T', " ").concat(' GMT');
 
@@ -1120,7 +1120,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                         }
 
-                    })
+                    }
+                    )
 
                     messageList.splice(Index, 1, json.chat_data);
 
@@ -1165,7 +1166,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 if (response) {
 
-                    let json = response;
+                    // let json = response;
 
                     if (!add) {
 
@@ -1436,7 +1437,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         uploadFile(blob, message)
 
-        let length = saveDataUrl.length + 1;
+        // let length = saveDataUrl.length + 1;
 
         if (blob) {
 

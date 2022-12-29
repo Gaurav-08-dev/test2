@@ -1,6 +1,5 @@
 
-import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
-import debounce from "lodash.debounce"
+import React, { useState, useEffect, useRef, memo } from 'react';
 import './Support.scss';
 import SpeedSelect from 'react-speedselect';
 import CreateChatRoom from './CreateChatRoom';
@@ -14,6 +13,7 @@ import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
 import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
+import Delete from './DeleteConfirmation/Delete'
 
 
 // let webSocket;
@@ -51,8 +51,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const [indivTopic, setIndivTopic] = useState([]);
 
-    const [editTopic, setEditTopic] = useState([]); //TODO: discuss for this option
-
     const bodyRef = useRef();
 
     const [searchString, setSearchString] = useState('');
@@ -63,7 +61,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const [showFeedback, setShowFeedback] = useState(false);
 
-    const [hideReopenButton, setHideReopenButton] = useState(false); //TODO: Confirm its usage and related functionality
 
     const [showReopenPanel, setshowReopenPanell] = useState(false);
 
@@ -168,13 +165,13 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         if (key === 'topic_data') {
 
-                            data?.map((topicValue, index) => {
-                                allTopics.push(topicValue);
-                            })
+                            data?.forEach((topicValue) =>
+                                allTopics.push(topicValue)
+                            )
 
                         } else if (key === 'unread_data') {
 
-                            data?.map((unread, index) => {
+                            data?.forEach((unread) => {
                                 unReadList.push(unread);
                             })
 
@@ -186,19 +183,19 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'user_data') {
 
-                            data?.map((user, index) => {
+                            data?.forEach((user) => {
                                 allUser.current.push(user);
                             })
 
                         } else if (key === 'account_data') {
 
-                            data?.map((account, index) => {
+                            data?.forEach((account) => {
                                 allAccount.current.push(account);
                             })
 
                         } else if (key === 'activity') {
 
-                            data?.map((act, index) => {
+                            data?.forEach((act) => {
                                 activity.push(act);
                             })
 
@@ -500,11 +497,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         // if (allTopics.length === 0) {
 
-            getTopics();
+        getTopics();
 
         // }
 
-        const onScroll = async (event) => {
+        const onScroll = async () => {
 
             if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
 
@@ -514,7 +511,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     pageNumber += 1;
 
-                    let data = await getTopics();
+                    await getTopics();
 
                 }
 
@@ -570,7 +567,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
-    const openChat = (event, topic, index) => {
+    const openChat = (event, topic) => {
 
         let data = checkLastActivity(topic.id);
 
@@ -605,13 +602,13 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
-    const onInputChange = (e) => {
+    // const onInputChange = (e) => {
 
-        setSearchString(e.target.value)
+    //     setSearchString(e.target.value)
 
-        searchTopic(e.target.value)
+    //     searchTopic(e.target.value)
 
-    }
+    // }
 
     const closeFeedbackandReopenPane = () => {
 
@@ -619,7 +616,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         setshowReopenPanell(false);
 
-        setHideReopenButton(false);
+
 
         setFeedBackId('');
 
@@ -630,9 +627,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const showUnreadNotification = (id) => {
 
         let data = unReadList.filter(read => {
-            if (read.topic_id === id) {
-                return read;
-            }
+            return read.topic_id === id
+
         })
 
         return data && data.length > 0 && data[0].unread_count > 0 ? true : false;
@@ -731,6 +727,51 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
+    const deleteTopic = async (e, data) => {
+
+        e.stopPropagation();
+
+        const jwt_token = getTokenClient();
+
+        const token = `Bearer ${jwt_token}`;
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'topic/?topic_id=' + data, null, false, 'DELETE', controller, token)
+            .then(response => {
+
+                if (response) {
+
+                    let result = response;
+
+                    if (allTopics.length > 10) {
+
+                        let index = allTopics.findIndex((topic) => {
+                            return topic.id === data;
+                        })
+
+                        allTopics.splice(index, 1);
+
+                    } else {
+
+                        getTopics('delete');
+
+                    }
+                    
+                    alertService.showToast('success', result.message);
+
+                    setConfirmDelete(false);
+
+                }
+
+            })
+            .catch(err => {
+
+                setShowLoader(false);
+
+                alertService.showToast('error', err.msg);
+
+            });
+
+    }
     const checkLastActivity = (id) => {
 
         let data = activity.filter((val) => val.id === id);
@@ -739,240 +780,237 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     }
 
-    const debouncedResults = useMemo(() => {
-        return debounce(onInputChange, 500);
-    }, []);
-
-    useEffect(() => {
-
-        return () => {
-            debouncedResults.cancel();
-        };
-
-    }, [searchString]);
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            searchTopic(searchString)
+        }
+    }
+    
 
 
     return (
 
         <>
 
-            {!TopicClick && !showChat && 
-            <div id='client-home' className='support-wrapper'>
+            {!TopicClick && !showChat &&
+                <div id='client-home' className='support-wrapper'>
 
-                <div className='support-wrapper-inner'>
+                    <div className='support-wrapper-inner'>
 
-                    <div className='header-wrapper'>
+                        <div className='header-wrapper'>
 
-                        {showLoader && <LoadingScreen />}
+                            {showLoader && <LoadingScreen />}
 
-                        <div className='header-inner'>iAssist</div>
+                            <div className='header-inner'>iAssist</div>
 
-                        <div className='header-other-functionality-wrapper'>
+                            <div className='header-other-functionality-wrapper'>
 
-                            <div className='topic-filter-search'>
+                                <div className='topic-filter-search'>
 
-                                <div className='search'>
+                                    <div className='search'>
 
-                                    <button className='btn' onClick={searchTopic} title='search'></button>
+                                        <button className='btn' onClick={searchTopic} title='search'></button>
 
-                                    <input type={'text'}
-                                        title='Search'
-                                        onChange={(e) => { e.persist(); debouncedResults(e) }}
-                                        placeholder='Search'
-                                    //    onKeyDown={handleKeyDown}    
-                                    />
+                                        <input type={'text'}
+                                            title='Search'
+                                            onChange={(e) => { setSearchString(e.target.value) }}
+                                            placeholder='Search'
+                                            onKeyDown={handleKeyDown}
+                                        />
 
-                                </div>
-
-                            </div>
-
-                            <div className={'filter-btn' + (showMultipleFilters ? ' filter-bg' : '')}>
-
-                                <button className={'button' + (showMultipleFilters ? ' button-select' : '')} disabled={disableButton} title='filter-button' onClick={() => openFilterList()}></button>
-
-                            </div>
-
-                            <div className='btn-new-topic-wrapper'>
-
-                                <button onClick={() => {
-                                    clearData();
-                                    setTopicClick(true)
-                                }} disabled={disableButton}><span className='add-new-ticket'></span>Ticket</button>
-
-                            </div>
-
-                            <button className='header-close' disabled={disableButton} onClick={() => closePanes()}></button>
-
-                        </div>
-
-                    </div>
-
-                    {showMultipleFilters &&
-                        <div className='sub-header-wrapper'>
-
-                            <div id='calendar' className={'calendar-wrapper'}>
-
-                                <div className={'calendar-wrapper-separator'}>
-
-                                    <label className={'label'} onClick={() => setIsOpenCalendar(true)}>
-
-                                        {dates}
-
-                                    </label>
-
-                                    <button title='Calendar' className={'button-calendar'} onClick={() => setIsOpenCalendar(true)}></button>
+                                    </div>
 
                                 </div>
 
-                                {isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
+                                <div className={'filter-btn' + (showMultipleFilters ? ' filter-bg' : '')}>
 
-                                    <DatePicker picker='date'
-                                        onChange={(e) => handleDatePicker(e)}
-                                        placeholder={'Select Date'}
-                                        date={date}
-                                        allowClear={false}
-                                        showOkCancelBtns={true}
-                                        showInline={true} />
+                                    <button className={'button' + (showMultipleFilters ? ' button-select' : '')} disabled={disableButton} title='filter-button' onClick={() => openFilterList()}></button>
 
-                                </div>}
+                                </div>
 
-                            </div>
+                                <div className='btn-new-topic-wrapper'>
 
-                            <div className='type'>
+                                    <button onClick={() => {
+                                        clearData();
+                                        setTopicClick(true)
+                                    }} disabled={disableButton}><span className='add-new-ticket'></span>Ticket</button>
 
-                                <SpeedSelect options={type} selectLabel={typeLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => ondropDownChange(value, 'type')} />
+                                </div>
 
-                            </div>
-
-                            <div className='reporter'>
-
-                                <SpeedSelect options={reporters} selectLabel={reporterLabel} prominentLabel='Reporter' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='first_name' onSelect={(value) => ondropDownChange(value, 'reporter')} />
+                                <button className='header-close' disabled={disableButton} onClick={() => closePanes()}></button>
 
                             </div>
-                            <div className={unRead ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton} onClick={() => showUnread()}>Unread</button></div>
-                            <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>clear</button>
-
-                        </div>}
-
-
-                    <div className='filter-wrapper support'>
-
-                        <div className={'tab-preview'}>
-
-                            <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
-                                if (tabData !== 'open') {
-                                    tabData = 'open';
-                                    setStatusTab('open');
-                                    
-                                    allTopics = [];
-                                    clearData();
-                                    getTopics();
-                                }
-                            }}>
-
-                                In Progress
-
-                            </button>
-
-                            <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
-                                if (tabData !== 'resolved') {
-                                    tabData = 'resolved';
-                                    setStatusTab('resolved');
-                                    allTopics = [];
-                                    clearData();
-                                    getTopics();
-                                }
-                            }}>
-
-                                Resolved
-
-                            </button>
 
                         </div>
 
-                    </div>
+                        {showMultipleFilters &&
+                            <div className='sub-header-wrapper'>
 
-                    <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+                                <div id='calendar' className={'calendar-wrapper'}>
 
-                        {!confirmDelete && allTopics.length > 0 && allTopics.map((topic, index) => {
+                                    <div className={'calendar-wrapper-separator'}>
 
-                            return (
-                                <div className='topic' key={topic.id}>
+                                        <label className={'label'} onClick={() => setIsOpenCalendar(true)}>
 
-                                    {<div className='topic-header' onClick={(e) => openChat(e, topic, index)}>
+                                            {dates}
 
-                                        <div className='topic-header-inner'>
+                                        </label>
 
-                                            <div className='topic-name'><span>{topic.name}</span></div>
+                                        <button title='Calendar' className={'button-calendar'} onClick={() => setIsOpenCalendar(true)}></button>
 
-                                            <div className='topic-chat-notify'>
+                                    </div>
 
+                                    {isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
+
+                                        <DatePicker picker='date'
+                                            onChange={(e) => handleDatePicker(e)}
+                                            placeholder={'Select Date'}
+                                            date={date}
+                                            allowClear={false}
+                                            showOkCancelBtns={true}
+                                            showInline={true} />
+
+                                    </div>}
+
+                                </div>
+
+                                <div className='type'>
+
+                                    <SpeedSelect options={type} selectLabel={typeLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => ondropDownChange(value, 'type')} />
+
+                                </div>
+
+                                <div className='reporter'>
+
+                                    <SpeedSelect options={reporters} selectLabel={reporterLabel} prominentLabel='Reporter' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='first_name' onSelect={(value) => ondropDownChange(value, 'reporter')} />
+
+                                </div>
+                                <div className={unRead ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton} onClick={() => showUnread()}>Unread</button></div>
+                                <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>clear</button>
+
+                            </div>}
+
+
+                        <div className='filter-wrapper support'>
+
+                            <div className={'tab-preview'}>
+
+                                <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
+                                    if (tabData !== 'open') {
+                                        tabData = 'open';
+                                        setStatusTab('open');
+
+                                        allTopics = [];
+                                        clearData();
+                                        getTopics();
+                                    }
+                                }}>
+
+                                    In Progress
+
+                                </button>
+
+                                <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
+                                    if (tabData !== 'resolved') {
+                                        tabData = 'resolved';
+                                        setStatusTab('resolved');
+                                        allTopics = [];
+                                        clearData();
+                                        getTopics();
+                                    }
+                                }}>
+
+                                    Resolved
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+
+                            {!confirmDelete && allTopics.length > 0 && allTopics.map((topic, index) => {
+
+                                return (
+                                    <div className='topic' key={topic.id}>
+
+                                        {<div className='topic-header' onClick={(e) => openChat(e, topic)}>
+
+                                            <div className='topic-header-inner'>
+
+                                                <div className='topic-name'><span>{topic.name}</span></div>
+
+                                                <div className='topic-chat-notify'>
+
+
+                                                </div>
+
+                                                {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
 
                                             </div>
 
-                                            {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
+                                            <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
-                                        </div>
-
-                                        <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
-
-                                        <Detail topic={topic} type={type} allUser={allUser.current} allAccount={allAccount.current} />
-
-                                    </div>}
-
-                                    {(showFeedback || showReopenPanel) && <div className='header-meta-divider'></div>}
-
-                                    {<div className='topic-meta'>
-
-                                        {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} />}
-                                        {feedBackId !== topic.id && (statusTab === 'open') &&
-                                            <div className='topic-buttons'>
-
-                                                <button className='resolved' disabled={disableButton} onClick={() => {
-                                                    setDisableButton(true);
-                                                    setShowFeedback(true);
-                                                    setFeedBackId(topic.id)
-                                                }}>Resolve</button>
-
-                                                {checkLastActivity(topic.id) && <button className='delete' disabled={disableButton} onClick={(e) => {
-                                                    setConfirmDelete(true)
-                                                    setDisableButton(true);
-                                                    setDeleteId(topic.id);
-                                                }
-                                                }>Delete</button>}
-
-                                            </div>}
-
-                                        {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} />}
-                                        {(statusTab === 'resolved') && <div className='topic-buttons'>
-
-                                            {getTopicId.id !== topic.id && <button className='reopen' disabled={disableButton} onClick={() => {
-                                                setDisableButton(true);
-                                                setGetTopicId(topic);
-                                                setshowReopenPanell(true);
-                                                setHideReopenButton(true);
-
-                                            }}>Re-Open</button>}
+                                            <Detail topic={topic} type={type} allUser={allUser.current} allAccount={allAccount.current} />
 
                                         </div>}
 
-                                    </div>}
+                                        {(showFeedback || showReopenPanel) && <div className='header-meta-divider'></div>}
 
-                                </div>
+                                        {<div className='topic-meta'>
 
-                            )
-                        })}
+                                            {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} />}
+                                            {feedBackId !== topic.id && (statusTab === 'open') &&
+                                                <div className='topic-buttons'>
 
-                        {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
+                                                    <button className='resolved' disabled={disableButton} onClick={() => {
+                                                        setDisableButton(true);
+                                                        setShowFeedback(true);
+                                                        setFeedBackId(topic.id)
+                                                    }}>Resolve</button>
 
-                        }
+                                                    {checkLastActivity(topic.id) && <button className='delete' disabled={disableButton} onClick={(e) => {
+                                                        setConfirmDelete(true)
+                                                        setDisableButton(true);
+                                                        setDeleteId(topic.id);
+                                                    }
+                                                    }>Delete</button>}
+
+                                                </div>}
+
+                                            {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} />}
+                                            {(statusTab === 'resolved') && <div className='topic-buttons'>
+
+                                                {getTopicId.id !== topic.id && <button className='reopen' disabled={disableButton} onClick={() => {
+                                                    setDisableButton(true);
+                                                    setGetTopicId(topic);
+                                                    setshowReopenPanell(true);
+
+                                                }}>Re-Open</button>}
+
+                                            </div>}
+
+                                        </div>}
+
+                                    </div>
+
+                                )
+                            })}
+
+                        {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
+                            {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
+
+                            }
+                        </div>
+
                     </div>
 
-                </div>
+                </div>}
 
-            </div>}
 
-            {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} topicData={editTopic} socketDetail={webSocket} />}
+                      
+            {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} />}
 
             {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket} />}
 
