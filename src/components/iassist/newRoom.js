@@ -155,9 +155,15 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const replyEditorRef = useRef();
 
+    const editEditorRef = useRef();
+
+    const editFnRef = useRef()
+
     const fnReplyRef = useRef();
 
     const getMessageHeight = useRef();
+
+    const [editedMessage, setEditedMessage] = useState('')
 
     const Size = useRef(pageSize);
 
@@ -1065,17 +1071,17 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const editMessageClick = (e, msg) => {
 
-        let token = getToken();
+        // let token = getToken();
 
-        let userDetail = getUserDetailsFromToken(token);
+        let userDetail = getUser();
 
-        if (userDetail.identity.id === msg.user_id) {
+        if (userDetail.id === msg.user_id) {
 
             setEditId(msg.id);
 
             parent_note_id = msg.parent_note_id;
 
-            setMessage(msg?.is_file ? msg?.note?.message : msg.note);
+            setEditedMessage(msg?.is_file ? msg?.note?.message : msg.note);
 
             setShowMainMenu(false);
 
@@ -1098,7 +1104,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         let data = {
             chat_id: editId,
             parent_note_id: parent_note_id,
-            message: message
+            message: editedMessage
         }
 
         const token = `Bearer ${jwt_token}`;
@@ -1721,10 +1727,46 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                             <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)} </span>
 
-                                            {!messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content'>
+                                            {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content'>
 
                                                 {parse(messages.note, options)}
 
+                                            </div>}
+
+                                            {editId === messages.id &&!messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content'>
+
+                                                <Steno
+                                                    html={editedMessage}
+                                                    disable={false} //indicate that the editor has to be in edit mode
+                                                    onChange={(val) => { 
+                                                        console.log(val);
+                                                        setEditedMessage(val) }}
+                                                    innerRef={editEditorRef} //ref attached to the editor
+                                                    backgroundColor={'#000'}
+                                                    onChangeBackgroundColor={() => { }}
+                                                    fontColor={'#fff'}
+                                                    onChangeFontColor={() => { }}
+                                                    functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                    isToolBarVisible={false} //to show/hide the toolbar options
+                                                    toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                    formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                    onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                    showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                    fileList={[]} //List of file object to track the files selected by user
+                                                    // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                    // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                    sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                    onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                    autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                    minEditorHeight='20px' // Default will be 100px
+                                                    maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                    placeHolder="Message"
+                                                />
+                                                <div className='edit-btn'>
+                                                    <button type='button' className='save' onClick={(e) => editMessage(e)}>save</button>
+                                                    <button type='button' className='cancel' onClick={editCancel}>cancel</button>
+
+                                                </div>
                                             </div>}
 
                                             {!messages.is_file && messages.is_feedback && !messages.is_reopen && <div className='content'>
@@ -1947,7 +1989,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     {<div className='topic-filter-search'>
 
-                        {editId === '' && <div className='search'>
+                        {<div className='search'>
 
                             <Steno
                                 html={message}
@@ -1980,39 +2022,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                         </div>}
 
-                        {editId !== '' && <div className='search'>
-
-                            <Steno
-                                html={message}
-                                disable={false} //indicate that the editor has to be in edit mode
-                                onChange={(val) => { setMessage(val) }}
-                                innerRef={editorRef} //ref attached to the editor
-                                backgroundColor={'#000'}
-                                onChangeBackgroundColor={() => { }}
-                                fontColor={'#fff'}
-                                onChangeFontColor={() => { }}
-                                functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
-                                isToolBarVisible={false} //to show/hide the toolbar options
-                                toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                fileList={[]} //List of file object to track the files selected by user
-                                // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                minEditorHeight='20px' // Default will be 100px
-                                maxEditorHeight="300px" // Default maxHeight will be 250px
-                                placeHolder="Message"
-                            />
-
-                            <button type='button' className='cancel' onClick={editCancel}>cancel</button>
-
-                            <button type='button' className='sends' onClick={(e) => editMessage(e)}>send</button>
-
-                        </div>}
+                        
 
                     </div>}
 
