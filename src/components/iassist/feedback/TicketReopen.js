@@ -94,18 +94,16 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                                     allTopic.splice(index, 1);
 
-                                } else {
+                                } 
+                                // else {
 
-                                    if (ticket) {
+                                //     if (ticket) {
 
-                                        ticket();
+                                //        // ticket(); fetchindivtopic
 
-                                    }
+                                //     }
 
-                                }
-                                if (fetchIndivTopic) {
-                                    fetchIndivTopic();
-                                }
+                                // }
 
                                 closePane();
 
