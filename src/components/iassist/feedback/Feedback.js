@@ -90,16 +90,15 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
                                     allTopic.splice(index, 1);
 
-                                } 
-                                // else {
+                                } else {
 
-                                //     if (ticket) {
+                                    if (ticket) {
 
-                                //        // ticket();
+                                       ticket();
 
-                                //     }
+                                    }
 
-                                // }
+                                }
 
                                 closePane();
 
