@@ -1310,11 +1310,13 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const fetchIndivTopic = async () => {
 
+        const status_flag = topic?.status_id === 3 ? true: false;
+
         const jwt_token = getTokenClient();
 
         const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/?page_size=10&page_number=1&status_flag=true&ticket_id=${topic.id}&sort_order=descending`, null, false, 'GET', controller, token)
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/?page_size=10&page_number=1&status_flag=${status_flag}&ticket_id=${topic.id}&sort_order=descending`, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1670,9 +1672,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 </div>
 
-                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} ticket={fetchIndivTopic} disabledButton={setShowFeedback} />}
+                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} disabledButton={setShowFeedback} Topic={topic} />}
 
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} fetchIndivTopic={fetchIndivTopic} />}
+                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} />}
 
                 <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
@@ -1971,7 +1973,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 minEditorHeight='20px' // Default will be 100px
                                 maxEditorHeight="300px" // Default maxHeight will be 250px
                                 placeHolder={topic.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
-                                onClick={onClickSteno}
+                                onClick={() => onClickSteno()}
                             />
 
                             <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader}></button>

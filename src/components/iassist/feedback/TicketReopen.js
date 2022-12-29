@@ -103,9 +103,6 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
                                     }
 
                                 }
-                                if (fetchIndivTopic) {
-                                    fetchIndivTopic();
-                                }
 
                                 closePane();
 
