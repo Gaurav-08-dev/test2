@@ -455,17 +455,17 @@ a {
 **************************/
 $app_wrapper_padding: $header_height /*+ $sub_header_height*/;
 
-#app-main-wrapper {
-  padding: $app_wrapper_padding 0 0 $sidebar_width;
+// #app-main-wrapper {
+//   padding: $app_wrapper_padding 0 0 $sidebar_width;
 
-  .app-wrapper {
-    height: calc(100vh - 30px) /*97.44vh*/;
-    padding-top: $sub_header_height;
-    .app-link {
-      color: #61dafb;
-    }
-  }
-}
+//   .app-wrapper {
+//     height: calc(100vh - 30px) /*97.44vh*/;
+//     padding-top: $sub_header_height;
+//     .app-link {
+//       color: #61dafb;
+//     }
+//   }
+// }
 
 /************************
   === CONTENT ===
