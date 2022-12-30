@@ -1591,7 +1591,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     <div className='header-other-functionality-wrapper'>
 
-                        <div className='topic-filter-search' id='search-box'>
+                        <div className='topic-filter-search-iassist' id='search-box'>
 
                             <div className='search'>
 
@@ -1886,7 +1886,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                 {getUserNameImage(currentUserId, true)}
 
-                                                {showReply && chatId === messages.id && <div className='topic-filter-search'>
+                                                {showReply && chatId === messages.id && <div className='topic-filter-search-iassist'>
 
                                                     <div className='search'>
 
@@ -1945,7 +1945,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 {!showSearch && <div className='message' id='message'>
 
-                    {<div className='topic-filter-search'>
+                    {<div className='topic-filter-search-iassist'>
 
                         {editId === '' && <div className='search'>
 

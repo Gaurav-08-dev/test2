@@ -805,7 +805,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             <div className='header-other-functionality-wrapper'>
 
-                                <div className='topic-filter-search'>
+                                <div className='topic-filter-search-iassist'>
 
                                     <div className='search'>
 
