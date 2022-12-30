@@ -5,7 +5,7 @@ import debounce from "lodash.debounce"
 
 import './newRoom.scss';
 import * as Constants from '../Constants';
-import { getToken, getTokenClient, getUser, getUserDetailsFromToken } from '../../utils/Common';
+import { getTokenClient, getUser } from '../../utils/Common';
 import alertService from '../../services/alertService';
 import Support from './Support';
 import Avatar from '../Avatar/Avatar';
