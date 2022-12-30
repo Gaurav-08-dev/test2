@@ -12,7 +12,7 @@
   text-align: left;
   //overflow-y: scroll;
   z-index: 100000;
-  max-height: 95.5%;
+  max-height: -webkit-fill-available;
 
   .btn-with-icon {
     display: block;
