@@ -1086,7 +1086,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             setEditedMessage(msg?.is_file ? msg?.note?.message : msg.note);
 
             setShowMainMenu(false);
-            console.log(document.getElementById(`msg${msg.id}`))
+            
+            if(document.getElementById(`content${msg.id}`)) {
+                document.getElementById(`content${msg.id}`).scrollIntoView({behavior:'smooth',
+            block:'nearest'})}
 
         } else {
 
@@ -1732,13 +1735,13 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                             <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)} </span>
 
-                                            {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"msg" + message.id}>
+                                            {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"msg" + messages.id}>
 
                                                 {parse(messages.note, options)}
 
                                             </div>}
 
-                                            {editId === messages.id &&!messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content'>
+                                            {editId === messages.id &&!messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"container" + messages.id}>
 
                                                 <Steno
                                                     html={editedMessage}
@@ -1979,7 +1982,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                     </div>
 
-                                    {!showSearch && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, 'main', messages)} title="option"></button>}
+                                    {!showSearch && editId!==messages.id && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, 'main', messages)} title="option"></button>}
                                 </div>
 
                             </div>
