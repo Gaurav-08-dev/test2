@@ -1086,10 +1086,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             setEditedMessage(msg?.is_file ? msg?.note?.message : msg.note);
 
             setShowMainMenu(false);
-            
-            if(document.getElementById(`content${msg.id}`)) {
-                document.getElementById(`content${msg.id}`).scrollIntoView({behavior:'smooth',
-            block:'nearest'})}
 
         } else {
 
@@ -1492,6 +1488,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         }
 
     }
+
+    useEffect(() => {
+        if(document.getElementById(`content${editId}`)) {
+                document.getElementById(`content${editId}`).scrollIntoView({behavior:'smooth',
+            block:'nearest'})}
+    }, [editId])
 
     useEffect(() => {
 
