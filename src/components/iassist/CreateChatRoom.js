@@ -113,7 +113,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
+            let conatinerWrapper = document.getElementsByClassName('create-chat-room');
 
             conatinerWrapper[0].style.top = '65px';
 
