@@ -78,7 +78,8 @@ const SupportContainer = () => {
                 span.style.height = '6px';
                 span.style.marginLeft = '3px';
                 span.style.borderRadius = '50%';
-                span.style.top = '6px';
+                span.style.marginTop = '-2px';
+                // span.style.top = '6px';
                 if(btn) btn.append(span);
             }
         }

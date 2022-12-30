@@ -344,7 +344,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             span.style.height = '6px';
             span.style.marginLeft = '3px';
             span.style.borderRadius = '50%';
-            span.style.top = '6px';
+            // span.style.top = '6px';
+            span.style.marginTop = '-2px';
 
             if (btn) btn.append(span);
             console.log(btn);
