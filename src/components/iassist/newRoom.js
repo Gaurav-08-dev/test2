@@ -1086,6 +1086,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             setEditedMessage(msg?.is_file ? msg?.note?.message : msg.note);
 
             setShowMainMenu(false);
+            console.log(document.getElementById(`masg${msg.id}`))
 
         } else {
 
@@ -1731,7 +1732,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                             <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)} </span>
 
-                                            {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content'>
+                                            {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"msg" + message.id}>
 
                                                 {parse(messages.note, options)}
 
