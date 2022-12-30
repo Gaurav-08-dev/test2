@@ -1086,7 +1086,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             setEditedMessage(msg?.is_file ? msg?.note?.message : msg.note);
 
             setShowMainMenu(false);
-            console.log(document.getElementById(`masg${msg.id}`))
+            console.log(document.getElementById(`msg${msg.id}`))
 
         } else {
 
