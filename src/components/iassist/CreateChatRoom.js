@@ -116,6 +116,8 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
             let conatinerWrapper = document.getElementsByClassName('create-chat-room');
 
             conatinerWrapper[0].style.top = '65px';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
+
 
         }
       
@@ -569,6 +571,8 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
             let conatinerWrapper = document.getElementsByClassName('create-chat-room');
 
             conatinerWrapper[0].style.top = '65px';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
+
 
         }
 

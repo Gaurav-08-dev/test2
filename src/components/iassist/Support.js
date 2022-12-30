@@ -492,6 +492,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
+
 
         }
 
