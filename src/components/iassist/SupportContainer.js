@@ -6,9 +6,9 @@ import '../../style/Global.scss'
 
 
 let webSocket;
-let tokenConstant = document.getElementById("test-div").getAttribute("data-token");
+let tokenConstant = document.getElementById("test-div").getAttribute("data-token") || 'sight';
 
-let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
+let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
 
 console.log('btn', btnId);
 
@@ -142,7 +142,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-            {/* <button id="btn">one</button> */}
+            { btnId === 'btn' && <button id="btn">one</button>}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>
