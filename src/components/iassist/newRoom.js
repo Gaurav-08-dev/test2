@@ -492,7 +492,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
-            conatinerWrapper[0].style.maxHeight = '92.5%';
+            // conatinerWrapper[0].style.maxHeight = '92.5%';
 
 
         }
@@ -1504,7 +1504,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
-            conatinerWrapper[0].style.maxHeight = '92.5%';
+            // conatinerWrapper[0].style.maxHeight = '92.5%';
 
 
         }
