@@ -492,7 +492,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
-            // conatinerWrapper[0].style.maxHeight = '92.5%';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
 
 
         }
@@ -1165,6 +1165,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             ]
         }
 
+        setShowLoader(true);
+
         const jwt_token = getTokenClient();
 
         const token = `Bearer ${jwt_token}`;
@@ -1175,6 +1177,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 if (response) {
 
                     // let json = response;
+
+                    setShowLoader(false);
 
                     if (!add) {
 
@@ -1189,9 +1193,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     }
 
-                    if (add)
+                    // if (add)
                         // collabId = [...collabId, json.data[0].user_id]
-                        setShowLoader(false);
 
                 }
 
@@ -1504,7 +1507,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
-            // conatinerWrapper[0].style.maxHeight = '92.5%';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
 
 
         }
