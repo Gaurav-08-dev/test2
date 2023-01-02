@@ -5,7 +5,7 @@ import { getTokenClient } from '../../../utils/Common';
 import './Feedback.scss'
 import * as Constants from '../../Constants';
 
-const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, Topic }) => {
+const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, Topic, setLoader }) => {
 
     const [feedbackValue, setFeedBackValue] = useState('');
 
@@ -42,6 +42,8 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
         if (feedbackValue !== '') {
 
+            setLoader(true);
+
             setDisableButton(true);
 
             setDisableCancel(true);
@@ -61,6 +63,8 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
                     .then(response => {
 
                         if (response) {
+
+                            setLoader(false);
 
                             if (disabledButton) {
 
@@ -108,6 +112,8 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
                     })
                     .catch(err => {
+
+                        setLoader(false)
 
                         closePane();
 
