@@ -963,7 +963,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                         {<div className='topic-meta'>
 
-                                            {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} />}
+                                            {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
                                             {feedBackId !== topic.id && (statusTab === 'open') &&
                                                 <div className='topic-buttons'>
 
@@ -982,7 +982,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                                 </div>}
 
-                                            {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} />}
+                                            {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
                                             {(statusTab === 'resolved') && <div className='topic-buttons'>
 
                                                 {getTopicId.id !== topic.id && <button className='reopen' disabled={disableButton} onClick={() => {

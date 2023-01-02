@@ -6,7 +6,7 @@ import APIService from '../../../services/apiService';
 import alertService from '../../../services/alertService';
 
 
-const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic, fetchIndivTopic }) => {
+const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic, setLoader }) => {
 
     const [suggestion, setSuggestion] = useState('');
 
@@ -44,6 +44,8 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
         if (checkSuggestion !== '') {
 
+            setLoader(true);
+
             setDisabledButton(true);
 
             setDisableCancel(true);
@@ -63,6 +65,8 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
                     .then(response => {
 
                         if (response) {
+
+                            setLoader(false);
 
                             if (Topic) {
 
@@ -112,6 +116,8 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                     })
                     .catch(err => {
+
+                        setLoader(false);
 
                         closePane();
 

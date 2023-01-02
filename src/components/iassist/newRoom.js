@@ -1691,9 +1691,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 </div>
 
-                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} disabledButton={setShowFeedback} Topic={topic} />}
+                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader}/>}
 
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} />}
+                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} setLoader={setShowLoader} />}
 
                 <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
