@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import debounce from "lodash.debounce"
 
-// import './newRoom.scss';
+import './newRoom.scss';
 import * as Constants from '../Constants';
 import { getTokenClient, getUser } from '../../utils/Common';
 import alertService from '../../services/alertService';
