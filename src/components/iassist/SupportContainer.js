@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
-// import '../../style/Global.scss'
+import '../../style/Global.scss'
 
 
 let webSocket;
@@ -95,6 +95,15 @@ const SupportContainer = () => {
     }
   
     useEffect(() => {
+
+        const bodyElement = document.getElementsByTagName('body')[0];
+
+        const linkTag = document.createElement("link")
+        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        // linkTag.href = 'https://iassist-dev.bydata.com/scripts/sight/docs/index.css';
+        linkTag.rel = "stylesheet";
+        linkTag.id = "iassist-css";
+        bodyElement.append(linkTag);
         
         if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
             if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
