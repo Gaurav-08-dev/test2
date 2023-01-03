@@ -1,6 +1,6 @@
 import React from 'react';
 import VideoLoader from '../Player/videoLoader';
-import './RecordOption.scss';
+// import './RecordOption.scss';
 
 const RecordOption = (
     {

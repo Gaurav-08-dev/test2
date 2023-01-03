@@ -1,6 +1,6 @@
 import * as Constants from '../../Constants';
 import Avatar from '../../Avatar/Avatar';
-import './Detail.scss'
+// import './Detail.scss'
 import React from 'react';
 const Detail = ({ topic, allUser, type, allAccount }) => {
 
