@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
-import '../../style/Global.scss'
+// import '../../style/Global.scss'
 
 
 let webSocket;

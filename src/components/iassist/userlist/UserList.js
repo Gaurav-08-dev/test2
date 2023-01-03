@@ -4,7 +4,7 @@ import APIService from '../../../services/apiService';
 import { getToken, getUser } from '../../../utils/Common';
 import * as Constants from '../../Constants';
 import Avatar from '../../Avatar/Avatar';
-import './UserList.scss'
+// import './UserList.scss'
 
 
 // user => user array list

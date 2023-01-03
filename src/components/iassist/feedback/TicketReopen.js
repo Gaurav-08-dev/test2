@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './Feedback.scss';
+// import './Feedback.scss';
 import * as Constants from '../../Constants';
 import { getTokenClient } from '../../../utils/Common';
 import APIService from '../../../services/apiService';

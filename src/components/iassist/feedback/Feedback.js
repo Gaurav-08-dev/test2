@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import alertService from '../../../services/alertService';
 import APIService from '../../../services/apiService';
 import { getTokenClient } from '../../../utils/Common';
-import './Feedback.scss'
+// import './Feedback.scss'
 import * as Constants from '../../Constants';
 
 const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, Topic, setLoader }) => {
