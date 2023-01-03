@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, memo } from 'react';
-// import './Support.scss';
+import './Support.scss';
 import SpeedSelect from 'react-speedselect';
 import CreateChatRoom from './CreateChatRoom';
 import * as Constants from '../Constants';

@@ -1,6 +1,6 @@
 import React,{ useEffect, useRef, useState } from "react";
 import alertService from "../../../services/alertService";
-// import './VideoRecord.scss';
+import './VideoRecord.scss';
 // import domtoimage from "dom-to-image";
 // import CanvasVideo from "./CanvasVideo";
 import APIService from "../../../services/apiService";

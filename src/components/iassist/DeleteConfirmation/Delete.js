@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import './Delete.scss';
+import './Delete.scss';
 
 let buttonDisable = false;
 
