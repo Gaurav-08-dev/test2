@@ -8,11 +8,11 @@ export function trigger(target) {
     div.dataset.buttonid = target;
     bodyElement.append(div);
 
-    const linkTag = document.createElement("link")
-    linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
-    linkTag.rel = "stylesheet";
-    linkTag.id = "iassist-css";
-    bodyElement.append(linkTag);
+    // const linkTag = document.createElement("link")
+    // linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+    // linkTag.rel = "stylesheet";
+    // linkTag.id = "iassist-css";
+    // bodyElement.append(linkTag);
 
     const scriptTag = document.createElement("script")
     scriptTag.id = "iassist-html";

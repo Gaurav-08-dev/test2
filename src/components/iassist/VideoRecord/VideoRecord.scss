@@ -1,3 +1,5 @@
+$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+
 .video-record-wrapper {
     width: 100%;
     height: 90vh;
@@ -98,8 +100,8 @@
                     
                     button {
                         content: 'Delete';
-                        mask: url("../../../images/icon-delete.svg") no-repeat center center;
-                        -webkit-mask: url("../../../images/icon-delete.svg") no-repeat center center;
+                        mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+                        -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
 
                         mask-size: 10px;
                         -webkit-mask-size: 10px;
@@ -127,8 +129,8 @@
                     
                     button {
                         content: 'Delete';
-                        mask: url("../../../images/icon-save.svg") no-repeat center center;
-                        -webkit-mask: url("../../../images/icon-save.svg") no-repeat center center;
+                        mask: url($image-prefix + "icon-save.svg") no-repeat center center;
+                        -webkit-mask: url($image-prefix + "icon-save.svg") no-repeat center center;
 
                         mask-size: 10px;
                         -webkit-mask-size: 10px;
@@ -160,8 +162,8 @@
                     cursor: pointer;
                     button {
                         content: '';
-                        mask: url("../../../images/icon-text-input.svg") no-repeat center center;
-                        -webkit-mask: url("../../../images/icon-text-input.svg") no-repeat center center;
+                        mask: url($image-prefix + "icon-text-input.svg") no-repeat center center;
+                        -webkit-mask: url($image-prefix + "icon-text-input.svg") no-repeat center center;
 
                         mask-size: 10px;
                         -webkit-mask-size: 10px;
@@ -181,8 +183,8 @@
                     cursor: pointer;
                     button {
                         content: '';
-                        mask: url("../../../images/icon-arrow-indicator.svg") no-repeat center center;
-                        -webkit-mask: url("../../../images/icon-arrow-indicator.svg") no-repeat center center;
+                        mask: url($image-prefix + "icon-arrow-indicator.svg") no-repeat center center;
+                        -webkit-mask: url($image-prefix + "icon-arrow-indicator.svg") no-repeat center center;
 
                         mask-size: 13px;
                         -webkit-mask-size: 13px;
@@ -204,8 +206,8 @@
                     cursor: pointer;
                     button {
                         content: '';
-                        mask: url("../../../images/icon-undo_sc.svg") no-repeat center center;
-                        -webkit-mask: url("../../../images/icon-undo_sc.svg") no-repeat center center;
+                        mask: url($image-prefix + "icon-undo_sc.svg") no-repeat center center;
+                        -webkit-mask: url($image-prefix + "icon-undo_sc.svg") no-repeat center center;
 
                         mask-size: 11px;
                         -webkit-mask-size: 11px;
@@ -226,8 +228,8 @@
                     cursor: pointer;
                     button {
                         content: '';
-                        mask: url("../../../images/icon-redo.svg") no-repeat center center;
-                        -webkit-mask: url("../../../images/icon-redo.svg") no-repeat center center;
+                        mask: url($image-prefix + "icon-redo.svg") no-repeat center center;
+                        -webkit-mask: url($image-prefix + "icon-redo.svg") no-repeat center center;
 
                         mask-size: 11px;
                         -webkit-mask-size: 11px;

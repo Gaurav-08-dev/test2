@@ -1,3 +1,5 @@
+$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+
 #test-div{#support-main-conatiner{
 
 .support-wrapper
@@ -105,8 +107,8 @@
           cursor: pointer;
           &::before {
             content: "";
-            mask: url("../../images/icon-arrow-left.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-arrow-left.svg") no-repeat center
+            mask: url($image-prefix + "icon-arrow-left.svg") no-repeat center center;
+            -webkit-mask: url($image-prefix + "icon-arrow-left.svg") no-repeat center
               center;
   
             width: 20px;
@@ -126,8 +128,8 @@
         .filter-btn {
           .button {
             content: "";
-            mask: url("../../images/icon-filters.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-filters.svg") no-repeat center
+            mask: url($image-prefix + "icon-filters.svg") no-repeat center center;
+            -webkit-mask: url($image-prefix + "icon-filters.svg") no-repeat center
               center;
   
             min-width: 12px;
@@ -168,8 +170,8 @@
   
             .btn {
               content: "";
-              mask: url("../../images/icon-search.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-search.svg") no-repeat center
+              mask: url($image-prefix + "icon-search.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-search.svg") no-repeat center
                 center;
   
               min-width: 12px;
@@ -203,8 +205,8 @@
             padding: 1px;
             .add-icon {
               content: "";
-              mask: url("../../images/icon-plus-lite.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat
+              mask: url($image-prefix + "icon-plus-lite.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-plus-lite.svg") no-repeat
                 center center;
   
               mask-size: 8px;
@@ -259,9 +261,9 @@
   
               &::before {
                 content: "";
-                mask: url("../../images/icon-plus-lite.svg") no-repeat center
+                mask: url($image-prefix + "icon-plus-lite.svg") no-repeat center
                   center;
-                -webkit-mask: url("../../images/icon-plus-lite.svg") no-repeat
+                -webkit-mask: url($image-prefix + "icon-plus-lite.svg") no-repeat
                   center center;
                 width: 8px;
                 height: 8px;
@@ -347,8 +349,8 @@
           display: block;
           width: 11px;
           height: 11px;
-          mask: url("../../images/icon-close.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-close.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-close.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center center;
   
           background: #b1b2b3;
         }
@@ -410,7 +412,7 @@
             cursor: pointer;
             position: absolute;
             width: 110px;
-            background: url("../../images/icon-calendar-1.svg") no-repeat right;
+            background: url($image-prefix + "icon-calendar-1.svg") no-repeat right;
           }
   
           .button-calendar {
@@ -421,7 +423,7 @@
             padding: 0;
             cursor: pointer;
             position: relative;
-            background: url("../../images/icon-calendar-1.svg") no-repeat right;
+            background: url($image-prefix + "icon-calendar-1.svg") no-repeat right;
             display: block;
             padding-left: 25px;
           }
@@ -494,8 +496,8 @@
   
           .btn {
             content: "";
-            mask: url("../../images/icon-search.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-search.svg") no-repeat center
+            mask: url($image-prefix + "icon-search.svg") no-repeat center center;
+            -webkit-mask: url($image-prefix + "icon-search.svg") no-repeat center
               center;
   
             min-width: 12px;
@@ -645,8 +647,8 @@
             }
             .topic-chat-notify {
               cursor: pointer;
-              mask: url("../../images/icon-message.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-message.svg") no-repeat center
+              mask: url($image-prefix + "icon-message.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-message.svg") no-repeat center
                 center;
   
               min-width: 12px;
@@ -684,8 +686,8 @@
   
             .option {
               cursor: pointer;
-              mask: url("../../images/icon-dots.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+              mask: url($image-prefix + "icon-dots.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-dots.svg") no-repeat center
                 center;
               min-width: 12px;
               mask-size: 12px;
@@ -727,8 +729,8 @@
   
               &::before {
                 content: "";
-                mask: url("../../images/icon-reopen.svg") no-repeat center center;
-                -webkit-mask: url("../../images/icon-reopen.svg") no-repeat center
+                mask: url($image-prefix + "icon-reopen.svg") no-repeat center center;
+                -webkit-mask: url($image-prefix + "icon-reopen.svg") no-repeat center
                   center;
                 mask-size: 10px;
                 -webkit-mask-size: 10px;
@@ -755,8 +757,8 @@
   
               &::before {
                 content: "";
-                mask: url("../../images/icon-run.svg") no-repeat center center;
-                -webkit-mask: url("../../images/icon-run.svg") no-repeat center
+                mask: url($image-prefix + "icon-run.svg") no-repeat center center;
+                -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center
                   center;
                 mask-size: 10px;
                 -webkit-mask-size: 10px;
@@ -782,8 +784,8 @@
               cursor: pointer;
               &::before {
                 content: "";
-                mask: url("../../images/icon-delete.svg") no-repeat center center;
-                -webkit-mask: url("../../images/icon-delete.svg") no-repeat center
+                mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+                -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center
                   center;
   
                 mask-size: 10px;
@@ -939,9 +941,9 @@
 
       i {
         &:before {
-          -webkit-mask: url("../../images/icon-close.svg") no-repeat center
+          -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center
             center;
-          mask: url("../../images/icon-close.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-close.svg") no-repeat center center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
 
@@ -955,9 +957,9 @@
       color: #fff;
       i {
         &:before {
-          -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center center;
 
-          mask: url("../../images/icon-run.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-run.svg") no-repeat center center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
           background-color: #000;
@@ -1029,8 +1031,8 @@
   //     .button {
   //       width: 12px;
   //       height: 12px;
-  //       mask: url("../../images/icon-arrow-desc.svg") no-repeat center center;
-  //       -webkit-mask: url("../../images/icon-arrow-desc.svg") no-repeat center
+  //       mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat center center;
+  //       -webkit-mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat center
   //         center;
 
   //       background: #fff;
@@ -1101,8 +1103,8 @@
 
       &::after {
         content: "";
-        mask: url("../../images/icon-down-arrow.svg") no-repeat center center;
-        -webkit-mask: url("../../images/icon-down-arrow.svg") no-repeat center
+        mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center
           center;
         mask-size: 9px;
         -webkit-mask-size: 9px;
@@ -1229,8 +1231,8 @@
           padding: 0;
           width: 13px;
           height: 13px;
-          mask: url("../../images/icon-close.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-close.svg") no-repeat center
+          mask: url($image-prefix + "icon-close.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center
             center;
           mask-size: 8px;
           -webkit-mask-size: 8px;
@@ -1328,8 +1330,8 @@
 
             .before {
               content: "";
-              mask: url("../../images/icon-search.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-search.svg") no-repeat center
+              mask: url($image-prefix + "icon-search.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-search.svg") no-repeat center
                 center;
               min-width: 12px;
               width: 12px;
@@ -1450,7 +1452,7 @@
               cursor: pointer;
               align-items: flex-end;
               margin-left: 40px;
-              mask: url("../../images/icon-dots.svg") no-repeat center center;
+              mask: url($image-prefix + "icon-dots.svg") no-repeat center center;
               background-color: #fff;
               mask-size: 12px;
               -webkit-mask-size: 12px;
@@ -1535,8 +1537,8 @@
 
             &::before {
               content: "";
-              mask: url("../../images/icon-record.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-record.svg") no-repeat center center;
+              mask: url($image-prefix + "icon-record.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-record.svg") no-repeat center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 
@@ -1554,8 +1556,8 @@
 
             &::before {
               content: "";
-              mask: url("../../images/icon-screenshot.svg") no-repeat center center;
-              -webkit-mask: url("../../images/icon-screenshot.svg") no-repeat center center;
+              mask: url($image-prefix + "icon-screenshot.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-screenshot.svg") no-repeat center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 
@@ -1596,7 +1598,7 @@
             }
             button {
               content: "Delete";
-              mask: url("../../images/icon-delete.svg") no-repeat center center;
+              mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 
@@ -1686,7 +1688,7 @@
 
         .before {
           content: "";
-          mask: url("../../images/icon-search.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-search.svg") no-repeat center center;
           width: 14px;
           height: 14px;
           background-color: #777777;
@@ -1724,7 +1726,7 @@
         cursor: pointer;
         &::before {
           content: "";
-          mask: url("../../images/icon-run.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-run.svg") no-repeat center center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
 
@@ -1750,7 +1752,7 @@
 
         &::before {
           content: "";
-          mask: url("../../images/icon-run.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-run.svg") no-repeat center center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
 
@@ -1764,7 +1766,7 @@
       .search-btn {
         display: block;
         content: "";
-        mask: url("../../images/icon-search.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-search.svg") no-repeat center center;
         min-width: 14px;
         width: 14px;
         height: 14px;
@@ -1915,9 +1917,9 @@
                 .arrow {
                   display: block;
                   content: "";
-                  mask: url("../../images/icon-down-arrow.svg") no-repeat center
+                  mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center
                     center;
-                  -webkit-mask: url("../../images/icon-down-arrow.svg")
+                  -webkit-mask: url($image-prefix + "icon-down-arrow.svg")
                     no-repeat center center;
                   min-width: 10px;
                   width: 7px;
@@ -1946,8 +1948,8 @@
 
           cursor: pointer;
           align-items: flex-end;
-          mask: url("../../images/icon-dots.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+          mask: url($image-prefix + "icon-dots.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-dots.svg") no-repeat center
             center;
 
           background-color: #fff;
@@ -2092,8 +2094,8 @@
             cursor: pointer;
             align-items: flex-end;
             //margin-left:60px;
-            mask: url("../../images/icon-dots.svg") no-repeat center center;
-            -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+            mask: url($image-prefix + "icon-dots.svg") no-repeat center center;
+            -webkit-mask: url($image-prefix + "icon-dots.svg") no-repeat center
               center;
 
             background-color: #fff;
@@ -2137,9 +2139,9 @@
           .rply-btn {
             cursor: pointer;
             content: "";
-            mask: url("../../images/icon-notes-copy.svg") no-repeat center
+            mask: url($image-prefix + "icon-notes-copy.svg") no-repeat center
               center;
-            -webkit-mask: url("../../images/icon-notes-copy.svg") no-repeat
+            -webkit-mask: url($image-prefix + "icon-notes-copy.svg") no-repeat
               center center;
             min-width: 12px;
             width: 12px;
@@ -2205,8 +2207,8 @@
         .send {
           cursor: pointer;
           content: "";
-          mask: url("../../images/icon-send.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-send.svg") no-repeat center
+          mask: url($image-prefix + "icon-send.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-send.svg") no-repeat center
             center;
 
           min-width: 12px;
@@ -2274,9 +2276,9 @@
 
           &::before {
             content: "";
-            mask: url("../../images/icon-record-filled.svg") no-repeat center
+            mask: url($image-prefix + "icon-record-filled.svg") no-repeat center
               center;
-            -webkit-mask: url("../../images/icon-record-filled.svg") no-repeat
+            -webkit-mask: url($image-prefix + "icon-record-filled.svg") no-repeat
               center center;
             mask-size: 10px;
             -webkit-mask-size: 10px;
@@ -2295,9 +2297,9 @@
 
           &::before {
             content: "";
-            mask: url("../../images/icon-screenshot-filled.svg") no-repeat
+            mask: url($image-prefix + "icon-screenshot-filled.svg") no-repeat
               center center;
-            -webkit-mask: url("../../images/icon-screenshot-filled.svg")
+            -webkit-mask: url($image-prefix + "icon-screenshot-filled.svg")
               no-repeat center center;
             mask-size: 10px;
             -webkit-mask-size: 10px;
@@ -2315,8 +2317,8 @@
         button {
           cursor: pointer;
           content: "";
-          mask: url("../../images/icon-plus.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-plus.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
           min-width: 12px;
           width: 17px;
           height: 17px;
@@ -2343,8 +2345,8 @@
 
         button {
           content: "";
-          mask: url("../../images/icon-run.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-run.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center center;
 
           mask-size: 10px;
           -webkit-mask-size: 10px;
@@ -2371,8 +2373,8 @@
 
         button {
           content: "";
-          mask: url("../../images/icon-run.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-run.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-run.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
 
@@ -2397,8 +2399,8 @@
 
         button {
           content: "";
-          mask: url("../../images/icon-delete.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-delete.svg") no-repeat center
+          mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center
             center;
 
           mask-size: 10px;
@@ -2534,8 +2536,8 @@
           cursor: pointer;
           align-items: flex-end;
           margin-left: 60px;
-          mask: url("../../images/icon-dots.svg") no-repeat center center;
-          -webkit-mask: url("../../images/icon-dots.svg") no-repeat center
+          mask: url($image-prefix + "icon-dots.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-dots.svg") no-repeat center
             center;
 
           background-color: #fff;
