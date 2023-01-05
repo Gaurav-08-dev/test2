@@ -20,7 +20,7 @@ const SupportContainer = () => {
     const simplifyToken = async() => {
         let token = localStorage.getItem(tokenConstant + '_token');
         const user = getUserDetailsFromToken(token);
-        setUserData(user?.identity);
+        setUserData(user?.identity || user);
         if (token) {
             const tokens = `Bearer ${token}`;
             let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
