@@ -1,3 +1,5 @@
+$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+
 .screen-wrapper {
     position: absolute;
     //top: -35px;
@@ -17,9 +19,9 @@
 
       &::before {
         content: "";
-        mask: url("../../../images/icon-record-filled.svg") no-repeat center
+        mask: url($image-prefix + "icon-record-filled.svg") no-repeat center
           center;
-        -webkit-mask: url("../../../images/icon-record-filled.svg") no-repeat center
+        -webkit-mask: url($image-prefix + "icon-record-filled.svg") no-repeat center
           center;
         mask-size: 10px;
         -webkit-mask-size: 10px;
@@ -38,9 +40,9 @@
 
       &::before {
         content: "";
-        mask: url("../../../images/icon-screenshot-filled.svg") no-repeat
+        mask: url($image-prefix + "icon-screenshot-filled.svg") no-repeat
           center center;
-        -webkit-mask: url("../../../images/icon-screenshot-filled.svg") no-repeat
+        -webkit-mask: url($image-prefix + "icon-screenshot-filled.svg") no-repeat
           center center;
         mask-size: 10px;
         -webkit-mask-size: 10px;
@@ -59,8 +61,8 @@
     button {
       cursor: pointer;
       content: "";
-      mask: url("../../../images/icon-plus.svg") no-repeat center center;
-      -webkit-mask: url("../../../images/icon-plus.svg") no-repeat center center;
+      mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
+      -webkit-mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
       min-width: 12px;
       width: 17px;
       height: 17px;
@@ -116,8 +118,8 @@
         }
         button {
           content: "Delete";
-          mask: url("../../../images/icon-delete.svg") no-repeat center center;
-          -webkit-mask: url("../../../images/icon-delete.svg") no-repeat center center;
+          mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
 
           mask-size: 10px;
           -webkit-mask-size: 10px;

@@ -109,6 +109,12 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
     useEffect(() => {
 
+        // let container = document.getElementById('client-home');
+        // container.style.left = positionData?.left;
+        // container.style.top = positionData?.top;
+        // container.style.right = positionData?.right;
+        // container.style.bottom = positionData?.bottom;
+
         const subheaderAvailable = document.getElementById('app-sub-header');
 
         if (subheaderAvailable) {

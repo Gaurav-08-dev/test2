@@ -7,6 +7,7 @@ import '../../style/Global.scss'
 
 let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token") || 'sight';
+let absolutePosition = document.getElementById("test-div").getAttribute('data-position');
 
 let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
 
@@ -19,7 +20,7 @@ const SupportContainer = () => {
     const simplifyToken = async() => {
         let token = localStorage.getItem(tokenConstant + '_token');
         const user = getUserDetailsFromToken(token);
-        setUserData(user?.identity);
+        setUserData(user?.identity || user);
         if (token) {
             const tokens = `Bearer ${token}`;
             let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
@@ -153,7 +154,7 @@ const SupportContainer = () => {
        
 
             { btnId === 'btn' && <button id="btn">one</button>}
-            {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
+            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} positionData={absolutePosition}/>}
 
         </div>
     )

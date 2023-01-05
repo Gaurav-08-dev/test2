@@ -1,3 +1,5 @@
+$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+
 #modal, #overlay {
     width: 100vw;
     height: 100vh;
@@ -91,8 +93,8 @@
                 .header-close {
                     display: block;
                     width: 11px; height: 11px;
-                    mask: url("../../../images/icon-close.svg") no-repeat center center;
-                    -webkit-mask: url("../../../images/icon-close.svg") no-repeat center center;
+                    mask: url($image-prefix + "icon-close.svg") no-repeat center center;
+                    -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center center;
 
                     background: #fff;
                     margin-right: 10px;
@@ -119,8 +121,8 @@
 
                         .btn{
                             content: '';
-                            mask: url("../../../images/icon-search.svg") no-repeat center center;
-                            -webkit-mask: url("../../../images/icon-search.svg") no-repeat center center;
+                            mask: url($image-prefix + "icon-search.svg") no-repeat center center;
+                            -webkit-mask: url($image-prefix + "icon-search.svg") no-repeat center center;
 
                             min-width: 12px;
                             width: 12px;

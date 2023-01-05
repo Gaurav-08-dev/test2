@@ -13,7 +13,7 @@ import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
 import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
-import Delete from './DeleteConfirmation/Delete'
+import Delete from './DeleteConfirmation/Delete';
 
 
 console.log("localhost")
@@ -38,7 +38,7 @@ let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
-const Support = ({ closePane, topicClick, webSocket }) => {
+const Support = ({ closePane, topicClick, webSocket, positionData }) => {
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -474,6 +474,12 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
 
     useEffect(() => {
+
+        // let container = document.getElementById('client-home');
+        // container.style.left = positionData?.left;
+        // container.style.top = positionData?.top;
+        // container.style.right = positionData?.right;
+        // container.style.bottom = positionData?.bottom;
 
         if (type.length === 0) {
 
