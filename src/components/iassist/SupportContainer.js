@@ -24,7 +24,8 @@ const SupportContainer = () => {
         setUserData(userData);
         if (token) {
             const tokens = `Bearer ${token}`;
-            let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
+            let url = tokenConstant === 'iassist' ? `auth/support/`: `auth/client/`;
+            let res = await fetch(Constants.API_IASSIST_BASE_URL + url, {
                 method: 'GET',
                 headers: {
                     'Authorization': tokens
