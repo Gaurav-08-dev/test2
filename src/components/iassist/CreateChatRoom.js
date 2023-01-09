@@ -17,7 +17,11 @@ let suggestIndex = -1;
 let chatId;
 
 const descriptionMaxChar = 150;
+
 const nameMaxChar = 45;
+
+// let height = document.getElementById("test-div").getAttribute("data-height");
+
 const CreateChatRoom = ({ closePane, socketDetail }) => {
 
     const [priority] = useState(JSON.parse('[{"id":1,"value":"High"},{"id":2,"value":"Medium"},{"id":3,"value":"Low"}]'));
@@ -109,11 +113,13 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
     useEffect(() => {
 
-        // let container = document.getElementById('client-home');
-        // container.style.left = positionData?.left;
-        // container.style.top = positionData?.top;
-        // container.style.right = positionData?.right;
-        // container.style.bottom = positionData?.bottom;
+        // let supportContainer = document.getElementById('create-chat-room');
+
+        // if (supportContainer && height) {
+
+        //     supportContainer.style.height = height;
+            
+        // }
 
         const subheaderAvailable = document.getElementById('app-sub-header');
 

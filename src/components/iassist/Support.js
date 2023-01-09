@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, memo } from 'react';
-// import './Support.scss';
+import './Support.scss';
 import SpeedSelect from 'react-speedselect';
 import CreateChatRoom from './CreateChatRoom';
 import * as Constants from '../Constants';
@@ -13,10 +13,9 @@ import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
 import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
-import Delete from './DeleteConfirmation/Delete';
+import Delete from './DeleteConfirmation/Delete'
 
 
-console.log("localhost")
 // let webSocket;
 let pageNumber = 1;
 const pageSize = 10;
@@ -34,11 +33,12 @@ let activity = [];
 let unReadList = [];
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
-let btnId = document.getElementById("test-div").getAttribute("data-buttonid");
+let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
+// let height = document.getElementById("test-div").getAttribute("data-height");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
-const Support = ({ closePane, topicClick, webSocket, positionData }) => {
+const Support = ({ closePane, topicClick, webSocket }) => {
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -346,7 +346,7 @@ const Support = ({ closePane, topicClick, webSocket, positionData }) => {
             span.style.marginLeft = '3px';
             span.style.borderRadius = '50%';
             // span.style.top = '6px';
-            span.style.marginTop = '-2px';
+            span.style.marginTop = '-16px';
 
             if (btn) btn.append(span);
             console.log(btn);
@@ -367,7 +367,7 @@ const Support = ({ closePane, topicClick, webSocket, positionData }) => {
             changeValue(isUnread);
         } else if (received_msg.type === 'chat') {
             let user = getUser();
-            if (user.id !== received_msg.user_id) {
+            if (chatId !== received_msg.topic_id) {
                 if (!document.getElementById('iassist-unread')) {
                     console.log('check');
                     changeValue(true);
@@ -475,12 +475,6 @@ const Support = ({ closePane, topicClick, webSocket, positionData }) => {
 
     useEffect(() => {
 
-        // let container = document.getElementById('client-home');
-        // container.style.left = positionData?.left;
-        // container.style.top = positionData?.top;
-        // container.style.right = positionData?.right;
-        // container.style.bottom = positionData?.bottom;
-
         if (type.length === 0) {
 
             fetchTypeData();
@@ -492,6 +486,14 @@ const Support = ({ closePane, topicClick, webSocket, positionData }) => {
             getUsers();
 
         }
+
+        // let supportContainer = document.getElementById('client-home');
+
+        // if (supportContainer && height) {
+
+        //     supportContainer.style.height = height;
+
+        // }
 
         const subheaderAvailable = document.getElementById('app-sub-header');
 
