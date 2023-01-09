@@ -7,9 +7,10 @@ import '../../style/Global.scss'
 
 let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token") || 'sight';
-let absolutePosition = document.getElementById("test-div").getAttribute('data-position');
 
 let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
+
+// let position = document.getElementById("test-div").getAttribute("data-position");
 
 console.log('btn', btnId);
 
@@ -20,12 +21,12 @@ const SupportContainer = () => {
     const simplifyToken = async() => {
         let token = localStorage.getItem(tokenConstant + '_token');
         const user = getUserDetailsFromToken(token);
-        let userData = user?.identity || user
+        let userData = user?.identity || user;
         setUserData(userData);
         if (token) {
             const tokens = `Bearer ${token}`;
-            let url = tokenConstant === 'iassist' ? `auth/support/`: `auth/client/`;
-            let res = await fetch(Constants.API_IASSIST_BASE_URL + url, {
+            // let url = tokenConstant === 'iassist' ? `auth/support/`: `auth/client/`;
+            let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': tokens
@@ -56,6 +57,8 @@ const SupportContainer = () => {
                     let isUnread = received_msg.unread_tickets_count > 0? true: false;
                     localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
                     changeValue(isUnread);
+                } if(received_msg.type === 'chat') {
+                    changeValue(true);
                 }
             };
             
@@ -81,7 +84,7 @@ const SupportContainer = () => {
                 span.style.height = '6px';
                 span.style.marginLeft = '3px';
                 span.style.borderRadius = '50%';
-                span.style.marginTop = '-2px';
+                span.style.marginTop = '-16px';
                 // span.style.top = '6px';
                 if(btn) btn.append(span);
             }
@@ -101,9 +104,8 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
 
-        const linkTag = document.createElement("link")
+        const linkTag = document.createElement("link");
         linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
-        // linkTag.href = 'https://iassist-dev.bydata.com/scripts/sight/docs/index.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -134,9 +136,22 @@ const SupportContainer = () => {
     useEffect(() => {
 
         simplifyToken();
+        // let container = document.getElementById('support-main-conatiner');
+
+        //     if (container && position) {
+        //         if (position.toLowerCase() === 'left') {
+        //             container.style.left = 0;
+        //         } else if (position.toUpperCase() === 'right') {
+        //             container.style.right = '10px';
+        //         } else if (position.toUpperCase() === 'center') {
+        //             container.style.left = '40%';
+        //         }
+        //     }
 
         document.addEventListener('mouseup', (event) => {
             let container = document.getElementById('support-main-conatiner');
+
+
             let buttonIcon = document.getElementById(btnId);
 
             let recorderWrapper = document.getElementById('video-record-wrapper');
@@ -156,7 +171,7 @@ const SupportContainer = () => {
        
 
             { btnId === 'btn' && <button id="btn">one</button>}
-            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} positionData={absolutePosition}/>}
+            {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>
     )

@@ -49,6 +49,8 @@ let playerType = '';
 
 let clickBackButton = false;
 
+// let height = document.getElementById("test-div").getAttribute("data-height");
+
 const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail }) => {
 
     const bodyRef = useRef();
@@ -560,6 +562,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             }
 
             let chatContainer = document.getElementById('main-chat-container');
+
+            // if (chatContainer && height) {
+
+            //     chatContainer.style.height = height;
+                
+            // }
 
             if (chatContainer && !(chatContainer.contains(event.target))) {
 
