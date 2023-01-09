@@ -76,38 +76,6 @@ table {
 
 .show-loading {
   position: relative;
-
-  &:before {
-    display: block;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 1);
-    z-index: 997;
-  }
-  &:after {
-    display: block;
-    content: "";
-    width: 84px;
-    height: 84px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -42px 0 0 -42px;
-    background: transparent url(../images/icon-loading-new.gif) no-repeat center center;
-    background-size: 84px 84px;
-    @include border-radius(8px);
-    font-family: $font-poppins;
-    text-transform: capitalize;
-    text-align: center;
-    color: #fff;
-    z-index: 999999999;
-  }
 }
 
 #suspense-loading {
@@ -153,52 +121,10 @@ button {
   right: 0;
   background: rgba(0, 0, 0, 1);
   z-index: 99;
-
-  object {
-    display: block;
-    width: 84px;
-    height: 84px;
-    margin: 0 auto;
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    margin-top: -42px;
-    margin-left: -42px;
-  }
 }
 
 .loading {
   position: relative;
-
-  &:before {
-    display: block;
-    content: "";
-    width: 2.04vw;
-    height: 1.22vw;
-    position: absolute;
-    top: -0.96vw;
-    left: -1.08vw;
-    -webkit-mask: url("../images/loading2.svg") no-repeat center center;
-    mask: url("../images/loading2.svg");
-    background: #fff;
-    mask-repeat: no-repeat;
-    mask-position: center center;
-    -webkit-mask-size: 1.22vw; //18px
-    mask-size: 1.22vw; //18px
-    z-index: 999999999;
-    animation-name: loadingAnim;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-  }
-  @keyframes loadingAnim {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
 }
 
 * {
