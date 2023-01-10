@@ -150,17 +150,17 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
                 </div>
 
                 <div className='feedback'>
-
-                    <span style={{ background: feedbackValue === 'Amazing' ? '#FFFFFF' : '', color: feedbackValue === 'Amazing' ? '#000000' : '', border: feedbackValue === 'Amazing' ? '0px' : '1px solid #fff' }} onClick={(e) => feedBackClick(e, 'Amazing')}>
+                    
+                    <span style={{ background: feedbackValue === 'Amazing' ? '#FFFFFF' : '', color: feedbackValue === 'Amazing' ? '#000000' : '', borderColor: feedbackValue === 'Amazing' ? '#fff' : '#b1b2b3' }} onClick={(e) => feedBackClick(e, 'Amazing')}>
                         Amazing</span>
 
-                    <span style={{ background: feedbackValue === 'Satisfied' ? '#FFFFFF' : '', color: feedbackValue === 'Satisfied' ? '#000000' : '', border: feedbackValue === 'Satisfied' ? '0px' : '1px solid #fff' }} onClick={(e) => feedBackClick(e, 'Satisfied')}>
+                    <span style={{ background: feedbackValue === 'Satisfied' ? '#FFF' : '', color: feedbackValue === 'Satisfied' ? '#000000' : '', borderColor: feedbackValue === 'Satisfied' ? '#fff' : '#b1b2b3' }} onClick={(e) => feedBackClick(e, 'Satisfied')}>
                        Satisfied</span>
 
-                    <span style={{ background: feedbackValue === 'Neutral' ? '#FFFFFF' : '', color: feedbackValue === 'Neutral' ? '#000000' : '', border: feedbackValue === 'Neutral' ? '0px' : '1px solid #fff' }} onClick={(e) => feedBackClick(e, 'Neutral')}>
+                    <span style={{ background: feedbackValue === 'Neutral' ? '#FFFFFF' : '', color: feedbackValue === 'Neutral' ? '#000000' : '', borderColor: feedbackValue === 'Neutral' ? '#fff' : '#b1b2b3' }} onClick={(e) => feedBackClick(e, 'Neutral')}>
                         Neutral</span>
 
-                    <span style={{ background: feedbackValue === 'Unsatisfied' ? '#FFFFFF' : '', color: feedbackValue === 'Unsatisfied' ? '#000000' : '', border: feedbackValue === 'Unsatisfied' ? '0px' : '1px solid #fff' }} onClick={(e) => feedBackClick(e, 'Unsatisfied')}>
+                    <span style={{ background: feedbackValue === 'Unsatisfied' ? '#FFFFFF' : '', color: feedbackValue === 'Unsatisfied' ? '#000000' : '', borderColor: feedbackValue === 'Unsatisfied' ? '#fff' : '#b1b2b3' }} onClick={(e) => feedBackClick(e, 'Unsatisfied')}>
                         Unsatisfied</span>
 
                 </div>

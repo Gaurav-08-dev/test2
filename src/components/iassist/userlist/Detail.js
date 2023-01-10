@@ -78,14 +78,17 @@ const Detail = ({ topic, allUser, type, allAccount }) => {
 
     return (
         <div className='detail-wrapper'>
-
-            <div className='user-image'>{getUserNameImage(topic.user_id)}</div>
-
-            <div className='user-name'>{getUserNameBasedOnId(topic.user_id)} </div>
+            <div className='user'>
+                <div className='user-image'>{getUserNameImage(topic.user_id)}</div>
+                <div className='user-name'>{getUserNameBasedOnId(topic.user_id)} </div>
+            </div>
+            <div className='divider'></div>
 
             <span className='user-date'>{Constants.months[new Date(topic.created_at).getMonth()]} {new Date(topic.created_at).getDate()} {new Date(topic.created_at).getFullYear()}</span>
+            <div className='divider'></div>
             
             <div className='user-type'>{getType(topic.ticket_type_id)}</div>
+            <div className='divider'></div>
 
             <div className='user-ticket'>{allAccount.length > 0 && allAccount[0].name.substring(0, 3)}-{topic.id}</div>
             
