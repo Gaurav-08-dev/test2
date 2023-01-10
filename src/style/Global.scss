@@ -21,13 +21,6 @@
   --tm-global-search-icon-color: rgba(0, 0, 0, 0.33);
 }
 
-*::-webkit-scrollbar {
-  display: none;
-}
-* {
-  scrollbar-width: none; //Hide Scrollbar in firefox
-}
-
 /************************
   === GLOBAL Styles ===
 **************************/
@@ -68,25 +61,6 @@ h6 {
 p {
   font-size: 11px;
   margin: 0;
-}
-
-table {
-  font-size: var(--font-size);
-}
-
-.show-loading {
-  position: relative;
-}
-
-#suspense-loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 button {
