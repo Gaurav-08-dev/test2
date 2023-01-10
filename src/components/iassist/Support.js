@@ -813,31 +813,25 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             {showLoader && <LoadingScreen />}
 
-                            <div className='header-inner'>iAssist</div>
+                            <h4 className='header-inner'>iAssist</h4>
 
                             <div className='header-other-functionality-wrapper'>
 
-                                <div className='topic-filter-search-iassist'>
+                                <div className='search'>
 
-                                    <div className='search'>
+                                    <button className='btn' onClick={searchTopic} title='search'></button>
 
-                                        <button className='btn' onClick={searchTopic} title='search'></button>
-
-                                        <input type={'text'}
-                                            title='Search'
-                                            onChange={(e) => { setSearchString(e.target.value) }}
-                                            placeholder='Search'
-                                            onKeyDown={handleKeyDown}
-                                        />
-
-                                    </div>
+                                    <input type={'text'}
+                                        title='Search'
+                                        onChange={(e) => { setSearchString(e.target.value) }}
+                                        placeholder='Search'
+                                        onKeyDown={handleKeyDown}
+                                    />
 
                                 </div>
 
                                 <div className={'filter-btn' + (showMultipleFilters ? ' filter-bg' : '')}>
-
                                     <button className={'button' + (showMultipleFilters ? ' button-select' : '')} disabled={disableButton} title='filter-button' onClick={() => openFilterList()}></button>
-
                                 </div>
 
                                 <div className='btn-new-topic-wrapper'>
@@ -848,28 +842,17 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                     }} disabled={disableButton}><span className='add-new-ticket'></span>Ticket</button>
 
                                 </div>
-
                                 <button className='header-close' disabled={disableButton} onClick={() => closePanes()}></button>
-
                             </div>
-
                         </div>
 
                         {showMultipleFilters &&
                             <div className='sub-header-wrapper'>
 
                                 <div id='calendar' className={'calendar-wrapper'}>
-
-                                    <div className={'calendar-wrapper-separator'}>
-
-                                        <label className={'label'} onClick={() => setIsOpenCalendar(true)}>
-
-                                            {dates}
-
-                                        </label>
-
+                                    <div className={'calendar-date'}>
+                                        <label className={'label'} onClick={() => setIsOpenCalendar(true)}>{dates}</label>
                                         <button title='Calendar' className={'button-calendar'} onClick={() => setIsOpenCalendar(true)}></button>
-
                                     </div>
 
                                     {isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
@@ -902,118 +885,115 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             </div>}
 
+                        <div className='panel-body'>
+                            <div className='filter-wrapper'>
 
-                        <div className='filter-wrapper support'>
+                                <div className={'tab-wrapper'}>
 
-                            <div className={'tab-preview'}>
+                                    <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
+                                        if (tabData !== 'open') {
+                                            tabData = 'open';
+                                            setStatusTab('open');
 
-                                <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
-                                    if (tabData !== 'open') {
-                                        tabData = 'open';
-                                        setStatusTab('open');
+                                            allTopics = [];
+                                            clearData();
+                                            getTopics();
+                                        }
+                                    }}>
 
-                                        allTopics = [];
-                                        clearData();
-                                        getTopics();
-                                    }
-                                }}>
+                                        Active
 
-                                    In Progress
+                                    </button>
 
-                                </button>
+                                    <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
+                                        if (tabData !== 'resolved') {
+                                            tabData = 'resolved';
+                                            setStatusTab('resolved');
+                                            allTopics = [];
+                                            clearData();
+                                            getTopics();
+                                        }
+                                    }}>
 
-                                <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
-                                    if (tabData !== 'resolved') {
-                                        tabData = 'resolved';
-                                        setStatusTab('resolved');
-                                        allTopics = [];
-                                        clearData();
-                                        getTopics();
-                                    }
-                                }}>
+                                        Resolved
 
-                                    Resolved
+                                    </button>
 
-                                </button>
+                                </div>
 
                             </div>
 
-                        </div>
+                            <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
 
-                        <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+                                {!confirmDelete && allTopics.length > 0 && allTopics.map((topic, index) => {
 
-                            {!confirmDelete && allTopics.length > 0 && allTopics.map((topic, index) => {
+                                    return (
+                                        <div className='topic' key={topic.id}>
 
-                                return (
-                                    <div className='topic' key={topic.id}>
+                                            {<div className='topic-header' onClick={(e) => openChat(e, topic)}>
 
-                                        {<div className='topic-header' onClick={(e) => openChat(e, topic)}>
-
-                                            <div className='topic-header-inner'>
-
-                                                <div className='topic-name'><span>{topic.name}</span></div>
-
-                                                <div className='topic-chat-notify'>
-
-
+                                                <div className='topic-header-inner'>
+                                                    <h4 className='topic-name'>{topic.name}</h4>
+                                                    <div className='topic-chat-notify'></div>
+                                                    {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
                                                 </div>
 
-                                                {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
+                                                <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
-                                            </div>
-
-                                            <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
-
-                                            <Detail topic={topic} type={type} allUser={allUser.current} allAccount={allAccount.current} />
-
-                                        </div>}
-
-                                        {(showFeedback || showReopenPanel) && <div className='header-meta-divider'></div>}
-
-                                        {<div className='topic-meta'>
-
-                                            {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
-                                            {feedBackId !== topic.id && (statusTab === 'open') &&
-                                                <div className='topic-buttons'>
-
-                                                    <button className='resolved' disabled={disableButton} onClick={() => {
-                                                        setDisableButton(true);
-                                                        setShowFeedback(true);
-                                                        setFeedBackId(topic.id)
-                                                    }}>Resolve</button>
-
-                                                    {checkLastActivity(topic.id) && <button className='delete' disabled={disableButton} onClick={(e) => {
-                                                        setConfirmDelete(true)
-                                                        setDisableButton(true);
-                                                        setDeleteId(topic.id);
-                                                    }
-                                                    }>Delete</button>}
-
-                                                </div>}
-
-                                            {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
-                                            {(statusTab === 'resolved') && <div className='topic-buttons'>
-
-                                                {getTopicId.id !== topic.id && <button className='reopen' disabled={disableButton} onClick={() => {
-                                                    setDisableButton(true);
-                                                    setGetTopicId(topic);
-                                                    setshowReopenPanell(true);
-
-                                                }}>Re-Open</button>}
+                                                <Detail topic={topic} type={type} allUser={allUser.current} allAccount={allAccount.current} />
 
                                             </div>}
 
-                                        </div>}
+                                            {/* {(showFeedback || showReopenPanel) && <div className='header-meta-divider'></div>} */}
 
-                                    </div>
+                                            {<div className='topic-meta'>
 
-                                )
-                            })}
+                                                {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
+                                                {feedBackId !== topic.id && (statusTab === 'open') &&
+                                                    <div className='topic-buttons'>
 
-                        {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
-                            {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
+                                                        <button className='btn-resolve icon-btn' disabled={disableButton} onClick={() => {
+                                                            setDisableButton(true);
+                                                            setShowFeedback(true);
+                                                            setFeedBackId(topic.id)
+                                                        }}>
+                                                            <i></i>
+                                                            <span>Resolve</span>
+                                                        </button>
 
-                            }
+                                                        {checkLastActivity(topic.id) && <button className='btn-delete icon-btn' disabled={disableButton} onClick={(e) => {
+                                                            setConfirmDelete(true)
+                                                            setDisableButton(true);
+                                                            setDeleteId(topic.id);
+                                                        }
+                                                        }>Delete</button>}
+
+                                                    </div>}
+
+                                                {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
+                                                {(statusTab === 'resolved') && <div className='topic-buttons'>
+
+                                                    {getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
+                                                        setDisableButton(true);
+                                                        setGetTopicId(topic);
+                                                        setshowReopenPanell(true);
+
+                                                    }}>Re-Open</button>}
+
+                                                </div>}
+
+                                            </div>}
+
+                                        </div>
+
+                                    )
+                                })}
+
+                            {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
+                                {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
+
+                                }
+                            </div>
                         </div>
 
                     </div>
