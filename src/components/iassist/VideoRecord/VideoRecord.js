@@ -8,7 +8,7 @@ import * as Constants from '../../Constants';
 import { getTokenClient } from "../../../utils/Common";
 
 
-let  time = 5, ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
+let  ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
 let undoStack = [], redoStack = [];
 let selectMedia;
 let backspace = false;
@@ -51,6 +51,7 @@ const VideoRecord = ({ save, close, message }) => {
 
     const startCountDown = () => {
 
+
         if (+ref.current === 1) {
 
             clearInterval(interval.current);
@@ -59,7 +60,7 @@ const VideoRecord = ({ save, close, message }) => {
 
             interval.current = null;
 
-            console.log('after', interval.current)
+            // console.log('after', interval.current)
 
 
             start();
@@ -92,11 +93,15 @@ const VideoRecord = ({ save, close, message }) => {
         }
 
         interval.current = setInterval(() => {
+
+            console.log(closeInterval)
             if (!closeInterval) {
 
+                console.log("here")
                 startCountDown();
 
-            } else {
+            } 
+            else {
 
                 clearInterval(interval.current);
 
@@ -319,8 +324,10 @@ const VideoRecord = ({ save, close, message }) => {
 
     const start = async () => {
 
+        console.log("here")
         setEmpty(true);
 
+        closeInterval=false;
         if (message === 'Record') {
 
             stream = await recordScreen();
@@ -332,7 +339,7 @@ const VideoRecord = ({ save, close, message }) => {
                 // mediaRecorder = 
                 createRecorder(stream, mimeType);
 
-                time = 5;
+                // time = 5;
 
             } else {
 
@@ -795,15 +802,15 @@ const VideoRecord = ({ save, close, message }) => {
                             <button className="capture" onClick={() => {
                                 start()
                                 clearInterval(interval.current);
-                                closeInterval = true;
+                                closeInterval = false;
                                 interval.current = null
                             }}>Capture Now</button>
 
                             <button className="cancel" onClick={() => {
                                 close(false);
-                                time = 5;
+                                // time = 5;
                                 clearInterval(interval.current);
-                                closeInterval = true;
+                                closeInterval = false;
                                 interval.current = null;
                             }}>Cancel</button>
 

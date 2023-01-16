@@ -221,7 +221,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
     width: 100%;
     // max-height: calc(100% - 140px);
     max-height: calc(100% - 190px);
-    padding: 0 15px;
+    padding: 0 10px;
     // padding-top: 40px;
     position: absolute;
     //top: 21%;
@@ -272,7 +272,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             cursor: pointer;
           }
           .content-wrapper {
-            margin-top: -2px;
+            margin-top: 1px;
             padding-left: 10px;
             margin-left: 13px;
             width: 100%;

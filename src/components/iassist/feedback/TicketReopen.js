@@ -6,7 +6,7 @@ import APIService from '../../../services/apiService';
 import alertService from '../../../services/alertService';
 
 
-const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic, setLoader }) => {
+const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic, setLoader, placeHolders }) => {
 
     const [suggestion, setSuggestion] = useState('');
 
@@ -152,7 +152,7 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                 </div>
 
-                <textarea className='textarea' value={suggestion} placeholder='Your Message' onChange={(e) => {
+                <textarea className='textarea' value={suggestion} placeholder={placeHolders} onChange={(e) => {
                     setDisabledButton(e.target.value?.trim() !== '' ? false : true);
                     setSuggestion(e.target.value);
                 }}></textarea>

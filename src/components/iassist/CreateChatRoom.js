@@ -79,6 +79,8 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
     const [videoUrl, setVideoUrl] = useState([]);
 
     const [disableCreate, setDisableCreate] = useState(false);
+    
+    const [disableCancel, setDisableCancel] = useState(false);
 
     const controller = new AbortController();
 
@@ -209,7 +211,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
     }
 
     const debouncedChangeHandler = useCallback(
-    debounce(getTagSuggestion, 500)
+    ()=>debounce(getTagSuggestion, 500)
         , []);
 
     const handleInputChange = (e, type) => {
@@ -376,6 +378,8 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (token && validation) {
 
+            setDisableCancel(true);
+
             setShowLoading(true);
 
             let res = await fetch(url, {
@@ -389,6 +393,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
             let result = await res.json();
 
             setDisableCreate(false);
+            setDisableCancel(false);
 
             if (result.message && result.data) {
 
@@ -597,7 +602,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
         <>
 
             {!showVideo && !chatRoom &&
-                <div id='create-chat-room' className='create-chat-room'>
+                <div id='create-chat-room' className='create-chat-room support-wrapper'>
 
                     <div className='header-wrapper'>
 
@@ -755,19 +760,19 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
                         </div>
 
-                        <div className='submit-wrapper'>
-                            {/* topicData.length === 0 && */}
-                            <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
+                    </div>
+                    <div className='submit-wrapper'>
+                        {/* topicData.length === 0 && */}
+                        <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
 
-                            {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
+                        {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
 
-                            <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCreate} onClick={() => setNavigateSupport(true)}><i></i><span>Cancel</span></button>
+                            <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => setNavigateSupport(true)}><i></i><span>Cancel</span></button>
 
                         </div>
 
                     </div>
 
-                </div>
 
             }
             {!showVideo && chatRoom &&
