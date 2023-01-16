@@ -351,7 +351,7 @@ const PanelHeader = ({ panel, month, year, onPrevBtn, onNextBtn, onMonthBtn, onY
             <button tabIndex="-1" className="asc-picker-header-prev-btn" onClick={onPrevBtn}>
                 <span className="asc-picker-header-prev-icon"></span>
             </button>
-            <div className="asc-picker-header-view">
+            <div id="asc-picker-header-view">
                 {panel === 'date' && <button tabIndex="-1" className="asc-picker-header-month-btn" onClick={onMonthBtn}>{MONTHS[month]}</button>}
                 {(panel === 'date' || panel === 'month' || panel === 'quarter') && <button tabIndex="-1" className="asc-picker-header-year-btn" onClick={onYearBtn}>{year}</button>}
                 {(panel === 'year') && <span className="asc-picker-header-decade" >{decade}</span>}
