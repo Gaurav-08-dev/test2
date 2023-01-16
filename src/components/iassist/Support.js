@@ -16,6 +16,8 @@ import Detail from './userlist/Detail';
 import Delete from './DeleteConfirmation/Delete'
 
 
+
+
 // let webSocket;
 let pageNumber = 1;
 const pageSize = 10;
@@ -28,9 +30,6 @@ let defType = { 'name': 'All', 'id': 'All' };
 let defReporter = { 'first_name': 'All', 'id': 'All' };
 let reporter_id = 0;
 let type_id = 0;
-let allTopics = [];
-let activity = [];
-let unReadList = [];
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
 let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
@@ -39,6 +38,10 @@ let btnId = document.getElementById("test-div").getAttribute("data-buttonid") ||
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
 const Support = ({ closePane, topicClick, webSocket }) => {
+
+    const allTopics = useRef([]);
+    const unReadList = useRef([]);
+    const activity = useRef([]);
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -129,6 +132,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     // }
 
     const getTopics = async (isDelete) => {
+        setDisableButton(true)
 
         if (tabData) {
 
@@ -137,11 +141,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         }
 
         if (isDelete === 'delete') {
-            allTopics = [];
-            unReadList = [];
+            allTopics.current = [];
+            unReadList.current = [];
             allUser.current = [];
             allAccount.current = [];
-            activity = [];
+            activity.current = [];
         }
 
 
@@ -167,13 +171,13 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                         if (key === 'topic_data') {
 
                             data?.forEach((topicValue) =>
-                                allTopics.push(topicValue)
+                                allTopics.current.push(topicValue)
                             )
 
                         } else if (key === 'unread_data') {
 
                             data?.forEach((unread) => {
-                                unReadList.push(unread);
+                                unReadList.current.push(unread);
                             })
 
                         } else if (key === 'pagination') {
@@ -197,13 +201,14 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                         } else if (key === 'activity') {
 
                             data?.forEach((act) => {
-                                activity.push(act);
+                                activity.current.push(act);
                             })
 
                         }
 
                     }
 
+                    setDisableButton(false)
                     setFetchButton(!fetchButton);
 
                     setShowLoader(false);
@@ -212,6 +217,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             })
             .catch(err => {
+
+                setDisableButton(false)
 
                 setShowLoader(false);
 
@@ -230,6 +237,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         let searchStringFlag = searchString ? `&topic_search=${searchString}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
         let unReadFlag = unRead ? `&unread=${unRead}` : ''
+        
 
         if (dates === 'Date') {
 
@@ -261,6 +269,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         setShowLoader(true);
 
+        setDisableButton(true)
+        
         let url = getUrl(searchQuery);
 
         const jwt_token = getTokenClient();
@@ -280,11 +290,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         if (key === 'topic_data') {
 
-                            allTopics = data;
+                            allTopics.current = data;
 
                         } else if (key === 'unread_data') {
 
-                            unReadList = data;
+                            unReadList.current = data;
 
                         } else if (key === 'pagination') {
 
@@ -294,7 +304,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'message' && data === 'no tickets found') {
 
-                            allTopics = [];
+                            allTopics.current = [];
 
                         } else if (key === 'user_data') {
 
@@ -306,13 +316,15 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'activity') {
 
-                            activity = data;
+                            activity.current = data;
 
                         }
 
                     }
 
                     disableUnreadButton = false;
+
+                    setDisableButton(false)
 
                     setFetchButton(!fetchButton);
 
@@ -322,6 +334,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             })
             .catch(err => {
+                setDisableButton(false)
+
                 disableUnreadButton = false;
 
                 setShowLoader(false);
@@ -366,26 +380,22 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
             changeValue(isUnread);
         } else if (received_msg.type === 'chat') {
-            let user = getUser();
+            // let user = getUser();
             if (chatId !== received_msg.topic_id) {
                 if (!document.getElementById('iassist-unread')) {
-                    console.log('check');
+                    // console.log('check');
                     changeValue(true);
                 }
 
-                unReadList.filter((topic) => {
+                unReadList.current.forEach((topic) => {
 
-                    if (allTopics.length > 0) {
-
-                        if (topic.topic_id === received_msg.topic_id) {
+                    if (allTopics.current.length > 0 && topic.topic_id === received_msg.topic_id) {
 
                             topic.unread_count += 1;
 
                             setCountChange(!CountChange);
 
-                            return topic;
-
-                        }
+                            return;
 
                     }
 
@@ -507,7 +517,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         }
 
-        // if (allTopics.length === 0) {
+        // if (allTopics.current.length === 0) {
 
         getTopics();
 
@@ -517,7 +527,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
 
-                let checkScroll = allTopics.length === pageNumber * 10;
+                let checkScroll = allTopics.current.length === pageNumber * 10;
 
                 if (checkScroll) {
 
@@ -569,11 +579,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const clearData = () => {
 
-        allTopics = [];
+        allTopics.current = [];
 
-        activity = [];
+        activity.current = [];
 
-        unReadList = [];
+        unReadList.current = [];
 
         pageNumber = 1;
 
@@ -585,7 +595,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         setLastActivity(data);
 
-        let checkIndex = unReadList.find((list) => {
+        let checkIndex = unReadList.current.find((list) => {
             return list.topic_id === topic.id;
         });
 
@@ -638,7 +648,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const showUnreadNotification = (id) => {
 
-        let data = unReadList.filter(read => {
+        let data = unReadList.current.filter(read => {
             return read.topic_id === id
 
         })
@@ -721,14 +731,14 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
     const clearFilter = () => {
 
-        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date') {
+        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date' || unRead ) {
 
             reporter_id = 0;
 
             type_id = 0;
 
             dates = 'Date';
-
+            unRead = false;
             setTypeLabel('All');
 
             setReportersLabel('Select');
@@ -754,13 +764,13 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     let result = response;
 
-                    if (allTopics.length > 10) {
+                    if (allTopics.current.length > 10) {
 
-                        let index = allTopics.findIndex((topic) => {
+                        let index = allTopics.current.findIndex((topic) => {
                             return topic.id === data;
                         })
 
-                        allTopics.splice(index, 1);
+                        allTopics.current.splice(index, 1);
 
                     } else {
 
@@ -786,7 +796,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
     const checkLastActivity = (id) => {
 
-        let data = activity.filter((val) => val.id === id);
+        let data = activity.current.filter((val) => val.id === id);
 
         return data.length > 0 && data[0].activity_status === 0 ? true : false;
 
@@ -803,6 +813,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     return (
 
         <>
+    {/* <Toast/> */}
 
             {!TopicClick && !showChat &&
                 <div id='client-home' className='support-wrapper'>
@@ -813,9 +824,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             {showLoader && <LoadingScreen />}
 
-                            <h4 className='header-inner'>iAssist</h4>
+                            <h4 className='header-title'>iAssist</h4>
 
-                            <div className='header-other-functionality-wrapper'>
+                            <div className='header-right'>
 
                                 <div className='search'>
 
@@ -839,10 +850,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                     <button onClick={() => {
                                         clearData();
                                         setTopicClick(true)
-                                    }} disabled={disableButton}><span className='add-new-ticket'></span>Ticket</button>
+                                    }}><span className='add-new-ticket'></span>Ticket</button>
 
                                 </div>
-                                <button className='header-close' disabled={disableButton} onClick={() => closePanes()}></button>
+                                <button className='header-close' onClick={() => closePanes()}></button>
                             </div>
                         </div>
 
@@ -869,19 +880,24 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                 </div>
 
-                                <div className='type'>
+                                <div className='divider'></div>
+
+                                <div className='type no-bg'>
 
                                     <SpeedSelect options={type} selectLabel={typeLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => ondropDownChange(value, 'type')} />
 
                                 </div>
+                                
+                                <div className='divider'></div>
 
-                                <div className='reporter'>
+                                <div className='reporter no-bg'>
 
                                     <SpeedSelect options={reporters} selectLabel={reporterLabel} prominentLabel='Reporter' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='first_name' onSelect={(value) => ondropDownChange(value, 'reporter')} />
 
                                 </div>
+                                <div className='divider'></div>
                                 <div className={unRead ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton} onClick={() => showUnread()}>Unread</button></div>
-                                <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>clear</button>
+                                <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
 
                             </div>}
 
@@ -895,7 +911,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                             tabData = 'open';
                                             setStatusTab('open');
 
-                                            allTopics = [];
+                                            allTopics.current = [];
                                             clearData();
                                             getTopics();
                                         }
@@ -909,7 +925,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                         if (tabData !== 'resolved') {
                                             tabData = 'resolved';
                                             setStatusTab('resolved');
-                                            allTopics = [];
+                                            allTopics.current = [];
                                             clearData();
                                             getTopics();
                                         }
@@ -925,7 +941,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
 
-                                {!confirmDelete && allTopics.length > 0 && allTopics.map((topic, index) => {
+                                {!confirmDelete && allTopics.current.length > 0 && allTopics.current.map((topic, index) => {
 
                                     return (
                                         <div className='topic' key={topic.id}>
@@ -948,7 +964,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                             {<div className='topic-meta'>
 
-                                                {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
+                                                {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here'/>}
                                                 {feedBackId !== topic.id && (statusTab === 'open') &&
                                                     <div className='topic-buttons'>
 
@@ -966,11 +982,14 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                                             setDisableButton(true);
                                                             setDeleteId(topic.id);
                                                         }
-                                                        }>Delete</button>}
+                                                        }>
+                                                            <i></i>
+                                                            <span>Delete</span>
+                                                        </button>}
 
                                                     </div>}
 
-                                                {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
+                                                {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here'/>}
                                                 {(statusTab === 'resolved') && <div className='topic-buttons'>
 
                                                     {getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
@@ -978,7 +997,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                                         setGetTopicId(topic);
                                                         setshowReopenPanell(true);
 
-                                                    }}>Re-Open</button>}
+                                                    }}>
+                                                        <i></i>
+                                                        <span>Re-Open</span>
+                                                    </button>}
 
                                                 </div>}
 
@@ -990,7 +1012,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 })}
 
                             {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
-                                {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
+                                {allTopics.current.length === 0 && !initalLoad && !showLoader && <div className='no-record'>No Tickets Found </div>
 
                                 }
                             </div>

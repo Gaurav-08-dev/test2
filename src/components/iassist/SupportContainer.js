@@ -5,6 +5,7 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 import '../../style/Global.scss'
 
 
+
 let webSocket;
 let tokenConstant = document.getElementById("test-div").getAttribute("data-token") || 'sight';
 
@@ -12,11 +13,16 @@ let btnId = document.getElementById("test-div").getAttribute("data-buttonid") ||
 
 // let position = document.getElementById("test-div").getAttribute("data-position");
 
-console.log('btn', btnId);
+// console.log('btn', btnId);
 
 const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
+
+    // if (webSocket === undefined) {
+    //     let buttonElement = document.getElementById(btnId);
+    //     if(buttonElement && buttonElement.children.length > 0)buttonElement.children[0].disabled = true;
+    // }
 
     const simplifyToken = async() => {
         let token = localStorage.getItem(tokenConstant + '_token');
@@ -41,14 +47,16 @@ const SupportContainer = () => {
 
     const connectSocket = () => {
         if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
-            if (webSocket=== undefined || (webSocket.readyState !== WebSocket.OPEN && webSocket.readyState !== WebSocket.CONNECTING)) {
-            if (webSocket=== undefined || webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING) {
+            if (webSocket === undefined || (webSocket.readyState !== WebSocket.OPEN && webSocket.readyState !== WebSocket.CONNECTING)) {
+            if (webSocket === undefined || webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING) {
                 const jwt_token = getTokenClient();
                 console.log("here")
                 webSocket= new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token);
             //    setOpenSupport(true) // when we have to open without click
 
             }
+            let buttonElement = document.getElementById(btnId);
+            if(buttonElement && buttonElement.children.length > 0)buttonElement.children[0].disabled = false;
             console.log('listen connection');
             }
             webSocket.onmessage = function (evt) {
@@ -101,6 +109,11 @@ const SupportContainer = () => {
     }
   
     useEffect(() => {
+
+        if (!webSocket) {
+            let buttonElement = document.getElementById(btnId);
+            if(buttonElement && buttonElement.children.length > 0)buttonElement.children[0].disabled = true;
+        }
 
         const bodyElement = document.getElementsByTagName('body')[0];
 
@@ -167,10 +180,11 @@ const SupportContainer = () => {
 
     
     return (
+
         <div id="support-main-conatiner">
        
 
-            { btnId === 'btn' && <button id="btn">one</button>}
+            { btnId === 'btn' && <div id="btn"> <button>one</button></div>}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>

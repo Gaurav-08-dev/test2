@@ -70,7 +70,7 @@ const DatePicker = ({ picker, showInline, placeholder, align, allowClear, date, 
     placeholder = placeholder || 'Select ' + picker[0].toUpperCase() + picker.slice(1);
 
     return (
-        <div className={'asc-date-picker' + (showInline ? ' inline' : '')}>
+        <div className={(showInline ? ' inline' : '')} id='asc-date-picker'>
             {!showInline &&
                 <div className={'asc-picker-input' + (inputFocused ? ' asc-picker-input-focused' : '')} onClick={handlePickerClick}>
                     <div className="asc-picker-input-inner" >

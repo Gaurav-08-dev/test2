@@ -3,6 +3,7 @@
   border-top: 1px solid rgba(255,255,255,0.14);
   margin-top: 15px;
   z-index: 100000;
+  border-radius: 2px;
 
   .content-wrapper {
     padding-bottom: 10px;
@@ -70,6 +71,19 @@
         margin-right: 0;
       }
     }
+  }
+}
+
+.chat-wrapper {
+  background: #000000;
+  border: none !important;
+
+  .content-wrapper {
+
+    textarea {
+      padding: 0 !important;
+    }
+
   }
 }
 

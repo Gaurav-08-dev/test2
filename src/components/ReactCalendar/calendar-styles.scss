@@ -133,7 +133,7 @@
     column-gap: 3px;
     margin: 0;
     border: none;
-    padding: 0 3px;
+    padding-left: calc(100% / 7);
     color: var(--font-color);
     position: relative;
 
@@ -148,16 +148,23 @@
         background: 0 0;
         cursor: pointer;
         color: var(--font-color);
+        padding: 0;
+        &:hover{
+            background-color: transparent;
+        }
     }
 
     .asc-picker-header-prev-btn,
     .asc-picker-header-next-btn {
+        position: absolute;
+        top: 3px;
+        left: 5px;
         min-width: 16px;
         margin: 0;
     }
     .asc-picker-header-next-btn{
         left:auto;
-        right: 3px;
+        right: 5px;
     }
 
     .asc-picker-header-prev-icon,
@@ -192,10 +199,12 @@
     }
 
     .asc-picker-header-view {
-        flex: auto;
         line-height: 21px;
         font-weight: 500;
+        border: 1px solid #444;
         border-bottom: none;
+        text-align: center;
+        width: 129px;
 
         button {
             background: 0 0;
@@ -218,6 +227,7 @@
         width: 100%;
         border-collapse: collapse;
         border: 1px solid #333;
+        text-align: center;
 
         th,
         td {
@@ -225,7 +235,7 @@
             // min-width: 19px;
             font-weight: 400;
             user-select: none;
-            border: 1px solid #333;
+            border: 1px solid #444;
             width: calc(100%/7);
         }
 

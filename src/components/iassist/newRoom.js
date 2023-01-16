@@ -83,7 +83,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [navigateHome, setNavigateHome] = useState(false);
 
-    const [users, setUser] = useState([]);
 
     const [searchString, setSearchString] = useState('');
 
@@ -165,7 +164,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const getMessageHeight = useRef();
 
-    const [editedMessage, setEditedMessage] = useState('')
+    const [editedMessage, setEditedMessage] = useState('');
 
     const Size = useRef(pageSize);
 
@@ -428,7 +427,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         return isData;
 
     }
-    const chatmenu = (e, key, type, msg) => {
+    const chatmenu = (e, key, msg) => {
 
         Ids = key;
 
@@ -638,14 +637,19 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         } else if (received_msg.parent_note_id !== 0) {
 
-            messageList.filter((ms) => {
+            
+
+            // const currentParentChatIndex=messageList.findIndex(item=> item.id === received_msg.parent_note_id);
+
+            // if(currentParentChatIndex > -1){
+            //     const currentReplies=messageList[currentParentChatIndex].replies;
+            //     messageList[currentParentChatIndex].replies=[...currentReplies,received_msg]
+            // }
+            messageList.forEach((ms) => {
 
                 if (ms.id === received_msg.parent_note_id) {
-
                     ms.replies = [...ms.replies, received_msg];
-
-                    return ms;
-
+                    return ;
                 }
             })
 
@@ -713,7 +717,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         setShowMainMenu(false);
 
-        getReply(e, message.id, false, hideReply)
+        getReply(e, message.id, hideReply)
 
     }
 
@@ -736,7 +740,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }, [topic.activity_collaborate, topic.activity_chat])
 
-    const getReply = (e, id, isNonZero, hideReply) => {
+    const getReply = (e, id, hideReply) => {
 
 
         if (hideReply && chatId === id) {
@@ -1327,33 +1331,33 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const fetchIndivTopic = async () => {
+    // const fetchIndivTopic = async () => {
 
-        const status_flag = topic?.status_id === 3 ? true: false;
+    //     const status_flag = topic?.status_id === 3 ? true: false;
 
-        const jwt_token = getTokenClient();
+    //     const jwt_token = getTokenClient();
 
-        const token = `Bearer ${jwt_token}`;
+    //     const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/?page_size=10&page_number=1&status_flag=${status_flag}&ticket_id=${topic.id}&sort_order=descending`, null, false, 'GET', controller, token)
-            .then(response => {
+    //     APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/?page_size=10&page_number=1&status_flag=${status_flag}&ticket_id=${topic.id}&sort_order=descending`, null, false, 'GET', controller, token)
+    //         .then(response => {
 
-                if (response) {
+    //             if (response) {
 
-                    let result = response;
+    //                 let result = response;
 
-                    setTopic(result.topic_data[0]);
+    //                 setTopic(result.topic_data[0]);
 
-                }
+    //             }
 
-            })
-            .catch(err => {
+    //         })
+    //         .catch(err => {
 
-                setShowLoader(false);
+    //             setShowLoader(false);
 
-            });
+    //         });
 
-    }
+    // }
 
     const checkVideo = (file) => {
 
@@ -1597,6 +1601,21 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         }
     }
 
+    const getTextWidth = (text) => {
+        if (showExpand) {
+            const descriptionElement = document.getElementById('topic-description-chat');
+            let ctx = document.createElement('canvas').getContext('2d');
+            ctx.font = '11px "Poppins", sans-serif';
+            let width = ctx.measureText(text).width;
+            console.log(width);
+            console.log(descriptionElement.clientWidth);
+            if (width >= descriptionElement?.clientWidth) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return !navigateHome ? (
 
         <>
@@ -1689,24 +1708,24 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic && topic.name}
 
-                        <button className={'button' + (showExpand ? ' full-button' : '')} title='expand'></button>
+                        <button className={'button' + (showExpand && getTextWidth(topic?.description) ? ' full-button' : '')} title='expand'></button>
 
                     </div>
 
-                    <div className={'description' + (showExpand ? ' full-description' : '')}>{topic && topic.description}</div>
+                    <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')}>{topic && topic.description}</div>
 
                     <Detail topic={topic} type={type} allAccount={allAccount} allUser={allUser} />
 
                 </div>
 
-                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader}/>}
+                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message'/>}
 
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} setLoader={setShowLoader} />}
+                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message'/>}
 
                 <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
                     {showUserPane && <UserList
-                        user={users}
+                        // user={users}
                         clientUser={userData.client_participants}
                         position={'absolute'}
                         height={150}
@@ -1794,9 +1813,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                 <div className='change-status'>Changed status of this ticket to  <span>Resolved</span></div>
 
-                                                <div className='feedback'> Feedback Given <li onClick={() => openFeedbackMessage(messages.id)}>{messages.note.feedback}</li> <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage ? ' rotate' : '')} title='arrowdown'></button></div>
+                                                <div className='feedback'> Feedback Given <li onClick={() => openFeedbackMessage(messages.id)}>{messages.note.feedback}</li>
+                                                 {messages.note.text !== '' && <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></button>}
+                                                </div>
 
-                                                {feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
+                                                {messages.note.text !== '' && feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
 
                                             </div>}
 
@@ -1848,7 +1869,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                             </div>}
 
 
-                                            {!showSearch && messages.replies && messages.replies.length > 0 && <span className='replied' onClick={(e) => getReply(e, messages.id, messages.replies.length > 0, hideReply)}>
+                                            {!showSearch && messages.replies && messages.replies.length > 0 && <span className='replied' onClick={(e) => getReply(e, messages.id, hideReply)}>
 
                                                 <button className={'reply-arrow' + (hideReply && chatId === messages.id ? ' reply-rotate' : '')}>Reply</button>
 
@@ -1879,11 +1900,48 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                                     <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
 
-                                                                    {!msg.is_file && <div className='content-reply'>
+                                                                    {editId !== msg.id && !msg.is_file && <div className='content-reply'>
 
                                                                         {parse(msg.note, options)}
 
                                                                     </div>}
+
+                                                                    {editId === msg.id && !msg.is_file && !msg.is_feedback && !msg.is_reopen && <div className='content'>
+
+                                                                        <Steno
+                                                                            html={editedMessage}
+                                                                            disable={false} //indicate that the editor has to be in edit mode
+                                                                            onChange={(val) => {
+                                                                                // console.log(val);
+                                                                                setEditedMessage(val)
+                                                                            }}
+                                                                            innerRef={editEditorRef} //ref attached to the editor
+                                                                            backgroundColor={'#000'}
+                                                                            onChangeBackgroundColor={() => { }}
+                                                                            fontColor={'#fff'}
+                                                                            onChangeFontColor={() => { }}
+                                                                            functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                                            isToolBarVisible={false} //to show/hide the toolbar options
+                                                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                                            fileList={[]} //List of file object to track the files selected by user
+                                                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                                            sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                                            onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                                            minEditorHeight='20px' // Default will be 100px
+                                                                            maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                                            placeHolder="Message"
+                                                                        />
+                                                                        <div className='edit-btn'>
+                                                                            <button type='button' className='save' onClick={(e) => editMessage(e)}>save</button>
+                                                                            <button type='button' className='cancel' onClick={editCancel}>cancel</button>
+
+                                                                        </div>
+                                                                        </div>}
 
                                                                     {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
 
@@ -1931,7 +1989,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                                 {validateEditChat(msg, false) && <div className='dot'>
 
-                                                                    <button onClick={(e) => chatmenu(e, msg.id, 'main', msg)} title="option"></button>
+                                                                    <button onClick={(e) => chatmenu(e, msg.id, msg)} title="option"></button>
 
                                                                 </div>}
 
@@ -1995,7 +2053,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                     </div>
 
-                                    {!showSearch && editId!==messages.id && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, 'main', messages)} title="option"></button>}
+                                    {!showSearch && editId!==messages.id && !messages.is_feedback && !messages.is_reopen && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>}
                                 </div>
 
                             </div>

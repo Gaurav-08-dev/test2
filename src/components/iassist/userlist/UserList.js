@@ -1,7 +1,7 @@
-import React,{ useEffect, useState } from 'react';
+import React,{ useEffect, useState, useRef } from 'react';
 import alertService from '../../../services/alertService';
 import APIService from '../../../services/apiService';
-import { getToken, getUser } from '../../../utils/Common';
+import { getToken } from '../../../utils/Common';
 import * as Constants from '../../Constants';
 import Avatar from '../../Avatar/Avatar';
 import './UserList.scss'
@@ -13,26 +13,25 @@ import './UserList.scss'
 // userSelect => method to call when user got select
 // collaborator => selected userList
 // close =>  close the pane
-const UserList = ({ user, clientUser, supportUser, position, height, header, userSelect, collaborator, close, author, id, topic }) => {
+const UserList = ({ clientUser, supportUser, position, header, userSelect, collaborator, close, author, id, topic }) => {
 
     const [userDetail, setUserDetails] = useState(clientUser ? clientUser : []);
 
     const [UserData, setUserData] = useState([]);
 
-    const [supportUsers, setSupportUsers] = useState(supportUser ? supportUser : []);
+    const supportUsers = useRef(supportUser ? supportUser : []);
 
     const [selectedUser, setSelectedUser] = useState(clientUser ? clientUser : []);
 
-    const [showSupport, setShowSupport] = useState(false);
+    const showSupport = useRef(false);
 
-    const [collabs, setCollabs] = useState(collaborator ? collaborator : []);
+    const collabs = useRef(collaborator ? collaborator : []);
 
     const [disable, setDisable] = useState(false);
 
 
     const getUsers = async () => {
 
-        // let user = getUser();
 
         let Id = topic.account_id;
 
@@ -102,7 +101,7 @@ const UserList = ({ user, clientUser, supportUser, position, height, header, use
 
         setSelectedUser([...selectedUser, user]);
 
-        collabs.push(user.id);
+        collabs.current.push(user.id);
 
         setDisable(false)
 
@@ -114,11 +113,11 @@ const UserList = ({ user, clientUser, supportUser, position, height, header, use
 
         let index = selectedUser.findIndex((usr) => usr.id === user.id);
 
-        let collabIndex = collabs.findIndex((collab) => collab === user.id)
+        let collabIndex = collabs.current.findIndex((collab) => collab === user.id)
 
         if (collabIndex !== -1) {
 
-            collabs.splice(collabIndex, 1);
+            collabs.current.splice(collabIndex, 1);
 
         }
 
@@ -193,9 +192,9 @@ const UserList = ({ user, clientUser, supportUser, position, height, header, use
 
                                     <div className='user-button'>
 
-                                        {!collabs.includes(users.id) && users.id !== author && <button className='add' disabled={disable} onClick={(e) => selectusers(e, users)}>Add</button>}
+                                        {!collabs.current.includes(users.id) && users.id !== author && <button className='add' disabled={disable} onClick={(e) => selectusers(e, users)}>Add</button>}
 
-                                        {collabs.includes(users.id) && users.id !== author && <button className='remove' disabled={disable} onClick={(e) => removeUser(e, users)}>Remove</button>}
+                                        {collabs.current.includes(users.id) && users.id !== author && <button className='remove' disabled={disable} onClick={(e) => removeUser(e, users)}>Remove</button>}
 
                                     </div>
 
@@ -207,11 +206,11 @@ const UserList = ({ user, clientUser, supportUser, position, height, header, use
 
                     </div>
 
-                    {showSupport && <div className='support-user-list-widget'>
+                    {showSupport.current && <div className='support-user-list-widget'>
 
                         {header && <div className='user-heading'>Support Agents</div>}
 
-                        {supportUsers.length > 0 && supportUsers.map((users) => {
+                        {supportUsers.current.length > 0 && supportUsers.current.map((users) => {
                             return (
                                 <div className='field-wrapper' key={users.id}>
                                     <Avatar imgSrc={users.cover_img_url}
@@ -229,7 +228,7 @@ const UserList = ({ user, clientUser, supportUser, position, height, header, use
                             )
                         })}
 
-                        {supportUsers.length === 0 && <div className='alert'>No support Agents Assigned</div>}
+                        {supportUsers.current.length === 0 && <div className='alert'>No support Agents Assigned</div>}
 
                     </div>}
 
