@@ -221,7 +221,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
     width: 100%;
     // max-height: calc(100% - 140px);
     max-height: calc(100% - 190px);
-    padding: 0 10px;
+    padding: 0 15px;
     // padding-top: 40px;
     position: absolute;
     //top: 21%;
@@ -292,46 +292,79 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
               justify-content: end;
               gap: 10px;
               margin-left: -10px;
-
-              .cancel {
-                display: flex;
-
-                &::before {
-                  content: "";
-                  mask: url($image-prefix + "icon-close-lite.svg") no-repeat center center;
-                  -webkit-mask: url($image-prefix + "icon-close-lite.svg") no-repeat center
-                    center;
-                  mask-size: 9px;
-                  -webkit-mask-size: 9px;
-    
-                  width: 9px;
-                  height: 9px;
-                  background-color: #000;
-                  margin: 4px 0;
-                  margin-right: 3px;
-                }
+              .save-btn {
+                background-color: #02bb5b !important;
               }
 
-              .save {
-                background-color: #02BB5B;
-                display: flex;
+              .cancel-btn {
+                background-color: #fff !important;
+              }
 
-                &::before {
-                  content: "";
-                  mask: url($image-prefix + "icon-save.svg") no-repeat center center;
-                  -webkit-mask: url($image-prefix + "icon-save.svg") no-repeat center
-                    center;
-                  mask-size: 10px;
-                  -webkit-mask-size: 10px;
-    
-                  width: 10px;
-                  height: 10px;
-                  background-color: #000;
-                  margin: 3px 0;
-                  margin-right: 3px;
+              button {
+                display: flex;
+                align-items: center;
+                width: fit-content;
+                height: 16px;
+                position: relative;
+                cursor: pointer;
+                border: none;
+                // background: #ffffff 0% 0% no-repeat padding-box;
+                border-radius: 2px;
+                padding: 0 5px 0 0;
+
+                span{
+
+                  display: flex;
+                  margin-right: 4px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 16px;
+                  height: 16px;
+                  background: #00000033;
+                }
+                .save {
+
+                  &::before {
+                    content: "";
+                    mask: url($image-prefix + "icon-save.svg") no-repeat center
+                      center;
+                    -webkit-mask: url($image-prefix + "icon-save.svg") no-repeat
+                      center center;
+                    mask-size: 10px;
+                    -webkit-mask-size: 10px;
+
+                    width: 10px;
+                    height: 10px;
+                    background-color: #000;
+                    // margin: 3px 0;
+                    // margin-right: 3px;
+                  }
+                }
+
+                .cancel {
+                  // display: flex;
+
+                  &::before {
+                    content: "";
+                    mask: url($image-prefix + "icon-close-lite.svg") no-repeat
+                      center center;
+                    -webkit-mask: url($image-prefix + "icon-close-lite.svg")
+                      no-repeat center center;
+                    mask-size: 9px;
+                    -webkit-mask-size: 9px;
+
+                    width: 9px;
+                    height: 9px;
+                    background-color: #000;
+                    // margin: 4px 0;
+                    // margin-right: 3px;
+                  }
                 }
               }
             }
+
+
             .card-label {
               color: #b1b2b3;
               border: 1px solid #b1b2b3;
@@ -452,25 +485,38 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
 
         .pane {
           position: absolute;
-          padding: 5px 10px;
-          right: 10px;
-          background: #284469 0% 0% no-repeat padding-box;
+          // padding: 3px 5px;
+          padding: 3px;
+          right: -9px;
+          top: 3px;
+          background: #fff 0% 0% no-repeat padding-box;
           font-size: 10px;
           border-radius: 3px;
           z-index: 1;
+          height: fit-content;
 
           &:hover {
             cursor: pointer;
           }
 
           li {
+            border-radius: 2px;
             list-style: none;
-            color: #fff;
+            color: #000;
             right: 10px;
-            // padding: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            height: 21.5px;
+            // border: 1px solid red;
+            padding: 4px 4px;
+
+            &:hover {
+              background-color: #eeeeee;
+            }
           }
           > li:first-child {
-            padding-top: 0;
+            // padding-top: 0;
+            padding-bottom: 2px;
           }
         }
       }
@@ -565,14 +611,18 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             padding: 5px 10px;
             right: 10px;
             z-index: 1;
-            background: #344a58;
+            background: #FFFFFF;
             font-size: 11px;
             border-radius: 3px;
             li {
               list-style: none;
-              color: #fff;
+              color: #000;
               right: 10px;
               //padding: 5px;
+
+              &:hover{
+                background-color: #eeeeee;
+              }
             }
             > li:first-child {
               padding-top: 0;

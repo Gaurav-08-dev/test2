@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 
 
-const root = ReactDOM.createRoot(document.getElementById('test-div'));
+const root = ReactDOM.createRoot(document.getElementById('iassist-panel-wrapper'));
 root.render(
     // <React.StrictMode>
         <App />
