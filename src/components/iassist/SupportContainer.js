@@ -7,13 +7,10 @@ import '../../style/Global.scss'
 
 
 let webSocket;
-let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight';
+let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
 let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
-// let position = document.getElementById("test-div").getAttribute("data-position");
-
-// console.log('btn', btnId);
 
 const SupportContainer = () => {
 
@@ -25,7 +22,7 @@ const SupportContainer = () => {
     // }
 
     const simplifyToken = async() => {
-        let token = localStorage.getItem(tokenConstant + '_token');
+        let token = localStorage.getItem(tokenConstant + 'token');
         const user = getUserDetailsFromToken(token);
         let userData = user?.identity || user;
         setUserData(userData);
