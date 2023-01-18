@@ -7,9 +7,9 @@ import '../../style/Global.scss'
 
 
 let webSocket;
-let tokenConstant = document.getElementById("test-div").getAttribute("data-token") || 'sight';
+let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight';
 
-let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
+let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
 // let position = document.getElementById("test-div").getAttribute("data-position");
 
@@ -136,7 +136,7 @@ const SupportContainer = () => {
        }
 
 
-       console.log(document.getElementById(btnId))
+    //    console.log(document.getElementById(btnId))
        document.getElementById(btnId)?.addEventListener('click', supportButtonClick)
 
     },[])

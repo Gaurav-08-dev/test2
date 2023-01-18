@@ -1,4 +1,4 @@
-$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+$image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 #create-chat-room {
   width: 450px;
   position: fixed;
@@ -78,7 +78,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       color: #fff;
       i {
         &:before {
-          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center
+            center;
 
           mask: url($image-prefix + "icon-run.svg") no-repeat center center;
           mask-size: 10px;
@@ -213,7 +214,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         width: 11px;
         height: 11px;
         mask: url($image-prefix + "icon-close.svg") no-repeat center center;
-        -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center
+          center;
 
         background: #b1b2b3;
       }
@@ -449,8 +451,14 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                 box-shadow: 3px 3px 5px 0px rgb(0 0 0 / 45%);
                 -webkit-box-shadow: 3px 3px 5px 0px rgb(0 0 0 / 45%);
                 -moz-box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.45);
+                .search-wrapper {
+                  .search {
+                    width: 100%; //! temporary fix - discus with devang
+                  }
+                }
                 .options-wrapper {
                   background: #fff;
+                  overflow: scroll; //! temporary fix - discus with devang
                   .options {
                     list-style-type: none;
                     padding-inline-start: 10px;
@@ -506,7 +514,6 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
     }
 
     .record-wrapper {
-     
       height: 314px;
       max-height: 314px;
       width: 421px;
@@ -530,9 +537,10 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
 
             &::before {
               content: "";
-              mask: url($image-prefix + "icon-record.svg") no-repeat center center;
-              -webkit-mask: url($image-prefix + "icon-record.svg") no-repeat center
+              mask: url($image-prefix + "icon-record.svg") no-repeat center
                 center;
+              -webkit-mask: url($image-prefix + "icon-record.svg") no-repeat
+                center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 
@@ -594,8 +602,10 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             }
             button {
               content: "Delete";
-              mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
-              -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+              mask: url($image-prefix + "icon-delete.svg") no-repeat center
+                center;
+              -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat
+                center center;
               mask-size: 10px;
               -webkit-mask-size: 10px;
 

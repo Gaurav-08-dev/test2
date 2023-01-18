@@ -1,5 +1,5 @@
 $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
-#test-div{#support-main-conatiner{
+#iassist-panel-wrapper{#support-main-conatiner{
 
 .support-wrapper{
   .header-wrapper {
@@ -23,64 +23,64 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         }
       }
 
-      .btn-new-topic-wrapper {
-        margin-right: 10px;
-        &:before {
-          display: none;
-        }
+      // .btn-new-topic-wrapper {
+      //   margin-right: 10px;
+      //   &:before {
+      //     display: none;
+      //   }
 
-        button {
-          display: flex;
-          align-items: center;
-          width: 55px;
-          height: 16px;
-          position: relative;
-          cursor: pointer;
-          border: none;
-          background: #ffffff 0% 0% no-repeat padding-box;
-          border-radius: 2px;
-          padding: 0 5px 0 0;
+      //   button {
+      //     display: flex;
+      //     align-items: center;
+      //     width: 55px;
+      //     height: 16px;
+      //     position: relative;
+      //     cursor: pointer;
+      //     border: none;
+      //     background: #ffffff 0% 0% no-repeat padding-box;
+      //     border-radius: 2px;
+      //     padding: 0 5px 0 0;
 
-          .add-new-ticket {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            background: #00000033;
-            margin-right: 4px;
+      //     .add-new-ticket {
+      //       display: flex;
+      //       align-items: center;
+      //       justify-content: center;
+      //       width: 16px;
+      //       height: 16px;
+      //       background: #00000033;
+      //       margin-right: 4px;
 
-            &::before {
-              content: "";
-              mask: url($image-prefix + "icon-plus-lite.svg") no-repeat center
-                center;
-              -webkit-mask: url($image-prefix + "icon-plus-lite.svg") no-repeat
-                center center;
-              width: 8px;
-              height: 8px;
-              background-color: #000000;
-              margin: 0;
-            }
-          }
-        }
+      //       &::before {
+      //         content: "";
+      //         mask: url($image-prefix + "icon-plus-lite.svg") no-repeat center
+      //           center;
+      //         -webkit-mask: url($image-prefix + "icon-plus-lite.svg") no-repeat
+      //           center center;
+      //         width: 8px;
+      //         height: 8px;
+      //         background-color: #000000;
+      //         margin: 0;
+      //       }
+      //     }
+      //   }
 
-        .list {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          width: 50px;
-          background: #efefef 0% 0% no-repeat padding-box;
-          border-radius: 2px;
+      //   .list {
+      //     width: 100%;
+      //     display: flex;
+      //     align-items: center;
+      //     width: 50px;
+      //     background: #efefef 0% 0% no-repeat padding-box;
+      //     border-radius: 2px;
 
-          input {
-            background: transparent;
-            border: none;
-            padding: 0;
-            line-height: 20px;
-            width: 100%;
-          }
-        }
-      }
+      //     input {
+      //       background: transparent;
+      //       border: none;
+      //       padding: 0;
+      //       line-height: 20px;
+      //       width: 100%;
+      //     }
+      //   }
+      // }
       .btn-new-topic-wrapper {
         margin-right: 10px;
         &:before {
@@ -263,6 +263,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
           background-color: transparent !important;
           .select-box{
             padding: 0 12px 0 6px !important;
+            cursor: pointer;
             .label-wrapper .label{
               color: #fff !important;
               padding: 0 !important;
@@ -270,7 +271,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
           } 
           .dropdown-icon-wrapper{
             border-top-color: #fff !important;
-            top: 5px !important;
+            top: 3px !important;
             right: 0 !important;
           }
         }
@@ -660,8 +661,15 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         box-shadow: 3px 3px 5px 0px rgb(0 0 0 / 45%);
         -webkit-box-shadow: 3px 3px 5px 0px rgb(0 0 0 / 45%);
         -moz-box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.45);
+
+        .search-wrapper{
+          .search{
+            width: 100%; //! temporary fix - discus with devang
+          }
+        }
         .options-wrapper {
           background: #fff;
+          overflow: scroll; //! temporary fix - discus with devang
           .options {
             list-style-type: none;
             padding-inline-start: 10px;

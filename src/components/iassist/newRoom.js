@@ -49,6 +49,8 @@ let playerType = '';
 
 let clickBackButton = false;
 
+let singleScroll = false;
+
 // let height = document.getElementById("test-div").getAttribute("data-height");
 
 const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail }) => {
@@ -56,7 +58,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     const bodyRef = useRef();
 
     const topScroll = useRef();
-
+    const prevSearchValue = useRef();
 
     const [messageList, setMessageList] = useState([]);
 
@@ -148,6 +150,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [showVideoLoader, setShowVideoLoader] = useState(false);
 
+    const [showUserDataFetching, setShowUserDataFetching] = useState(true);
+
     const chatActivity = useRef((topic.activity_collaborate || topic.activity_chat) ? true : false);
 
     const editorRef = useRef();
@@ -216,11 +220,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     setTimeout(() => {
 
                         if (noneRead) {
-            
+
                             setNoneRead(undefined);
-            
+
                         }
-            
+
                     }, 2000);
 
                 }
@@ -239,6 +243,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     async function fetchCollabUsers() {
 
         setShowLoader(true);
+
+        setShowUserDataFetching(true);
 
         const jwt_token = getTokenClient();
 
@@ -271,13 +277,15 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     setShowLoader(false);
 
+                    setShowUserDataFetching(false);
+
                 }
 
             })
             .catch(err => {
 
                 setShowLoader(false);
-
+                setShowUserDataFetching(false);
                 alertService.showToast('error', err.msg);
 
             });
@@ -299,12 +307,28 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             setReplyMessage(event.target.value);
 
-        } else if (type === 'search') {
+        } 
+        
+        // else if (type === 'search') {
 
-            setSearchString(event.target.value);
+        //     // setSearchString(event.target.value);
 
-            if (event.target.value !== '') {
-                getChatSearch(event, event.target.value)
+        //     if (event !== '') {
+        //         getChatSearch(event, event.target.value)
+        //     } else {
+        //         setShowSearch(false);
+        //         fetchData();
+        //     }
+
+        // }
+    }
+
+    const handleKeyDown = (e) => {
+        if ((e.keyCode === 13 || e==='click') && (searchString !== '' || prevSearchValue.current)) {
+            prevSearchValue.current = searchString;
+
+            if (searchString !== '') {
+                getChatSearch(e, searchString)
             } else {
                 setShowSearch(false);
                 fetchData();
@@ -312,6 +336,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         }
     }
+
+
+
+
 
     const sendMessage = (e, type, messageId) => {
 
@@ -412,9 +440,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         let subHr = Math.abs(msg_send_date.getHours() - current_date.getHours());
 
+        let dateDiff = Math.abs(msg_send_date.getDate() - current_date.getDate());
+
         let isData = false;
 
-        isData = subMin <= 3 && subHr === 0 ? true : false
+        isData = subMin <= 3 && subHr === 0 && dateDiff === 0 ? true : false
 
         if (setAccessValue) {
 
@@ -449,7 +479,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     useEffect(() => {
 
-       
+
 
         if (messageList.length === 0) {
 
@@ -463,6 +493,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
 
     useEffect(() => {
+
+        singleScroll = false;
 
         let unreadDataList = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread'));
 
@@ -500,11 +532,13 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         const onScroll = async (event) => {
 
-            if (bodyRef.current.scrollTop < 10 && (totalCount > Size.current)) {
+            if (bodyRef.current.scrollTop < 10 && (totalCount > Size.current) && !singleScroll) {
 
                 scrollHeight = bodyRef.current.scrollHeight;
 
                 setScrolls(true);
+                
+                singleScroll = true;
 
                 Size.current += pageSize;
 
@@ -528,7 +562,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             let reply = document.getElementById('rply-menu');
 
-            if ((head && !(head.contains(event.target))) || (reply && !(reply.contains(event.target)))) {
+            if ((head && !(head.contains(event.target)))) {
 
                 setShowMainMenu(false);
 
@@ -565,7 +599,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             // if (chatContainer && height) {
 
             //     chatContainer.style.height = height;
-                
+
             // }
 
             if (chatContainer && !(chatContainer.contains(event.target))) {
@@ -637,7 +671,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         } else if (received_msg.parent_note_id !== 0) {
 
-            
+
 
             // const currentParentChatIndex=messageList.findIndex(item=> item.id === received_msg.parent_note_id);
 
@@ -649,7 +683,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 if (ms.id === received_msg.parent_note_id) {
                     ms.replies = [...ms.replies, received_msg];
-                    return ;
+                    return;
                 }
             })
 
@@ -794,14 +828,19 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 }
 
             } else {
+                if (!scrolls) {
 
-                borderChatId = ''
+                    borderChatId = ''
 
-                scrollIntoLastMessage();
+                    scrollIntoLastMessage();
+
+                }
 
             }
 
         }
+
+        singleScroll = false;
 
     }, [messageList, showScreenButton])
 
@@ -1120,6 +1159,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             parent_note_id: parent_note_id,
             message: editedMessage
         }
+        setShowLoader(true);
 
         const token = `Bearer ${jwt_token}`;
 
@@ -1148,6 +1188,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     setEditId('');
 
                     setMessage('');
+
+                    setShowLoader(false);
 
                 }
 
@@ -1206,7 +1248,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     }
 
                     // if (add)
-                        // collabId = [...collabId, json.data[0].user_id]
+                    // collabId = [...collabId, json.data[0].user_id]
 
                 }
 
@@ -1505,9 +1547,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     }
 
     useEffect(() => {
-        if(document.getElementById(`content${editId}`)) {
-                document.getElementById(`content${editId}`).scrollIntoView({behavior:'smooth',
-            block:'nearest'})}
+        if (document.getElementById(`content${editId}`)) {
+            document.getElementById(`content${editId}`).scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            })
+        }
     }, [editId])
 
     useEffect(() => {
@@ -1528,7 +1573,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         let message = document.getElementById('message');
 
-        chatBody.style.bottom = message.clientHeight + 6 + 'px';
+        chatBody.style.bottom = message.clientHeight + 12 + 'px';
 
         chatBody.style.setProperty('maxHeight', `calc(100% - ${message.clientHeight + 'px'})`)
 
@@ -1587,7 +1632,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         let getLastId = messageList[messageList.length - 1]?.id;
 
-        if (getLastId && !hideReply) {
+        if (getLastId && !hideReply && !scrolls) {
 
             scrollIntoLastMessage();
 
@@ -1643,7 +1688,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                 <button onClick={getChatSearch} className='btn' title='search'></button>
 
-                                <input type={'text'} title='Search' placeholder='Search' onChange={(e) => { e.persist(); debouncedResults(e, 'search') }} />
+            
+                                <input type={'text'} title='Search' 
+                                placeholder='Search' 
+                                onChange={(e) => setSearchString(e.target.value)} 
+                                    onKeyDown={handleKeyDown}
+                                />
 
                             </div>
 
@@ -1718,9 +1768,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 </div>
 
-                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message'/>}
+                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
 
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message'/>}
+                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
 
                 <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
@@ -1738,7 +1788,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                         id='user-list' topic={topic}
                     />}
 
-                    {!confirmDelete && messageList.length > 0 && messageList.map((messages, index) => {
+                    {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages, index) => {
                         return (
                             <div className='chat-wrapper' key={messages.id} style={{ border: borderChatId === messages.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
 
@@ -1748,8 +1798,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                         <ul id='menu' className='pane'>
 
                                             <li onClick={(e) => reply(e, messages)}>Reply</li>
-
-                                            {editAccess && <li onClick={(e) => editMessageClick(e, messages)}>Edit</li>}
+                                            {
+                                                editAccess && <li onClick={(e) => editMessageClick(e, messages)}>Edit</li>}
 
                                         </ul>
 
@@ -1773,14 +1823,15 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                             </div>}
 
-                                            {editId === messages.id &&!messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"container" + messages.id}>
+                                            {editId === messages.id && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"container" + messages.id}>
 
                                                 <Steno
                                                     html={editedMessage}
                                                     disable={false} //indicate that the editor has to be in edit mode
-                                                    onChange={(val) => { 
+                                                    onChange={(val) => {
                                                         console.log(val);
-                                                        setEditedMessage(val) }}
+                                                        setEditedMessage(val)
+                                                    }}
                                                     innerRef={editEditorRef} //ref attached to the editor
                                                     backgroundColor={'#000'}
                                                     onChangeBackgroundColor={() => { }}
@@ -1803,8 +1854,13 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                     placeHolder="Message"
                                                 />
                                                 <div className='edit-btn'>
-                                                    <button type='button' className='save' onClick={(e) => editMessage(e)}>save</button>
-                                                    <button type='button' className='cancel' onClick={editCancel}>cancel</button>
+                                                    <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
+                                                        <span className='save'></span>
+                                                        save
+                                                    </button>
+                                                    <button type='button' className='cancel-btn' onClick={editCancel}>
+                                                        <span className='cancel'></span>
+                                                        cancel</button>
 
                                                 </div>
                                             </div>}
@@ -1814,7 +1870,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                 <div className='change-status'>Changed status of this ticket to  <span>Resolved</span></div>
 
                                                 <div className='feedback'> Feedback Given <li onClick={() => openFeedbackMessage(messages.id)}>{messages.note.feedback}</li>
-                                                 {messages.note.text !== '' && <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></button>}
+                                                    {messages.note.text !== '' && <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></button>}
                                                 </div>
 
                                                 {messages.note.text !== '' && feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
@@ -1831,7 +1887,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                             {messages.is_file && !messages.is_feedback && <div className='content'>
 
-                                                {parse(messages.note.message, options)}
+                                                {editId !== messages.id && parse(messages.note.message, options)}
 
                                                 <div className='content-video'>
 
@@ -1906,7 +1962,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                                     </div>}
 
-                                                                    {editId === msg.id && !msg.is_file && !msg.is_feedback && !msg.is_reopen && <div className='content'>
+                                                                    {editId === msg.id && !msg.is_feedback && !msg.is_reopen && <div className='content'>
 
                                                                         <Steno
                                                                             html={editedMessage}
@@ -1937,15 +1993,19 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                             placeHolder="Message"
                                                                         />
                                                                         <div className='edit-btn'>
-                                                                            <button type='button' className='save' onClick={(e) => editMessage(e)}>save</button>
-                                                                            <button type='button' className='cancel' onClick={editCancel}>cancel</button>
+                                                                            <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
+                                                                                <span className='save'></span>
+                                                                                save</button>
+                                                                            <button type='button' className='cancel-btn' onClick={editCancel}>
+                                                                            <span className='cancel'></span>
+                                                                            cancel</button>
 
                                                                         </div>
-                                                                        </div>}
+                                                                    </div>}
 
                                                                     {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
 
-                                                                        {parse(msg?.note?.message, options)}
+                                                                        {editId !== msg.id && parse(msg?.note?.message, options)}
 
                                                                         <div className='content-video'>
 
@@ -2053,7 +2113,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                     </div>
 
-                                    {!showSearch && editId!==messages.id && !messages.is_feedback && !messages.is_reopen && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>}
+                                    {!showSearch && editId !== messages.id && !messages.is_feedback && !messages.is_reopen && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>}
                                 </div>
 
                             </div>
@@ -2097,7 +2157,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 onClick={() => onClickSteno()}
                             />
 
-                            <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader}></button>
+                            <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader || !message}></button>
 
                         </div>}
 

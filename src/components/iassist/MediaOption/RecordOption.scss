@@ -16,6 +16,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       background: transparent;
       //color: #fff;
       display: flex;
+      border-bottom: 0.1px #00000040 solid;
 
       &::before {
         content: "";

@@ -13,10 +13,7 @@ import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
 import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
-import Delete from './DeleteConfirmation/Delete'
-
-
-
+import Delete from './DeleteConfirmation/Delete';
 
 // let webSocket;
 let pageNumber = 1;
@@ -32,12 +29,16 @@ let reporter_id = 0;
 let type_id = 0;
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
-let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
+let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 // let height = document.getElementById("test-div").getAttribute("data-height");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
 const Support = ({ closePane, topicClick, webSocket }) => {
+
+
+    const prevSearchValue = useRef();
+
 
     const allTopics = useRef([]);
     const unReadList = useRef([]);
@@ -250,12 +251,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         }
 
         return url;
-
-    }
-
-    const searchTopic = (e) => {
-
-        getTopicsBasedOnFilter(e);
 
     }
 
@@ -719,7 +714,6 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             clearFilter();
 
         }
-
         setShowMultipleFilters(!showMultipleFilters)
 
     }
@@ -803,18 +797,17 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
 
     const handleKeyDown = (e) => {
-        if (e.keyCode === 13) {
-            searchTopic(searchString)
+        if ((e.keyCode === 13 || e==='click') && (searchString !== '' || prevSearchValue.current)) {
+            prevSearchValue.current = searchString;
+
+        getTopicsBasedOnFilter(searchString);
+            // searchTopic(searchString)
         }
     }
     
-
-
     return (
 
         <>
-    {/* <Toast/> */}
-
             {!TopicClick && !showChat &&
                 <div id='client-home' className='support-wrapper'>
 
@@ -830,7 +823,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                 <div className='search'>
 
-                                    <button className='btn' onClick={searchTopic} title='search'></button>
+                                    <button className='btn' onClick={()=>handleKeyDown('click')} title='search'></button>
 
                                     <input type={'text'}
                                         title='Search'
@@ -842,7 +835,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 </div>
 
                                 <div className={'filter-btn' + (showMultipleFilters ? ' filter-bg' : '')}>
-                                    <button className={'button' + (showMultipleFilters ? ' button-select' : '')} disabled={disableButton} title='filter-button' onClick={() => openFilterList()}></button>
+                                    <button className={'button' + (showMultipleFilters ? ' button-select' : '')} 
+                                    disabled={disableButton} 
+                                    title='filter-button' onClick={() => openFilterList()}></button>
                                 </div>
 
                                 <div className='btn-new-topic-wrapper'>
@@ -850,7 +845,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                     <button onClick={() => {
                                         clearData();
                                         setTopicClick(true)
-                                    }}><span className='add-new-ticket'></span>Ticket</button>
+                                    }}>
+                                    <span className='add-new-ticket'></span>
+                                    Ticket
+                                    </button>
 
                                 </div>
                                 <button className='header-close' onClick={() => closePanes()}></button>
@@ -897,6 +895,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                 </div>
                                 <div className='divider'></div>
                                 <div className={unRead ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton} onClick={() => showUnread()}>Unread</button></div>
+                                {/* <div className='divider'></div> */}
+
                                 <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
 
                             </div>}
@@ -906,14 +906,16 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                 <div className={'tab-wrapper'}>
 
-                                    <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
+                                    <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }} 
+                                    disabled={disableButton} 
+                                    onClick={() => {
                                         if (tabData !== 'open') {
                                             tabData = 'open';
                                             setStatusTab('open');
-
                                             allTopics.current = [];
                                             clearData();
                                             getTopics();
+
                                         }
                                     }}>
 
@@ -921,7 +923,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                     </button>
 
-                                    <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }} disabled={disableButton} onClick={() => {
+                                    <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }} 
+                                    disabled={disableButton} 
+                                    onClick={() => {
                                         if (tabData !== 'resolved') {
                                             tabData = 'resolved';
                                             setStatusTab('resolved');
@@ -965,7 +969,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                             {<div className='topic-meta'>
 
                                                 {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here'/>}
-                                                {feedBackId !== topic.id && (statusTab === 'open') &&
+
+                                                {console.log(feedBackId !== topic.id && (statusTab === 'open'))}
+                                                {feedBackId !== topic.id && (statusTab === 'open') ?
                                                     <div className='topic-buttons'>
 
                                                         <button className='btn-resolve icon-btn' disabled={disableButton} onClick={() => {
@@ -987,10 +993,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                                             <span>Delete</span>
                                                         </button>}
 
-                                                    </div>}
+                                                    </div>:''}
 
                                                 {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here'/>}
-                                                {(statusTab === 'resolved') && <div className='topic-buttons'>
+                                                {(statusTab === 'resolved') && (!showReopenPanel) && <div className='topic-buttons'>
 
                                                     {getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
                                                         setDisableButton(true);
