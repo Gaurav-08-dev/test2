@@ -30,7 +30,6 @@ let type_id = 0;
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
 let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
-// let height = document.getElementById("test-div").getAttribute("data-height");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 

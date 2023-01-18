@@ -20,7 +20,6 @@ const descriptionMaxChar = 150;
 
 const nameMaxChar = 45;
 
-// let height = document.getElementById("test-div").getAttribute("data-height");
 
 const CreateChatRoom = ({ closePane, socketDetail }) => {
 

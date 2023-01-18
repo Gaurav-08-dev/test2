@@ -51,7 +51,6 @@ let clickBackButton = false;
 
 let singleScroll = false;
 
-// let height = document.getElementById("test-div").getAttribute("data-height");
 
 const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail }) => {
 
