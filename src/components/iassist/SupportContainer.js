@@ -13,7 +13,7 @@ let webSocket;
 
 let tokenConstant = 'sight_';
 
-let btnId = 'btn';
+let btnId = 'trigger-btn';
 
 
 const SupportContainer = () => {
@@ -118,6 +118,10 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
 
+        const div = document.createElement('div')
+        div.id = 'iassist-panel-wrapper';
+        bodyElement.append(div);
+
         const linkTag = document.createElement("link");
         linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
         linkTag.rel = "stylesheet";
@@ -185,7 +189,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-            { btnId === 'btn' && <div id="btn"> <button>one</button></div>}
+            {/* { btnId === 'btn' && <div id="btn"> <button>one</button></div>} */}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>
