@@ -1,6 +1,6 @@
 // import * as Constants from '../Constants';
 
-export function embediAssist(target) {
+export default function embed(target) {
 
     const bodyElement = document.getElementsByTagName('body')[0];
      const div = document.createElement('div')
