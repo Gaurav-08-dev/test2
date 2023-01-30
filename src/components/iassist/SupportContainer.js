@@ -4,16 +4,18 @@ import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
 import '../../style/Global.scss'
 
+// import constants from 'https://gaurav-08-dev.github.io/test2/config.js';
+
 
 
 let webSocket;
-// let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
+let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
-// let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
+let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'trigger-btn';
 
-let tokenConstant = 'sight_';
+// let tokenConstant = constants.SITE;
 
-let btnId = 'trigger-btn';
+// let btnId = constants.BUTTONID;
 
 
 const SupportContainer = () => {
@@ -189,7 +191,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-            {/* { btnId === 'btn' && <div id="btn"> <button>one</button></div>} */}
+            { btnId === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>
