@@ -20,4 +20,7 @@ const embed = (target) => {
 
 }
 
+embed();
+
 export default embed;
+
