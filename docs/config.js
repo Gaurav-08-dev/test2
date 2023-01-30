@@ -1,4 +1,3 @@
-import * as constant from './constants';
+import * as constants from 'https://gaurav-08-dev.github.io/test2/constants.js';
 
-console.log(constant.VALUE)
-export default constant;
+export default constants;
