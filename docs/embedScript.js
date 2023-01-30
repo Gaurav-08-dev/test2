@@ -1,6 +1,6 @@
 // import * as Constants from '../Constants';
 
-export default function embed(target) {
+const embed = (target) => {
 
     const bodyElement = document.getElementsByTagName('body')[0];
      const div = document.createElement('div')
@@ -17,3 +17,5 @@ export default function embed(target) {
     bodyElement.append(scriptTag);
 
 }
+
+export default embed;
