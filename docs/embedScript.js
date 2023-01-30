@@ -2,6 +2,8 @@
 
 const embed = (target) => {
 
+    console.log("check its running or not");
+
     const bodyElement = document.getElementsByTagName('body')[0];
      const div = document.createElement('div')
      div.id = 'iassist-panel-wrapper';
