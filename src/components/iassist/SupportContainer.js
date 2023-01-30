@@ -11,7 +11,7 @@ import '../../style/Global.scss'
 let webSocket;
 let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
-let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'trigger-btn';
+let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
 // let tokenConstant = constants.SITE;
 
@@ -191,7 +191,7 @@ const SupportContainer = () => {
         <div id="support-main-conatiner">
        
 
-            { btnId === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>}
+            { btnId === 'btn' && <div id="btn"> <button>one</button></div>}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
 
         </div>

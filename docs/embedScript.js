@@ -20,7 +20,9 @@ const embed = (target) => {
 
 }
 
-embed();
+setTimeout(() => {
+    embed();
+}, 3000);
 
-export default embed;
+// export default embed;
 
