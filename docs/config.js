@@ -1,2 +1,4 @@
-export const SITE = 'sight_';
-export const BUTTONID = 'trigger-btn';
+import * as constant from './constants';
+
+console.log(constant.VALUE)
+export default constant;
