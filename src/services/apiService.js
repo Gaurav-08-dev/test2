@@ -93,6 +93,8 @@ const APIService = {
         return fetch(API_URL, options)
             .then((response) => {
                 //for black listed users just log out them
+
+
                 if (response.status === 301) {
                     forceLogout('Invalid Credentials.');
                 }
@@ -118,7 +120,7 @@ const APIService = {
                             }
 
                             return fetch(Constants.API_BASE_URL+'/auth/rt1', apiOptions).then((response) => {
-                                if(response.status == 401){
+                                if(response.status === 401){ //* comparator bug
                                     localStorage.setItem(Constants.SITE_PREFIX + 'reset_token_inprocess', 0); //reset to 0 so that it can process futther (other apis)
                                     forceLogout('Invalid Credentials.');
                                     return;

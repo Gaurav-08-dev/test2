@@ -1,67 +1,77 @@
-import * as Constants from '../../Constants';
-import Avatar from '../../Avatar/Avatar';
-import './Detail.scss'
 import React from 'react';
+import * as Constants from '../../Constants';
+// import Avatar from '../../Avatar/Avatar';
+import './Detail.scss'
+import { getUserNameBasedOnId, getUserNameImage } from '../Utilityfunction';
+
 const Detail = ({ topic, allUser, type, allAccount }) => {
 
-    const getUserNameBasedOnId = (id) => {
 
-        if (allUser.length > 0) {
+    // const getUserNameBasedOnId = (id) => {
 
-            let userName;
+    //     if (allUser.length > 0) {
 
-            for (let i = 0; i < allUser.length; i++) {
+    //         let userName;
 
-                if (allUser[i].id === id) {
+    //         for (let i = 0; i < allUser.length; i++) {
 
-                    userName = allUser[i].first_name + ' ' + (allUser[i].last_name !== null ? allUser[i].last_name : '');
+    //             if (allUser[i].id === id) {
 
-                    break;
-                }
+    //                 userName = allUser[i].first_name + ' ' + (allUser[i].last_name !== null ? allUser[i].last_name : '');
 
-            }
+    //                 break;
+    //             }
 
-            return userName;
-        }
-    }
+    //         }
 
-    const getUserNameImage = (id) => {
+    //         return userName;
+    //     }
+    // }
 
-        let user;
+    // const getUserNameImage = (id) => {
 
-        let clientUser = allUser;
+    //     let user;
+        
+    //     let clientUser = allUser;
 
-        if (clientUser.length > 0) {
+        
+    //     if (clientUser.length > 0) {
+            
+    //         for (let i = 0; i < clientUser.length; i++) {
+                
+    //             if (clientUser[i].id === id) {
+                    
+    //                 user = clientUser[i];
+                    
+    //                 break;
+                    
+    //             }
+                
+    //         }
 
-            for (let i = 0; i < clientUser.length; i++) {
 
-                if (clientUser[i].id === id) {
+            
+    //         if (user) {
+    //             return <Avatar imgSrc={user.cover_img_url}
+    //                 firstName={user.first_name}
+    //                 lastName={user.last_name}
+    //                 alt={`${user.first_name}'s pic`}
+    //                 height={20}
+    //                 width={20}
+    //                 fontSize={9}
+    //                 borderRadius='2px'
+    //             />
 
-                    user = clientUser[i];
+    //         }
 
-                    break;
-
-                }
-
-            }
-
-            if (user) {
-                return <Avatar imgSrc={user.cover_img_url}
-                    firstName={user.first_name}
-                    lastName={user.last_name}
-                    alt={`${user.first_name}'s pic`}
-                    height={20}
-                    width={20}
-                    fontSize={9}
-                    borderRadius='2px'
-                />
-
-            }
-
-        }
-    }
+    //     }
+    // }
 
     const getType = (id) => {
+
+        // console.log(type.filter(item=>{
+        //     return item.id===id
+        // }))
 
         let data = type?.filter((types) => {
 
@@ -79,8 +89,8 @@ const Detail = ({ topic, allUser, type, allAccount }) => {
     return (
         <div className='detail-wrapper'>
             <div className='user'>
-                <div className='user-image'>{getUserNameImage(topic.user_id)}</div>
-                <div className='user-name'>{getUserNameBasedOnId(topic.user_id)} </div>
+                <div className='user-image'>{getUserNameImage(allUser,topic.user_id,'','detail')}</div>
+                <div className='user-name'>{getUserNameBasedOnId(allUser,topic.user_id,'detail')} </div>
             </div>
             <div className='divider'></div>
 

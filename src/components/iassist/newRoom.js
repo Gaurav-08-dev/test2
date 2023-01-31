@@ -1,8 +1,5 @@
-
-
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
-import debounce from "lodash.debounce"
-
+import debounce from "lodash.debounce";
 import './newRoom.scss';
 import * as Constants from '../Constants';
 import { getTokenClient, getUser } from '../../utils/Common';
@@ -22,6 +19,7 @@ import PlayButton from './Player/PlayButton';
 import RecordOption from './MediaOption/RecordOption';
 import Steno from 'react-steno';
 import parse from 'html-react-parser';
+import {getUserNameBasedOnId , getUserNameImage} from "./Utilityfunction";
 
 let msg = [];
 
@@ -336,10 +334,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         }
     }
 
-
-
-
-
     const sendMessage = (e, type, messageId) => {
 
         let msg = {};
@@ -456,6 +450,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         return isData;
 
     }
+
     const chatmenu = (e, key, msg) => {
 
         Ids = key;
@@ -501,7 +496,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             let index = unreadDataList.findIndex((data) => data === chatIds)
             unreadDataList.splice(index, 1);
             if (unreadDataList.length === 0) {
-                console.log(document.getElementById('iassist-unread'));
+
                 if (document.getElementById('iassist-unread')) document.getElementById('iassist-unread').remove();
             }
             localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(unreadDataList));
@@ -521,7 +516,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -593,7 +588,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let chatContainer = document.getElementById('main-chat-container');
+            let chatContainer = document.getElementById('iassist-panel');
 
             // if (chatContainer && height) {
 
@@ -963,29 +958,29 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const getUserNameBasedOnId = (id) => {
+    // const getUserNameBasedOnId = (id) => {
 
-        if (messageUserDetails?.length > 0) {
+    //     if (messageUserDetails?.length > 0) {
 
-            let userName;
+    //         let userName;
 
-            for (let i = 0; i < messageUserDetails.length; i++) {
+    //         for (let i = 0; i < messageUserDetails.length; i++) {
 
-                if (messageUserDetails[i].id === id) {
+    //             if (messageUserDetails[i].id === id) {
 
-                    userName = messageUserDetails[i].first_name;
+    //                 userName = messageUserDetails[i].first_name;
 
-                    break;
+    //                 break;
 
-                }
+    //             }
 
-            }
+    //         }
 
-            return userName;
+    //         return userName;
 
-        }
+    //     }
 
-    }
+    // }
 
     const searchClick = async (topic) => {
 
@@ -1059,40 +1054,41 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const getUserNameImage = (id, isReply) => {
+    // const getUserNameImage = (id, isReply) => {
 
-        let user;
+    //     let user;
 
-        if (messageUserDetails?.length > 0) {
+    //     if (messageUserDetails?.length > 0) {
 
-            for (let i = 0; i < messageUserDetails.length; i++) {
+    //         for (let i = 0; i < messageUserDetails.length; i++) {
 
-                if (messageUserDetails[i].id === id) {
+    //             if (messageUserDetails[i].id === id) {
 
-                    user = messageUserDetails[i];
+    //                 user = messageUserDetails[i];
 
-                    break;
+    //                 break;
 
-                }
+    //             }
 
-            }
+    //         }
 
-            if (user) {
+    //         if (user) {
 
-                return <div style={isReply ? { marginTop: '-15px' } : {}}><Avatar imgSrc={user.cover_img_url}
-                    firstName={user.first_name}
-                    lastName={user.last_name}
-                    alt={`${user.first_name}'s pic`}
-                    height={30}
-                    width={30}
-                    fontSize={9} />
-                </div>
+    //             return <div style={isReply ? { marginTop: '-15px' } : {}}>
+    //             <Avatar imgSrc={user.cover_img_url}
+    //                 firstName={user.first_name}
+    //                 lastName={user.last_name}
+    //                 alt={`${user.first_name}'s pic`}
+    //                 height={30}
+    //                 width={30}
+    //                 fontSize={9} />
+    //             </div>
 
-            }
+    //         }
 
-        }
+    //     }
 
-    }
+    // }
 
     const getTimeZone = (date, isDateFormat) => { //* change with other timeZone function in support center
 
@@ -1288,11 +1284,13 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     alertService.showToast('success', result.message);
 
                     setNavigateHome(true);
+                    setConfirmDelete(false)
 
                 }
 
             })
             .catch(err => {
+                setConfirmDelete(false)
 
                 setShowLoader(false);
 
@@ -1560,7 +1558,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -1651,8 +1649,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             let ctx = document.createElement('canvas').getContext('2d');
             ctx.font = '11px "Poppins", sans-serif';
             let width = ctx.measureText(text).width;
-            console.log(width);
-            console.log(descriptionElement.clientWidth);
             if (width >= descriptionElement?.clientWidth) {
                 return true;
             }
@@ -1664,30 +1660,22 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         <>
 
-            {!showVideo && <div id='main-chat-container' className='support-wrapper'>
+            {!showVideo && <div id='iassist-panel' className='iassist-panel'>
+                <div className='iassist-panel-inner'>
+                    <div className='iassist-panel-header'>
 
-                <div className='header-wrapper'>
+                            <div className='header-back' onClick={() => {
+                                ws.close();
+                                clickBackButton = true;
+
+                            }}>Back</div>
 
 
-                    <div className='header-inner'>
-
-                        <span className='header-back' onClick={() => {
-                            ws.close();
-                            clickBackButton = true;
-
-                        }}>Back</span>
-
-                    </div>
-
-                    <div className='header-other-functionality-wrapper'>
-
-                        <div className='topic-filter-search-iassist' id='search-box'>
+                        <div className='header-right'>
 
                             <div className='search'>
-
                                 <button onClick={getChatSearch} className='btn' title='search'></button>
 
-            
                                 <input type={'text'} title='Search' 
                                 placeholder='Search' 
                                 onChange={(e) => setSearchString(e.target.value)} 
@@ -1695,489 +1683,494 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 />
 
                             </div>
+                            <div className='topic-filter-search-iassist' id='search-box'></div>
 
-                        </div>
+                            <div className='author-list' onClick={() => setShowUserPane(true)}>
+                                {clientUser && clientUser.map((user, index) => {
 
-                        <div className='author-list' onClick={() => setShowUserPane(true)}>
-
-                            {clientUser && clientUser.map((user, index) => {
-                                if (index <= 2) {
-                                    return <span key={user.id + index.toString()}>
-                                        {
-                                            <Avatar imgSrc={user.cover_img_url}
-                                                firstName={user.first_name}
-                                                lastName={user.last_name}
-                                                alt={`${user.first_name}'s pic`}
-                                                height={20}
-                                                width={20}
-                                                fontSize={9}
-                                                borderRadius={2}
-                                            />
-                                        }
-                                    </span>
-
-                                } else {
-
-                                    if (index === 3) {
-
-                                        return <span className='number' key={index}> +{clientUser.length - 3}</span>
-
-                                    } else { return }
-
-                                }
-
-                            })}
-
-                            <div className='add-icon-wrapper'>
-
-                                <button className='add-icon'></button>
-
-
-                            </div>
-
-                        </div>
-
-                        {noneRead !== undefined && noneRead !== 0 && <div className='unread'>
-
-                            <span>{noneRead}</span>
-
-                        </div>}
-
-                        <button className='header-close' onClick={() => close()}></button>
-
-                    </div>
-
-                </div>
-
-                {showLoader && <LoadingScreen />}
-
-                {openPopupPlayer && <Player id='media-player' url={playerUrl} type={playerType} close={setOpenPopupPlayer} />}
-
-                <div className='title-widget'>
-
-                    <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic && topic.name}
-
-                        <button className={'button' + (showExpand && getTextWidth(topic?.description) ? ' full-button' : '')} title='expand'></button>
-
-                    </div>
-
-                    <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')}>{topic && topic.description}</div>
-
-                    <Detail topic={topic} type={type} allAccount={allAccount} allUser={allUser} />
-
-                </div>
-
-                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
-
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
-
-                <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
-
-                    {showUserPane && <UserList
-                        // user={users}
-                        clientUser={userData.client_participants}
-                        position={'absolute'}
-                        height={150}
-                        header={true}
-                        supportUser={userData.support_participants}
-                        userSelect={userSelect}
-                        collaborator={collabId}
-                        close={setShowUserPane}
-                        author={topic && topic.user_id}
-                        id='user-list' topic={topic}
-                    />}
-
-                    {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages, index) => {
-                        return (
-                            <div className='chat-wrapper' key={messages.id} style={{ border: borderChatId === messages.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
-
-                                <div className='support-header'>
-
-                                    {showMainMenu && Ids === messages.id &&
-                                        <ul id='menu' className='pane'>
-
-                                            <li onClick={(e) => reply(e, messages)}>Reply</li>
+                                    if (index <= 2) {
+                                        return <span key={user.id + index.toString()} style={{zIndex:clientUser.length-index}}>
                                             {
-                                                editAccess && <li onClick={(e) => editMessageClick(e, messages)}>Edit</li>}
+                                                <Avatar imgSrc={user.cover_img_url}
+                                                    firstName={user.first_name}
+                                                    lastName={user.last_name}
+                                                    alt={`${user.first_name}'s pic`}
+                                                    height={20}
+                                                    width={20}
+                                                    fontSize={9}
+                                                    borderRadius={2}
+                                                />
+                                            }
+                                        </span>
 
-                                        </ul>
+                                    } else {
+
+                                        if (index === 3) {
+
+                                            return <span className='number' key={index}> +{clientUser.length - 3}</span>
+
+                                        } else { return }
 
                                     }
 
-                                    <div className='support-header-left'>
+                                })}
 
-                                        <div> {getUserNameImage(messages.user_id, false)}</div>
+                                <div className='add-icon-wrapper'>
 
-                                        <div className='content-wrapper' id={`content${messages.id}`}>
+                                    <button className='add-icon'></button>
 
-                                            <span className='name'>{getUserNameBasedOnId(messages.user_id)}</span>
-
-                                            <span className='card-label'>{getUserCardLabel(messages.user_id)}</span>
-
-                                            <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)} </span>
-
-                                            {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"msg" + messages.id}>
-
-                                                {parse(messages.note, options)}
-
-                                            </div>}
-
-                                            {editId === messages.id && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"container" + messages.id}>
-
-                                                <Steno
-                                                    html={editedMessage}
-                                                    disable={false} //indicate that the editor has to be in edit mode
-                                                    onChange={(val) => {
-                                                        console.log(val);
-                                                        setEditedMessage(val)
-                                                    }}
-                                                    innerRef={editEditorRef} //ref attached to the editor
-                                                    backgroundColor={'#000'}
-                                                    onChangeBackgroundColor={() => { }}
-                                                    fontColor={'#fff'}
-                                                    onChangeFontColor={() => { }}
-                                                    functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
-                                                    isToolBarVisible={false} //to show/hide the toolbar options
-                                                    toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                                    formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                                    onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                                    showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                                    fileList={[]} //List of file object to track the files selected by user
-                                                    // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                                    // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                                    sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                                    onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                                    autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                                    minEditorHeight='20px' // Default will be 100px
-                                                    maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                    placeHolder="Message"
-                                                />
-                                                <div className='edit-btn'>
-                                                    <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
-                                                        <span className='save'></span>
-                                                        save
-                                                    </button>
-                                                    <button type='button' className='cancel-btn' onClick={editCancel}>
-                                                        <span className='cancel'></span>
-                                                        cancel</button>
-
-                                                </div>
-                                            </div>}
-
-                                            {!messages.is_file && messages.is_feedback && !messages.is_reopen && <div className='content'>
-
-                                                <div className='change-status'>Changed status of this ticket to  <span>Resolved</span></div>
-
-                                                <div className='feedback'> Feedback Given <li onClick={() => openFeedbackMessage(messages.id)}>{messages.note.feedback}</li>
-                                                    {messages.note.text !== '' && <button onClick={() => openFeedbackMessage(messages.id)} className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></button>}
-                                                </div>
-
-                                                {messages.note.text !== '' && feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
-
-                                            </div>}
-
-                                            {!messages.is_file && !messages.is_feedback && messages.is_reopen && <div className='content'>
-
-                                                <div className='change-status'>Changed status of this ticket to  <span>In Progress</span></div>
-
-                                                <div className='feedback'> Reopen Reason <li>{messages.note.reopen_reason}</li></div>
-
-                                            </div>}
-
-                                            {messages.is_file && !messages.is_feedback && <div className='content'>
-
-                                                {editId !== messages.id && parse(messages.note.message, options)}
-
-                                                <div className='content-video'>
-
-                                                    {messages.note.file.map((files, index) => {
-                                                        return (<div className='content-wrapper-media' key={index}>
-                                                            {checkVideo(files, 'video') && <div className='wrapper-media'>
-                                                                <video src={files.file} onClick={() => {
-
-                                                                    videoClick(files.file)
-                                                                }} onLoad={(e) => loadFile(e, messages)}>
-                                                                </video>
-
-                                                                {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
-
-                                                                <div className='media-id'>{files?.name}</div>
-
-                                                            </div>}
-
-                                                            {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file} onClick={() => {
-                                                                playerType = 'image';
-                                                                setOpenPopupPlayer(true)
-                                                                setPlayerUrl(files.file)
-                                                            }} onLoad={(e) => loadFile(e, messages)}></img>
-
-                                                                <div className='media-id'>{files?.name}</div>
-
-                                                            </div>}
-
-                                                        </div>)
-
-                                                    })}
-
-                                                </div>
-
-                                            </div>}
-
-
-                                            {!showSearch && messages.replies && messages.replies.length > 0 && <span className='replied' onClick={(e) => getReply(e, messages.id, hideReply)}>
-
-                                                <button className={'reply-arrow' + (hideReply && chatId === messages.id ? ' reply-rotate' : '')}>Reply</button>
-
-                                            </span>}
-
-                                            {hideReply && messages.replies && messages.replies.length > 0 && chatId === messages.id && messages.replies.map((msg, index) => {
-                                                if (messages.id === msg.parent_note_id) {
-
-                                                    return (<div className='reply-wrapper' key={msg.id} style={{ border: borderChatId === msg.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }}>
-                                                        <div className='header-reply'>
-
-                                                            {showMainMenu && Ids === msg.id &&
-                                                                <ul id='menu' className='panes'>
-
-                                                                    {editAccess && <li onClick={(e) => editMessageClick(e, msg)}>Edit</li>}
-
-                                                                </ul>
-                                                            }
-                                                            <div className='reply-header-wrapper'>
-
-                                                                <div> {getUserNameImage(msg.user_id, false)}</div>
-
-                                                                <div className='reply-sub-wrapper'>
-
-                                                                    <span className='name'>{getUserNameBasedOnId(msg.user_id)} &nbsp; </span>
-
-                                                                    <span className='card-label'>{getUserCardLabel(msg.user_id)}</span>
-
-                                                                    <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
-
-                                                                    {editId !== msg.id && !msg.is_file && <div className='content-reply'>
-
-                                                                        {parse(msg.note, options)}
-
-                                                                    </div>}
-
-                                                                    {editId === msg.id && !msg.is_feedback && !msg.is_reopen && <div className='content'>
-
-                                                                        <Steno
-                                                                            html={editedMessage}
-                                                                            disable={false} //indicate that the editor has to be in edit mode
-                                                                            onChange={(val) => {
-                                                                                // console.log(val);
-                                                                                setEditedMessage(val)
-                                                                            }}
-                                                                            innerRef={editEditorRef} //ref attached to the editor
-                                                                            backgroundColor={'#000'}
-                                                                            onChangeBackgroundColor={() => { }}
-                                                                            fontColor={'#fff'}
-                                                                            onChangeFontColor={() => { }}
-                                                                            functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
-                                                                            isToolBarVisible={false} //to show/hide the toolbar options
-                                                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                                                            fileList={[]} //List of file object to track the files selected by user
-                                                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                                                            sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                                                            onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                                                            minEditorHeight='20px' // Default will be 100px
-                                                                            maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                                            placeHolder="Message"
-                                                                        />
-                                                                        <div className='edit-btn'>
-                                                                            <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
-                                                                                <span className='save'></span>
-                                                                                save</button>
-                                                                            <button type='button' className='cancel-btn' onClick={editCancel}>
-                                                                            <span className='cancel'></span>
-                                                                            cancel</button>
-
-                                                                        </div>
-                                                                    </div>}
-
-                                                                    {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
-
-                                                                        {editId !== msg.id && parse(msg?.note?.message, options)}
-
-                                                                        <div className='content-video'>
-
-                                                                            {msg.note.file.map((files, index) => {
-                                                                                return (<div className='content-wrapper-media' key={index}>
-
-                                                                                    {checkVideo(files, 'video') && <div className='wrapper-media'> <video src={files.file} onClick={() => {
-
-                                                                                        videoClick(files.file)
-
-                                                                                    }}>
-
-                                                                                    </video>
-
-                                                                                        {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
-
-                                                                                        <div className='media-id'>{files?.name}</div>
-
-                                                                                    </div>}
-
-                                                                                    {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file}
-                                                                                        onClick={() => {
-                                                                                            playerType = 'image';
-                                                                                            setOpenPopupPlayer(true);
-                                                                                            setPlayerUrl(files.file);
-                                                                                        }}></img>
-
-                                                                                        <div className='media-id'>{files?.name}</div>
-
-                                                                                    </div>}
-
-                                                                                </div>)
-
-                                                                            })}
-
-                                                                        </div>
-
-                                                                    </div>}
-
-                                                                </div>
-
-                                                                {validateEditChat(msg, false) && <div className='dot'>
-
-                                                                    <button onClick={(e) => chatmenu(e, msg.id, msg)} title="option"></button>
-
-                                                                </div>}
-
-                                                            </div>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                    )
-                                                }
-                                            })}
-
-                                            {showReply && chatId === messages.id && <div className='reply-image' id={`textbox-${messages.id}`}>
-
-                                                {getUserNameImage(currentUserId, true)}
-
-                                                {showReply && chatId === messages.id && <div className='topic-filter-search-iassist'>
-
-                                                    <div className='search'>
-
-                                                        <Steno
-                                                            html={replyMessage}
-                                                            disable={false} //indicate that the editor has to be in edit mode
-                                                            onChange={(val) => { setReplyMessage(val) }}
-                                                            innerRef={replyEditorRef} //ref attached to the editor
-                                                            backgroundColor={'#000'}
-                                                            onChangeBackgroundColor={() => { }}
-                                                            fontColor={'#fff'}
-                                                            onChangeFontColor={() => { }}
-                                                            functionRef={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
-                                                            isToolBarVisible={false} //to show/hide the toolbar options
-                                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                                            fileList={[]} //List of file object to track the files selected by user
-                                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                                            sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                                            onEnterClickLogic={(e) => sendMessage(e, 'reply', messages.id)} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                                            minEditorHeight='20px' // Default will be 100px
-                                                            maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                            placeHolder="Reply"
-                                                        />
-
-                                                        <button className='rply-btn' onClick={(e) => sendMessage(e, 'reply', messages.id)} disabled={showVideoLoader}></button>
-
-                                                    </div>
-
-                                                    <RecordOption showScreenButton={showReplyScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'reply'} videoUrl={replyVideoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
-
-                                                    <div className='add-btn'> <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}></button></div>
-
-                                                </div>}
-
-                                            </div>}
-
-                                        </div>
-
-                                    </div>
-
-                                    {!showSearch && editId !== messages.id && !messages.is_feedback && !messages.is_reopen && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>}
                                 </div>
 
                             </div>
-                        )
-                    })}
 
-                    {confirmDelete && <Delete deleteTopic={deleteTopic} topic={topic} setConfirmDelete={setConfirmDelete} disable={setConfirmDelete} />}
+                            {noneRead !== undefined && noneRead !== 0 && <div className='unread'>
 
-                </div>
+                                <span>{noneRead}</span>
 
-                {!showSearch && <div className='message' id='message'>
+                            </div>}
 
-                    {<div className='topic-filter-search-iassist'>
+                            <button className='header-close' onClick={() => close()}></button>
 
-                        {<div className='search'>
+                        </div>
 
-                            <Steno
-                                html={message}
-                                disable={false} //indicate that the editor has to be in edit mode
-                                onChange={(val) => { setMessage(val) }}
-                                innerRef={editorRef} //ref attached to the editor
-                                backgroundColor={'#000'}
-                                onChangeBackgroundColor={() => { }}
-                                fontColor={'#fff'}
-                                onChangeFontColor={() => { }}
-                                functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
-                                isToolBarVisible={false} //to show/hide the toolbar options
-                                toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                fileList={[]} //List of file object to track the files selected by user
-                                // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                onEnterClickLogic={sendMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                minEditorHeight='20px' // Default will be 100px
-                                maxEditorHeight="300px" // Default maxHeight will be 250px
-                                placeHolder={topic.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
-                                onClick={() => onClickSteno()}
-                            />
+                    </div>
+                    {showLoader && <LoadingScreen />}
 
-                            <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader || !message}></button>
+                    {openPopupPlayer && <Player id='media-player' url={playerUrl} type={playerType} close={setOpenPopupPlayer} />}
+
+                    <div className='iassist-panel-title-widget'>
+
+                        <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic && topic.name}
+
+                            <button className={'button' + (showExpand && getTextWidth(topic?.description) ? ' full-button' : '')} title='expand'></button>
+
+                        </div>
+
+                        <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')}>{topic && topic.description}</div>
+
+                        <Detail topic={topic} type={type} allAccount={allAccount} allUser={allUser} />
+
+                    </div>
+
+                    <div className='iassist-panel-body'>
+                        <div className='msg-area'>
+                            
+
+                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
+
+                            <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
+
+                                {showUserPane && <UserList
+                                    // user={users}
+                                    clientUser={userData.client_participants}
+                                    position={'absolute'}
+                                    height={150}
+                                    header={true}
+                                    supportUser={userData.support_participants}
+                                    userSelect={userSelect}
+                                    collaborator={collabId}
+                                    close={setShowUserPane}
+                                    author={topic && topic.user_id}
+                                    id='user-list' topic={topic}
+                                />}
+
+                                {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages, index) => {
+                                    return (
+                                        <div className={'chat-wrapper ' + (messages.is_feedback || messages.is_reopen ? 'chat-feedback-wrapper' : '')} key={messages.id} style={{ border: borderChatId === messages.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
+
+                                            <div className='support-header'>
+
+                                                {showMainMenu && Ids === messages.id &&
+                                                    <ul id='menu' className='pane'>
+
+                                                        <li onClick={(e) => reply(e, messages)}>Reply</li>
+                                                        {
+                                                            editAccess && <li onClick={(e) => editMessageClick(e, messages)}>Edit</li>}
+
+                                                    </ul>
+
+                                                }
+
+                                                <div className='support-header-left'>
+
+                                                    {getUserNameImage(messageUserDetails,messages.user_id, false,'message_detail')}
+
+                                                    <div className='content-wrapper' id={`content${messages.id}`}>
+
+                                                        <div className='name'>
+                                                            <h4>{getUserNameBasedOnId(messageUserDetails,messages.user_id,'message_detail')}</h4>
+                                                            <span className='card-label'>{getUserCardLabel(messages.user_id)}</span>
+                                                            <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)}</span>
+                                                        </div>
+
+                                                        {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"msg" + messages.id}>
+
+                                                            {parse(messages.note, options)}
+
+                                                        </div>}
+
+                                                        {editId === messages.id && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"container" + messages.id}>
+
+                                                            <Steno
+                                                                html={editedMessage}
+                                                                disable={false} //indicate that the editor has to be in edit mode
+                                                                onChange={(val) => {
+
+                                                                    setEditedMessage(val)
+                                                                }}
+                                                                innerRef={editEditorRef} //ref attached to the editor
+                                                                backgroundColor={'#000'}
+                                                                onChangeBackgroundColor={() => { }}
+                                                                fontColor={'#fff'}
+                                                                onChangeFontColor={() => { }}
+                                                                functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                                isToolBarVisible={false} //to show/hide the toolbar options
+                                                                toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                                formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                                onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                                showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                                fileList={[]} //List of file object to track the files selected by user
+                                                                // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                                // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                                sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                                onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                                minEditorHeight='20px' // Default will be 100px
+                                                                maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                                placeHolder="Message"
+                                                            />
+                                                            <div className='edit-btn'>
+                                                                <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
+                                                                    <span className='save'></span>
+                                                                    save
+                                                                </button>
+                                                                <button type='button' className='cancel-btn' onClick={editCancel}>
+                                                                    <span className='cancel'></span>
+                                                                    cancel</button>
+
+                                                            </div>
+                                                        </div>}
+
+                                                        {!messages.is_file && messages.is_feedback && !messages.is_reopen && <div className='content'>
+
+                                                            <div className='change-status'>Changed status of this ticket to  <span>Resolved</span></div>
+
+                                                            <div className='feedback-wrapper'>
+                                                                <label>Feedback Given</label>
+                                                                <a className={'feedback'} onClick={() => openFeedbackMessage(messages.id)}>
+                                                                    {messages.note.feedback}
+                                                                    {messages.note.text !== '' && <span className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></span>}
+                                                                </a>                                                                
+                                                            </div>
+                                                            {messages.note.text !== '' && feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
+
+                                                        </div>}
+
+                                                        {!messages.is_file && !messages.is_feedback && messages.is_reopen && <div className='content'>
+
+                                                            <div className='change-status'>Changed status of this ticket to  <span>In Progress</span></div>
+
+                                                            <div className='text'>{messages.note.reopen_reason}</div>
+
+                                                        </div>}
+
+                                                        {messages.is_file && !messages.is_feedback && <div className='content'>
+
+                                                            {editId !== messages.id && parse(messages.note.message, options)}
+
+                                                            <div className='content-video'>
+
+                                                                {messages.note.file.map((files, index) => {
+                                                                    return (<div className='content-wrapper-media' key={index}>
+                                                                        {checkVideo(files, 'video') && <div className='wrapper-media'>
+                                                                            <video src={files.file} onClick={() => {
+
+                                                                                videoClick(files.file)
+                                                                            }} onLoad={(e) => loadFile(e, messages)}>
+                                                                            </video>
+
+                                                                            {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
+
+                                                                            <div className='media-id'>{files?.name}</div>
+
+                                                                        </div>}
+
+                                                                        {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file} onClick={() => {
+                                                                            playerType = 'image';
+                                                                            setOpenPopupPlayer(true)
+                                                                            setPlayerUrl(files.file)
+                                                                        }} onLoad={(e) => loadFile(e, messages)}></img>
+
+                                                                            <div className='media-id'>{files?.name}</div>
+
+                                                                        </div>}
+
+                                                                    </div>)
+
+                                                                })}
+
+                                                            </div>
+
+                                                        </div>}
+
+
+                                                        {!showSearch && messages.replies && messages.replies.length > 0 && <span className='replied' onClick={(e) => getReply(e, messages.id, hideReply)}>
+
+                                                            <button className={'reply-arrow' + (hideReply && chatId === messages.id ? ' reply-rotate' : '')}>Reply</button>
+
+                                                        </span>}
+
+                                                        {hideReply && messages.replies && messages.replies.length > 0 && chatId === messages.id && messages.replies.map((msg, index) => {
+                                                            if (messages.id === msg.parent_note_id) {
+
+                                                                return (<div className='reply-wrapper' key={msg.id} style={{ border: borderChatId === msg.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }}>
+                                                                    <div className='header-reply'>
+
+                                                                        {showMainMenu && Ids === msg.id &&
+                                                                            <ul id='menu' className='panes'>
+
+                                                                                {editAccess && <li onClick={(e) => editMessageClick(e, msg)}>Edit</li>}
+
+                                                                            </ul>
+                                                                        }
+                                                                        <div className='reply-header-wrapper'>
+
+                                                                            {getUserNameImage(messageUserDetails,msg.user_id, false,'message_detail')}
+
+                                                                            <div className='reply-sub-wrapper'>
+                                                                                <div className='name'>
+                                                                                    <h4>{getUserNameBasedOnId(messageUserDetails,msg.user_id,'message_detail')}</h4>
+                                                                                    <span className='card-label'>{getUserCardLabel(msg.user_id)}</span>
+                                                                                    <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
+                                                                                </div>
+
+                                                                                {editId !== msg.id && !msg.is_file && <div className='content-reply'>
+
+                                                                                    {parse(msg.note, options)}
+
+                                                                                </div>}
+
+                                                                                {editId === msg.id && !msg.is_feedback && !msg.is_reopen && <div className='content'>
+
+                                                                                    <Steno
+                                                                                        html={editedMessage}
+                                                                                        disable={false} //indicate that the editor has to be in edit mode
+                                                                                        onChange={(val) => {
+                                                                                            // console.log(val);
+                                                                                            setEditedMessage(val)
+                                                                                        }}
+                                                                                        innerRef={editEditorRef} //ref attached to the editor
+                                                                                        backgroundColor={'#000'}
+                                                                                        onChangeBackgroundColor={() => { }}
+                                                                                        fontColor={'#fff'}
+                                                                                        onChangeFontColor={() => { }}
+                                                                                        functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                                                        isToolBarVisible={false} //to show/hide the toolbar options
+                                                                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                                                        fileList={[]} //List of file object to track the files selected by user
+                                                                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                                                        sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                                                        onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                                                        minEditorHeight='20px' // Default will be 100px
+                                                                                        maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                                                        placeHolder="Message"
+                                                                                    />
+                                                                                    <div className='edit-btn'>
+                                                                                        <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
+                                                                                            <span className='save'></span>
+                                                                                            save</button>
+                                                                                        <button type='button' className='cancel-btn' onClick={editCancel}>
+                                                                                        <span className='cancel'></span>
+                                                                                        cancel</button>
+
+                                                                                    </div>
+                                                                                </div>}
+
+                                                                                {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
+
+                                                                                    {editId !== msg.id && parse(msg?.note?.message, options)}
+
+                                                                                    <div className='content-video'>
+
+                                                                                        {msg.note.file.map((files, index) => {
+                                                                                            return (<div className='content-wrapper-media' key={index}>
+
+                                                                                                {checkVideo(files, 'video') && <div className='wrapper-media'> <video src={files.file} onClick={() => {
+
+                                                                                                    videoClick(files.file)
+
+                                                                                                }}>
+
+                                                                                                </video>
+
+                                                                                                    {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
+
+                                                                                                    <div className='media-id'>{files?.name}</div>
+
+                                                                                                </div>}
+
+                                                                                                {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file}
+                                                                                                    onClick={() => {
+                                                                                                        playerType = 'image';
+                                                                                                        setOpenPopupPlayer(true);
+                                                                                                        setPlayerUrl(files.file);
+                                                                                                    }}></img>
+
+                                                                                                    <div className='media-id'>{files?.name}</div>
+
+                                                                                                </div>}
+
+                                                                                            </div>)
+
+                                                                                        })}
+
+                                                                                    </div>
+
+                                                                                </div>}
+
+                                                                            </div>
+
+                                                                            {validateEditChat(msg, false) && <div className='dot'>
+
+                                                                                <button onClick={(e) => chatmenu(e, msg.id, msg)} title="option"></button>
+
+                                                                            </div>}
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                )
+                                                            }
+                                                        })}
+
+                                                        {showReply && chatId === messages.id && <div className='reply-chat' id={`textbox-${messages.id}`}>
+
+                                                            {getUserNameImage(messageUserDetails,currentUserId, true,'message_detail')}
+
+                                                            {showReply && chatId === messages.id && <div className='topic-filter-search-iassist'>
+
+                                                                <div className='search'>
+
+                                                                    <Steno
+                                                                        html={replyMessage}
+                                                                        disable={false} //indicate that the editor has to be in edit mode
+                                                                        onChange={(val) => { setReplyMessage(val) }}
+                                                                        innerRef={replyEditorRef} //ref attached to the editor
+                                                                        backgroundColor={'#000'}
+                                                                        onChangeBackgroundColor={() => { }}
+                                                                        fontColor={'#fff'}
+                                                                        onChangeFontColor={() => { }}
+                                                                        functionRef={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
+                                                                        isToolBarVisible={false} //to show/hide the toolbar options
+                                                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                                        fileList={[]} //List of file object to track the files selected by user
+                                                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                                        sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                                        onEnterClickLogic={(e) => sendMessage(e, 'reply', messages.id)} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                                        minEditorHeight='20px' // Default will be 100px
+                                                                        maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                                        placeHolder="Reply"
+                                                                    />
+
+                                                                    <button className='rply-btn' onClick={(e) => sendMessage(e, 'reply', messages.id)} disabled={showVideoLoader}></button>
+
+                                                                </div>
+
+                                                                <RecordOption showScreenButton={showReplyScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'reply'} videoUrl={replyVideoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
+
+                                                                <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}></button></div>
+
+                                                            </div>}
+
+                                                        </div>}
+
+                                                    </div>
+
+                                                </div>
+
+                                                {!showSearch && editId !== messages.id && !messages.is_feedback && !messages.is_reopen && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>}
+                                            </div>
+
+                                        </div>
+                                    )
+                                })}
+
+                                {confirmDelete && <Delete deleteTopic={deleteTopic} topic={topic} setConfirmDelete={setConfirmDelete} disable={setConfirmDelete} />}
+
+                            </div>
+                        </div>
+
+                        {!showSearch && !confirmDelete && <div className='message' id='message'>
+                            {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
+
+                            {!showFeedback && <div className='topic-filter-search-iassist'>
+
+                                {<div className='search'>
+
+                                    <Steno
+                                        html={message}
+                                        disable={false} //indicate that the editor has to be in edit mode
+                                        onChange={(val) => { setMessage(val) }}
+                                        innerRef={editorRef} //ref attached to the editor
+                                        backgroundColor={'#000'}
+                                        onChangeBackgroundColor={() => { }}
+                                        fontColor={'#fff'}
+                                        onChangeFontColor={() => { }}
+                                        functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
+                                        isToolBarVisible={false} //to show/hide the toolbar options
+                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                        fileList={[]} //List of file object to track the files selected by user
+                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                        sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                        onEnterClickLogic={sendMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                        minEditorHeight='20px' // Default will be 100px
+                                        maxEditorHeight="300px" // Default maxHeight will be 250px
+                                        placeHolder={topic.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
+                                        onClick={() => onClickSteno()}
+                                    />
+
+                                    <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader || !message}></button>
+
+                                </div>}
+
+                            </div>}
+
+                            {!showFeedback && <div className='wrap-record'>
+
+                                <RecordOption showScreenButton={showScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'message'} videoUrl={videoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
+
+                            </div>}
+                            {!showFeedback &&  <div className='bottom-wrapper'>
+
+                                <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
+
+                                {((!activity || chatActivity.current) && topic && topic.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
+
+                                {activity && !chatActivity.current && topic.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
+
+                            </div>}
 
                         </div>}
-
-                    </div>}
-
-                    <div className='wrap-record'>
-
-                        <RecordOption showScreenButton={showScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'message'} videoUrl={videoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
-
                     </div>
-                    <div className='bottom-wrapper'>
-
-                        <div className='add-btn'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
-
-                        {((!activity || chatActivity.current) && topic && topic.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
-
-                        {activity && !chatActivity.current && topic.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
-
-                    </div>
-
-                </div>}
+                </div>
 
             </div>}
 

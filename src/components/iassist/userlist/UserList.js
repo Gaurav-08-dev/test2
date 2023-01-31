@@ -143,68 +143,56 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
             <div id='modal-content'>
 
-                <div className={"main-wrapper" + " " + position} id={id}>
+                <div className={"main-wrapper"} id={id}>
 
-                    {header && <div className='header-wrapper'>
-
-                        <div className='header-inner'>Manage Team</div>
-
+                    {header && <div className='iassist-panel-header'>
+                        <h4 className='header-title'>Manage Team</h4>
                         <button className='header-close' onClick={() => close(false)}></button>
-
                     </div>}
 
                     {!header && <div className='title'>Add members from your team to this ticket.</div>}
 
-                    <div className='search-wrapper'>
-
-                        <div className='topic-filter-search'>
-
-                            <div className='search'>
-
-                                <button className='btn' title='search'></button>
-
-                                <input type={'text'} title='Search' onChange={GetSearchUser} />
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div className='user-list-widget'>
-
-                        {header && <div className='user-heading'>Your Team</div>}
-
-                        {userDetail.length > 0 && userDetail.map((users) => {
-                            return (
-                                <div className='field-wrapper' key={users.id}>
-                                    <Avatar imgSrc={users.cover_img_url}
-                                        firstName={users.first_name}
-                                        lastName={users.last_name}
-                                        alt={`${users.first_name}'s pic`}
-                                        height={20}
-                                        width={20}
-                                        fontSize={9}
-                                        borderRadius={2} />
-
-                                    <span className='name'>{users.first_name} {users.last_name}</span>
-
-
-                                    <div className='user-button'>
-
-                                        {!collabs.current.includes(users.id) && users.id !== author && <button className='add' disabled={disable} onClick={(e) => selectusers(e, users)}>Add</button>}
-
-                                        {collabs.current.includes(users.id) && users.id !== author && <button className='remove' disabled={disable} onClick={(e) => removeUser(e, users)}>Remove</button>}
-
-                                    </div>
-
+                    <div className='iassist-panel-body'>
+                        <div className='search-wrapper'>
+                            <div className='topic-filter-search'>
+                                <div className='search'>
+                                    <button className='btn' title='search'></button>
+                                    <input type={'text'} title='Search' onChange={GetSearchUser} />
                                 </div>
-                            )
-                        })}
+                            </div>
+                        </div>
+                        <div className='user-list-widget'>
+                            {header && <div className='user-heading'>Your Team</div>}
+                            <div className='user-list-wrapper'>
+                                {userDetail.length > 0 && userDetail.map((users) => {
+                                    return (
+                                        <div className='field-wrapper' key={users.id}>
+                                            <div className='left'>
+                                                <Avatar imgSrc={users.cover_img_url}
+                                                    firstName={users.first_name}
+                                                    lastName={users.last_name}
+                                                    alt={`${users.first_name}'s pic`}
+                                                    height={20}
+                                                    width={20}
+                                                    fontSize={9}
+                                                    borderRadius={2} />
 
-                        {userDetail.length === 0 && <div style={{ color: '#B1B2B3' }}>No members added yet</div>}
+                                                <span className='name'>{users.first_name} {users.last_name}</span>
+                                            </div>
 
+                                            <div className='user-button'>
+                                                {!collabs.current.includes(users.id) && users.id !== author && <button className='add' disabled={disable} onClick={(e) => selectusers(e, users)}>Add</button>}
+                                                {collabs.current.includes(users.id) && users.id !== author && <button className='remove' disabled={disable} onClick={(e) => removeUser(e, users)}>Remove</button>}
+                                            </div>
+
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            {userDetail.length === 0 && <div style={{ color: '#B1B2B3' }}>No members added yet</div>}
+                        </div>
                     </div>
+
 
                     {showSupport.current && <div className='support-user-list-widget'>
 

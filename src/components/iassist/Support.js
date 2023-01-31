@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, memo } from 'react';
 import './Support.scss';
 import SpeedSelect from 'react-speedselect';
@@ -29,17 +28,13 @@ let reporter_id = 0;
 let type_id = 0;
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
-// let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
-let btnId = 'btn';
+let btnId = document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
 const Support = ({ closePane, topicClick, webSocket }) => {
 
-
     const prevSearchValue = useRef();
-
-
     const allTopics = useRef([]);
     const unReadList = useRef([]);
     const activity = useRef([]);
@@ -112,6 +107,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         type.unshift(defType);
 
     }
+
     if (reporters.length > 0 && reporters[0].id !== 'All') {
 
         reporters.unshift(defReporter);
@@ -358,7 +354,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             span.style.marginTop = '-16px';
 
             if (btn) btn.append(span);
-            console.log(btn);
+
         }
     }
 
@@ -381,6 +377,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                     // console.log('check');
                     changeValue(true);
                 }
+
+                const findUnread =  unReadList.current.find(topic => topic.topic_id === received_msg.topic_id)
+
+                if(!findUnread) unReadList.current = [...unReadList.current, {topic_id: received_msg.topic_id, unread_count: 1}]
 
                 unReadList.current.forEach((topic) => {
 
@@ -492,7 +492,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         }
 
-        // let supportContainer = document.getElementById('client-home');
+        // let supportContainer = document.getElementById('iassist-panel');
 
         // if (supportContainer && height) {
 
@@ -504,7 +504,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -552,7 +552,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             }
 
-            let home = document.getElementById('client-home');
+            let home = document.getElementById('iassist-panel');
 
             if (home && !(home.contains(event.target))) {
 
@@ -594,7 +594,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             return list.topic_id === topic.id;
         });
 
-        setUnReadCount(checkIndex.unread_count)
+       if(checkIndex) setUnReadCount(checkIndex.unread_count)
 
         setShowChat(true);
 
@@ -647,6 +647,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             return read.topic_id === id
 
         })
+
+        
+
 
         return data && data.length > 0 && data[0].unread_count > 0 ? true : false;
 
@@ -809,11 +812,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         <>
             {!TopicClick && !showChat &&
-                <div id='client-home' className='support-wrapper'>
+                <div id='iassist-panel' className='iassist-panel'>
 
-                    <div className='support-wrapper-inner'>
+                    <div className='iassist-panel-inner'>
 
-                        <div className='header-wrapper'>
+                        <div className='iassist-panel-header'>
 
                             {showLoader && <LoadingScreen />}
 
@@ -901,8 +904,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             </div>}
 
-                        <div className='panel-body'>
-                            <div className='filter-wrapper'>
+                        <div className='iassist-panel-body'>
+                            <div className='iassist-panel-filter-wrapper'>
 
                                 <div className={'tab-wrapper'}>
 
@@ -960,7 +963,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                                 <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
-                                                <Detail topic={topic} type={type} allUser={allUser.current} allAccount={allAccount.current} />
+                                                <Detail topic={topic} type={type} allUser={allUser.current.length?allUser.current:reporters} allAccount={allAccount.current} />
 
                                             </div>}
 
@@ -970,7 +973,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                                 {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here'/>}
 
-                                                {console.log(feedBackId !== topic.id && (statusTab === 'open'))}
+
                                                 {feedBackId !== topic.id && (statusTab === 'open') ?
                                                     <div className='topic-buttons'>
 
@@ -1017,7 +1020,10 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                     )
                                 })}
 
-                            {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
+                            {confirmDelete && <Delete deleteTopic={deleteTopic} 
+                                                      topic={deleteId} 
+                                                      setConfirmDelete={setConfirmDelete} 
+                                                      disable={setDisableButton} />}
                                 {allTopics.current.length === 0 && !initalLoad && !showLoader && <div className='no-record'>No Tickets Found </div>
 
                                 }
@@ -1032,7 +1038,18 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                       
             {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} />}
 
-            {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket} />}
+            {showChat && <ChatRoom closePane={closePanes} 
+                                   chatIds={chatId} 
+                                   unRead={unreadCount} 
+                                   topicDetail={indivTopic} 
+                                   allAccount={allAccount.current.length > 0?allAccount.current:reporters} 
+                                   allUser={allUser.current} 
+                                   type={type} 
+                                   activity={lastActivity} 
+                                   refresh={refresh} 
+                                   refreshState={refr} 
+                                   socketDetail={webSocket} />
+            }
 
         </>
     )

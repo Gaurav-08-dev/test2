@@ -94,10 +94,10 @@ const VideoRecord = ({ save, close, message }) => {
 
         interval.current = setInterval(() => {
 
-            console.log(closeInterval)
+
             if (!closeInterval) {
 
-                console.log("here")
+
                 startCountDown();
 
             } 
@@ -324,7 +324,7 @@ const VideoRecord = ({ save, close, message }) => {
 
     const start = async () => {
 
-        console.log("here")
+
         setEmpty(true);
 
         closeInterval=false;
@@ -824,42 +824,34 @@ const VideoRecord = ({ save, close, message }) => {
 
                         <div className="left-wrapper">
 
-                            <span>ID-{random}</span>
-
-                            <div className="delete-btn" onClick={() => {
+                            <span className="ss-id">ID-{random}</span>
+                            <button className="btn-with-icon btn-delete btn-small" onClick={() => {
                                 ctx = undefined;
                                 close(false)
                             }}>
-                                <button title="Delete"></button>Delete
-                            </div>
+                                <i></i>
+                                <span>Delete</span>
+                            </button>
 
-                            <div className="save-btn" onClick={(e) => {
+                            <button className="btn-with-icon btn-save btn-small" onClick={(e) => {
                                 ctx = undefined;
                                 undoStack = [];
                                 redoStack = [];
                                 save(e, videoBlob, random, message, getDataURL)
                             }}>
-
-                                <button title="Save File"></button>
-
-                                Save File
-
-                            </div>
+                                <i></i>
+                                <span>Save File</span>
+                            </button>
 
                         </div>
 
-                        {message === 'Shot' && <div className="right-wrapper">
+                        {message === 'Shot' && <div className="actions">
 
-                            {showTextBox && <input type={'text'} value={textBoxValue} onChange={onHandleInput} onKeyDown={onKeyDown}></input>}
-
-                            <div className="add-text" style={{ backgroundColor: showTextBox ? 'blue' : '', color: showTextBox ? 'white' : '' }} onClick={() => setShowTextBox(!showTextBox)}><button title="text"></button></div>
-
-                            <div className="draw-arrow" style={{ backgroundColor: drawArrow ? 'blue' : '', color: drawArrow ? 'white' : '' }} onClick={() => setDrawArrow(!drawArrow)}> <button title="draw"></button></div>
-
-                            <div className="undo" onClick={undo}><button title="undo"></button></div>
-
-                            <div className="redo" onClick={redo}><button title="redo"></button></div>
-
+                            {showTextBox && <div className="text-field"><input type={'text'} value={textBoxValue} onChange={onHandleInput} onKeyDown={onKeyDown}></input></div>}
+                            <button title="text" className="add-text" style={{ backgroundColor: showTextBox ? 'blue' : '', color: showTextBox ? 'white' : '' }} onClick={() => setShowTextBox(!showTextBox)}></button>
+                            <button title="draw" className="draw-arrow" style={{ backgroundColor: drawArrow ? 'blue' : '', color: drawArrow ? 'white' : '' }} onClick={() => setDrawArrow(!drawArrow)}></button>
+                            <button title="undo" className="undo" onClick={undo}></button>
+                            <button title="redo" className="redo" onClick={redo}></button>
                         </div>}
                     </div>
                     {message === 'Record' && <video src={videoUrl} controls></video>}

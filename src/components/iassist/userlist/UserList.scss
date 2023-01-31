@@ -1,121 +1,69 @@
 $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
 
 #modal, #overlay {
-    width: 100vw;
-    height: 100vh;
-    top: 0;
+    width: 100%;
+    height: calc(100% - 16px);
+    top: 16px;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 2;
-    position: fixed;
+    position: absolute;
 }
 
 #overlay {
-    background: rgba(49,49,49,0.8);
+    background-color: rgba(0,0,0,0.5);
 }
 
 #modal {
     #modal-content {
         position: absolute;
-        top: 25%;
-        left: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
         line-height: 1.4;
-        padding: 14px 28px;
         border-radius: 10px;
-        max-width: 500px;
-        min-width: 400px;
-        object-fit:contain;
         z-index:100;
+        width: 100%;
         .main-wrapper {
-            
-            background: #232931 0% 0% no-repeat padding-box;
+            background: #232931;
             max-width: 300px;
+            min-height: 435px;
+            max-height: 435px;
             width: 100%;
             padding: 0;
-            overflow: scroll;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             font-size: 11px;
+            margin: auto;
+            border-radius: 2px;
 
-            .title {
-                font: normal normal medium 11px/16px Poppins;
-            }
-
-            .header-wrapper {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
+            .iassist-panel-header {
                 position: sticky;
-                gap: 15px;
-                font-size: 11px;
                 top: 0;
-                background: #2F3741 0% 0% no-repeat padding-box;
-                
-                .header-inner {
-                    display: flex;
-                    justify-content: left;
-                    align-items: center;
-                    width: 100%;
-                    height: 30px;
-                    background-color: #2f3741;
-                    border-radius: 2px 0px 0px 0px;
-                    padding: 0 10px;
-                    font-size: 11px;
-                    font-weight: 400;
-                }
-                // span {
-                //     position: relative;
-                //     padding-left: 28px;
-                //     margin: 0 10px;
-
-                //     &:before,
-                //     &:after {
-                //         content: "";
-                //         position: absolute;
-                //         background-color: #fff;
-                //         top: 50%;
-                //         transform: translateY(-50%);
-                //         margin-top: 1px
-                //     }
-                //     &:before {
-                //         left: 0;
-                //         width: 15px;
-                //         height: 1px;
-                //         border-radius: 5px;
-                //     }
-                //     &:after {
-                //         left: 15px;
-                //         width: 6px;
-                //         height: 6px;
-                //         border-radius: 6px;
-                //     }
-                // }
+                padding: 3px 10px;
                 .header-close {
                     display: block;
-                    width: 11px; height: 11px;
+                    width: 11px;
+                    height: 11px;
                     mask: url($image-prefix + "icon-close.svg") no-repeat center center;
-                    -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center center;
-
-                    background: #fff;
-                    margin-right: 10px;
+                    background: #b1b2b3;
                 }
             }
 
             .search-wrapper {
-                padding: 10px 0;
                 .topic-filter-search {
-                    width: 340px; 
-                    height: 20px;
-                    margin-right: 5px;
-                    &:before{ display: none; }
-
+                    &:before{
+                        display: none;
+                    }
                     .search {
                         position: relative;
                         width: 100%;
-                        max-width: 280px;
                         display: flex;
                         align-items: center;
                         background: #000000 0% 0% no-repeat padding-box;
+                        height: 20px;
                         border-radius: 2px;
                         margin: 0;
 
@@ -148,27 +96,45 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                 padding-top: 15px;
             }
             .support-user-list-widget, .user-list-widget {
-                height: auto;
-                max-height: 250px;
-                overflow: scroll;
-                margin-bottom: 15px;
+                margin-top: 12px;
+                overflow: auto;
+                height: 100%;
+                .user-heading {
+                    color: #B1B2B3;
+                    margin-bottom: 6px;
+                }
+                .user-list-wrapper{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
                 .field-wrapper{
                     display: flex;
                     align-items: center;
-                    justify-content: left;
-                    margin: 10px 0;
+                    justify-content: space-between;
                     padding: 0;
                     width: 100%;
-                    .initial{ margin-right: 5px; }
-                    .name { width: 80%;}
+                    .left{
+                        display: flex;
+                        align-items: center;
+                        gap: 7px;
+                        text-transform: capitalize;
+                    }
                     .user-button {
-                        align-items: flex-end;
-                        .add {
-                            border-radius: 2px;
-                        }
-                        .remove {
-                            background: transparent;
-                            color: blue;
+                        button{
+                            padding: 0;
+                            background-color: transparent;
+                            font-weight: 500;
+                            transition: 300ms all;
+                            &.add {
+                                color: #00BB5A;
+                            }
+                            &.remove {
+                                color: #b1b2b3;
+                                &:hover{
+                                    color: #fff;
+                                }
+                            }
                         }
                     }
                 }
@@ -178,10 +144,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                     color: red;
                     background: #232931 0% 0% no-repeat padding-box;
                 }
-                .user-heading {
-                    // padding: 10px;
-                    color: #B1B2B3;
-                }
+                
             }
         }
 
@@ -190,17 +153,6 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             max-height: 200px;
             .support-user-list-widget {
                 display: none;
-            }
-        }
-        .absolute {
-            position: fixed;
-            z-index: 100000;
-            padding: 10px;
-            top:160px;
-            right: 73px;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-            .support-user-list-widget, .user-list-widget {
-                max-height: 150px;
             }
         }
     }
