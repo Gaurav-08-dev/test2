@@ -113,11 +113,11 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
 
-        // const linkTag = document.createElement("link");
-        // linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
-        // linkTag.rel = "stylesheet";
-        // linkTag.id = "iassist-css";
-        // bodyElement.append(linkTag);
+        const linkTag = document.createElement("link");
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
+        linkTag.rel = "stylesheet";
+        linkTag.id = "iassist-css";
+        bodyElement.append(linkTag);
 
         if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
             if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
