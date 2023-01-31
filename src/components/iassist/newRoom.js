@@ -516,7 +516,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -588,7 +588,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let chatContainer = document.getElementById('iassist-panel');
+            let chatContainer = document.getElementById('main-chat-container');
 
             // if (chatContainer && height) {
 
@@ -1558,7 +1558,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -1660,9 +1660,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         <>
 
-            {!showVideo && <div id='iassist-panel' className='iassist-panel'>
-                <div className='iassist-panel-inner'>
-                    <div className='iassist-panel-header'>
+            {!showVideo && <div id='main-chat-container' className='support-wrapper'>
+                <div className='support-wrapper-inner'>
+                    <div className='header-wrapper'>
 
                             <div className='header-back' onClick={() => {
                                 ws.close();
@@ -1738,7 +1738,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     {openPopupPlayer && <Player id='media-player' url={playerUrl} type={playerType} close={setOpenPopupPlayer} />}
 
-                    <div className='iassist-panel-title-widget'>
+                    <div className='title-widget'>
 
                         <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic && topic.name}
 
@@ -1752,7 +1752,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     </div>
 
-                    <div className='iassist-panel-body'>
+                    <div className='panel-body'>
                         <div className='msg-area'>
                             
 

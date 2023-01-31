@@ -145,14 +145,14 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
                 <div className={"main-wrapper"} id={id}>
 
-                    {header && <div className='iassist-panel-header'>
+                    {header && <div className='header-wrapper'>
                         <h4 className='header-title'>Manage Team</h4>
                         <button className='header-close' onClick={() => close(false)}></button>
                     </div>}
 
                     {!header && <div className='title'>Add members from your team to this ticket.</div>}
 
-                    <div className='iassist-panel-body'>
+                    <div className='panel-body'>
                         <div className='search-wrapper'>
                             <div className='topic-filter-search'>
                                 <div className='search'>
