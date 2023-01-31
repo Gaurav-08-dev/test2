@@ -504,7 +504,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -552,7 +552,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             }
 
-            let home = document.getElementById('iassist-panel');
+            let home = document.getElementById('client-home');
 
             if (home && !(home.contains(event.target))) {
 
@@ -812,11 +812,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         <>
             {!TopicClick && !showChat &&
-                <div id='iassist-panel' className='iassist-panel'>
+                <div id='client-home' className='support-wrapper'>
 
-                    <div className='iassist-panel-inner'>
+                    <div className='support-wrapper-inner'>
 
-                        <div className='iassist-panel-header'>
+                        <div className='header-wrapper'>
 
                             {showLoader && <LoadingScreen />}
 
@@ -904,8 +904,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             </div>}
 
-                        <div className='iassist-panel-body'>
-                            <div className='iassist-panel-filter-wrapper'>
+                        <div className='panel-body'>
+                            <div className='filter-wrapper'>
 
                                 <div className={'tab-wrapper'}>
 

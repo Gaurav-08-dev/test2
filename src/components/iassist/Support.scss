@@ -1,8 +1,8 @@
 $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
-#iassist-panel-wrapper{
+#iassist-panel-wrapper{#support-main-conatiner {
 
-.iassist-panel{
-  .iassist-panel-header {
+.support-wrapper{
+  .header-wrapper {
     .header-right{
       .filter-btn {
         padding: 0 15px;
@@ -231,7 +231,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
     }
   }
 
-  .iassist-panel-filter-wrapper {
+  .filter-wrapper {
     display: flex;
     padding-bottom: 15px;
     .tab-wrapper {
@@ -335,9 +335,10 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         //   }
         // }
 
-          .react-speedselect-container
-          .iassist-panel
-          .react-speedselect-container {
+        .create-chat-room
+        .react-speedselect-container
+        .support-wrapper
+        .react-speedselect-container {
           background-color: none;
         }
 
@@ -1912,5 +1913,6 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       overflow-y: auto;
     }
   }
+}
 }
 }

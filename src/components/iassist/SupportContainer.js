@@ -114,7 +114,7 @@ const SupportContainer = () => {
         const bodyElement = document.getElementsByTagName('body')[0];
 
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -176,12 +176,11 @@ const SupportContainer = () => {
 
 
     return (
-        <>
-
+        <div id="support-main-conatiner">
 
             {btnId === 'btn' && <div id="btn"> <button>one</button></div>}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket} />}
-        </>
+        </div>
 
     )
 }

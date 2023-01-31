@@ -1715,7 +1715,7 @@ textarea:focus {
 /*------------Support Global Style------------*/
 $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
 
-.iassist-panel{
+.support-wrapper{
   width: 450px;
   position: fixed;
   top: 35px;
@@ -1728,14 +1728,14 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
   text-align: left;
   z-index: 100000;
 
-  .iassist-panel-inner{
+  .support-wrapper-inner{
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
 
-    .iassist-panel-header {
+    .header-wrapper {
       padding: 6px 10px;
       display: flex;
       justify-content: space-between;
@@ -1983,7 +1983,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       }
     }
   
-    .iassist-panel-body {
+    .panel-body {
       display: flex;
       flex-direction: column;
       height: 100%;

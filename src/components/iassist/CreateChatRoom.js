@@ -126,7 +126,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+            let conatinerWrapper = document.getElementsByClassName('create-chat-room');
 
             conatinerWrapper[0].style.top = '65px';
             // conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -154,7 +154,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
                 suggestIndex = -1;
 
             }
-            let container = document.getElementById('iassist-panel');
+            let container = document.getElementById('create-chat-room');
 
             if ((container && !(container.contains(event.target)))) {
 
@@ -584,7 +584,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+            let conatinerWrapper = document.getElementsByClassName('create-chat-room');
 
             conatinerWrapper[0].style.top = '65px';
             // conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -601,9 +601,9 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
         <>
 
             {!showVideo && !chatRoom &&
-                <div id='iassist-panel' className='iassist-panel'>
-                    <div className='iassist-panel-inner'>
-                        <div className='iassist-panel-header'>
+                <div id='create-chat-room' className='create-chat-room support-wrapper'>
+                    <div className='support-wrapper-inner'>
+                        <div className='header-wrapper'>
                             <div className='title-with-breadcrumb'>
                                 <h4 className='header-title' onClick={() => setNavigateSupport(true)}>iAssist</h4>
                                 <div className="breadcrumb">
@@ -619,7 +619,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
                         </div>
                         {showLoading && <LoadingScreen />}
-                        <div className='iassist-panel-body'>
+                        <div className='panel-body'>
                             <div className='create-ticket-wrapper'>
                                 <div className='field-with-label'>
                                     <label>Topic</label>
