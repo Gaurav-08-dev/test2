@@ -8,10 +8,10 @@ import Toast from "./components/Toast/Toast"
 function App() {
   
   return (
-    <div className="App">
-    <Toast/>
+    <>
+      <Toast/>
       <SupportContainer />
-    </div>
+    </>
   );
 }
 
