@@ -72,9 +72,9 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
   }
 
   .video-url {
-    grid-template-columns: 30% 30% 30% !important;
+    // grid-template-columns: 30% 30% 30% !important;
     gap: 10px;
-    width: 90%;
+    padding-bottom: 10px;
   }
   #video-content-wrapper {
     display: grid;

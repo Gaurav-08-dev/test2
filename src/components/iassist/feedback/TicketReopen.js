@@ -159,7 +159,7 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
             </div>
 
-            <div className='submit-wrapper'>
+            <div className='feedback-btn-wrapper'>
 
                 {<button className='btn-with-icon btn-small btn-approve' disabled={disabledButton} onClick={submitReOpen}><i></i><span>Confirm</span></button>}
 

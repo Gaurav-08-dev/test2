@@ -36,14 +36,6 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
           padding-right: 3px;
           margin: -3px 0;
         }
-        .number {
-          border-radius: 2px;
-          padding: 3px;
-          background-color: grey;
-          font-size: 9px;
-          width: 20px;
-          height: 20px;
-        }
       }
 
       .unread {
@@ -99,7 +91,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat center center;
         -webkit-mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat center
           center;
-
+        transition: 300ms all;
         background: #fff;
         margin: 1px 6px;
       }
@@ -501,6 +493,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
               margin: -3px 5px;
             }
             .reply-sub-wrapper {
+              width: 100%;
               .content-reply {
                 font-size: 11px;
                 overflow-y: auto;
@@ -584,7 +577,6 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       }
       .reply-chat {
         display: flex;
-        align-items: center;
         padding-bottom: 20px;
         gap: 10px;
         .topic-filter-search-iassist{
@@ -614,6 +606,11 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
               border-radius: 50%;
             }
           }
+        }
+        .reply-chat-wrapper{
+          background-color: #000;
+          border-radius: 2px;
+          width: 100%;
         }
       }
       .topic-filter-search-iassist {

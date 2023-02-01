@@ -1707,7 +1707,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                         if (index === 3) {
 
-                                            return <span className='number' key={index}> +{clientUser.length - 3}</span>
+                                            return <span className='number' key={index}> {clientUser.length - 3}</span>
 
                                         } else { return }
 
@@ -1754,9 +1754,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     <div className='panel-body'>
                         <div className='msg-area'>
-                            
-
-                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
 
                             <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
@@ -2055,44 +2052,46 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                             {getUserNameImage(messageUserDetails,currentUserId, true,'message_detail')}
 
-                                                            {showReply && chatId === messages.id && <div className='topic-filter-search-iassist'>
+                                                            {showReply && chatId === messages.id && <div className='reply-chat-wrapper'>
+                                                                <div className='topic-filter-search-iassist'>
 
-                                                                <div className='search'>
+                                                                    <div className='search'>
 
-                                                                    <Steno
-                                                                        html={replyMessage}
-                                                                        disable={false} //indicate that the editor has to be in edit mode
-                                                                        onChange={(val) => { setReplyMessage(val) }}
-                                                                        innerRef={replyEditorRef} //ref attached to the editor
-                                                                        backgroundColor={'#000'}
-                                                                        onChangeBackgroundColor={() => { }}
-                                                                        fontColor={'#fff'}
-                                                                        onChangeFontColor={() => { }}
-                                                                        functionRef={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
-                                                                        isToolBarVisible={false} //to show/hide the toolbar options
-                                                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                                                        fileList={[]} //List of file object to track the files selected by user
-                                                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                                                        sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                                                        onEnterClickLogic={(e) => sendMessage(e, 'reply', messages.id)} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                                                        minEditorHeight='20px' // Default will be 100px
-                                                                        maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                                        placeHolder="Reply"
-                                                                    />
+                                                                        <Steno
+                                                                            html={replyMessage}
+                                                                            disable={false} //indicate that the editor has to be in edit mode
+                                                                            onChange={(val) => { setReplyMessage(val) }}
+                                                                            innerRef={replyEditorRef} //ref attached to the editor
+                                                                            backgroundColor={'#000'}
+                                                                            onChangeBackgroundColor={() => { }}
+                                                                            fontColor={'#fff'}
+                                                                            onChangeFontColor={() => { }}
+                                                                            functionRef={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
+                                                                            isToolBarVisible={false} //to show/hide the toolbar options
+                                                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                                            fileList={[]} //List of file object to track the files selected by user
+                                                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                                            sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                                            onEnterClickLogic={(e) => sendMessage(e, 'reply', messages.id)} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                                            minEditorHeight='20px' // Default will be 100px
+                                                                            maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                                            placeHolder="Reply"
+                                                                        />
 
-                                                                    <button className='rply-btn' onClick={(e) => sendMessage(e, 'reply', messages.id)} disabled={showVideoLoader}></button>
+                                                                        <button className='rply-btn' onClick={(e) => sendMessage(e, 'reply', messages.id)} disabled={showVideoLoader}></button>
+
+                                                                    </div>
+
+                                                                    <RecordOption showScreenButton={showReplyScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'reply'} videoUrl={replyVideoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
+
+                                                                    <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}></button></div>
 
                                                                 </div>
-
-                                                                <RecordOption showScreenButton={showReplyScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'reply'} videoUrl={replyVideoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
-
-                                                                <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}></button></div>
-
                                                             </div>}
 
                                                         </div>}
@@ -2116,7 +2115,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                         {!showSearch && !confirmDelete && <div className='message' id='message'>
                             {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
 
-                            {!showFeedback && <div className='topic-filter-search-iassist'>
+                            {/* Reopen Msg */}
+                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
+
+                            {!showFeedback && !showReopen && <div className='topic-filter-search-iassist'>
 
                                 {<div className='search'>
 
@@ -2153,12 +2155,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                             </div>}
 
-                            {!showFeedback && <div className='wrap-record'>
+                            {!showFeedback && !showReopen && <div className='wrap-record'>
 
                                 <RecordOption showScreenButton={showScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'message'} videoUrl={videoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
 
                             </div>}
-                            {!showFeedback &&  <div className='bottom-wrapper'>
+                            {!showFeedback && !showReopen && <div className='bottom-wrapper'>
 
                                 <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
 

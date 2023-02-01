@@ -274,4 +274,31 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       background-color: #00bb5a;
     }
   }
+  .iassist-panel-popup-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(0 0 0 / 62%) 0% 0% no-repeat padding-box;
+    padding: 10px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    .details {
+      font-size: 15px;
+      padding: 20px;
+      font-weight: 700;
+    }
+
+    .iassist-panel-btn {
+      display: flex;
+      gap: 10px;
+    }
+  }
+
 }

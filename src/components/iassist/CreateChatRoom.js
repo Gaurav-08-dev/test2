@@ -87,6 +87,8 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
     const [deleteSavedItem, setDeleteSavedItem] = useState(false);
 
+    const [openPopUp, setOpenPopUp] = useState(false);
+
     const fetchTypeData = async () => {
 
         const jwt_token = getToken();
@@ -605,7 +607,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
                     <div className='support-wrapper-inner'>
                         <div className='header-wrapper'>
                             <div className='title-with-breadcrumb'>
-                                <h4 className='header-title' onClick={() => setNavigateSupport(true)}>iAssist</h4>
+                                <h4 className='header-title' onClick={() => setOpenPopUp(true)}>iAssist</h4>
                                 <div className="breadcrumb">
                                     <ul>
                                         <li>New Ticket</li>
@@ -733,10 +735,20 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
                             {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
 
-                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => setNavigateSupport(true)}><i></i><span>Cancel</span></button>
+                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => setOpenPopUp(true)}><i></i><span>Cancel</span></button>
 
                         </div>
                     </div>
+                    {openPopUp && <div className='iassist-panel-popup-wrapper'>
+
+                            <div className='details'> Do you want to go back?</div>
+                            <div className='iassist-panel-btn'>
+                                <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
+
+                                <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
+                            </div>
+
+                        </div>}
                 </div>
 
 
