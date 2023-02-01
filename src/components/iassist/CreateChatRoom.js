@@ -623,7 +623,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
                         {showLoading && <LoadingScreen />}
                         <div className='panel-body'>
                             <div className='create-ticket-wrapper'>
-                                <div className='field-with-label'>
+                                <div className='field-w-label'>
                                     <label>Topic</label>
                                     <div className='field' onClick={() => titleRef.current.focus()}>
                                         {/* <textarea ref={titleRef} rows={topicRow} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></textarea> */}
@@ -631,7 +631,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
                                         <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
                                     </div>
                                 </div>
-                                <div className='field-with-label'>
+                                <div className='field-w-label'>
                                     <label>Tags</label>
                                     <div className='field tags' onClick={() => tagRef.current.focus()}>
                                         {tagList.length > 0 && tagList.map((tag, index) => (
@@ -656,7 +656,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
                                         </div>}
                                     </div>
                                 </div>
-                                <div className='field-with-label'>
+                                <div className='field-w-label'>
                                     <label>Description</label>
                                     <div className='field textarea'>
                                         <textarea value={topicDescriptions} rows={row} onChange={(e) => handleInputChange(e, 'description')}></textarea>
