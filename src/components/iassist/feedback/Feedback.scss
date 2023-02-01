@@ -52,7 +52,7 @@
     }
   }
 
-  .submit-wrapper {
+  .feedback-btn-wrapper  {
     width: 100%;
     display: flex;
     align-items: center;
@@ -87,20 +87,7 @@
   }
 }
 
-.feedback-wrapper {
+.feedback-wrapper, .reopen-wrapper {
   padding: 10px;
   margin: 0;
-}
-
-.reopen-wrapper {
-  position: absolute;
-  bottom: 0%;
-  padding: 10px;
-  margin: 10px;
-  max-width: 434px;
-  .content-wrapper {
-    .textarea {
-      margin-top: 10px;
-    }
-  }
 }

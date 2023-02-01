@@ -173,7 +173,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
             </div>
 
-            <div className='submit-wrapper'>
+            <div className='feedback-btn-wrapper'>
 
                 {<button className='btn-with-icon btn-approve btn-small' disabled={disableButton} onClick={submitFeedback}><i></i><span>Confirm</span></button>}
 

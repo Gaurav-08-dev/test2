@@ -5,6 +5,8 @@
 // @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
+$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+
 :root {
   --field-border-color: rgba(255, 255, 255, 0.5);
   --field-label-bg: #232931;
@@ -182,8 +184,8 @@ button {
 //     position: absolute;
 //     top: -0.96vw;
 //     left: -1.08vw;
-//     -webkit-mask: url("../images/loading2.svg") no-repeat center center;
-//     mask: url("../images/loading2.svg");
+//     -webkit-mask: url($image-prefix + "loading2.svg") no-repeat center center;
+//     mask: url($image-prefix + "loading2.svg");
 //     background: #fff;
 //     mask-repeat: no-repeat;
 //     mask-position: center center;
@@ -380,8 +382,8 @@ button {
     .btn-close {
       width: 20px;
       height: 20px;
-      -webkit-mask: url("../images/icon-close1.svg") no-repeat center center;
-      mask: url("../images/icon-close1.svg") no-repeat center center;
+      -webkit-mask: url($image-prefix + "icon-close1.svg") no-repeat center center;
+      mask: url($image-prefix + "icon-close1.svg") no-repeat center center;
       -webkit-mask-size: 20px;
       mask-size: 20px;
       background: red;
@@ -417,8 +419,8 @@ button {
         left: 0;
         width: 18px;
         height: 18px;
-        -webkit-mask: url("../images/icon-info.svg") no-repeat center center;
-        mask: url("../images/icon-info.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-info.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-info.svg") no-repeat center center;
         -webkit-mask-size: 18px;
         mask-size: 18px;
         background: #000;
@@ -431,8 +433,8 @@ button {
       color: green;
 
       &:before {
-        -webkit-mask: url("../images/icon-alert-warning.svg") no-repeat center center;
-        mask: url("../images/icon-alert-warning.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-alert-warning.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-alert-warning.svg") no-repeat center center;
         -webkit-mask-size: 18px;
         mask-size: 18px;
         background: green;
@@ -444,8 +446,8 @@ button {
       color: #FF0000;
 
       &:before {
-        -webkit-mask: url("../images/icon-alert-warning.svg") no-repeat center center;
-        mask: url("../images/icon-alert-warning.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-alert-warning.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-alert-warning.svg") no-repeat center center;
         -webkit-mask-size: 18px;
         mask-size: 18px;
         background: #FF0000;
@@ -762,16 +764,16 @@ button {
 
 //         &.desc {
 //           top: 2px;
-//           -webkit-mask: url("../images/icon-sort-down.svg") no-repeat center center;
-//           mask: url("../images/icon-sort-down.svg");
+//           -webkit-mask: url($image-prefix + "icon-sort-down.svg") no-repeat center center;
+//           mask: url($image-prefix + "icon-sort-down.svg");
 //           mask-repeat: no-repeat;
 //           mask-position: center center;
 //           -webkit-mask-size: 10px;
 //           mask-size: 10px;
 //         }
 //         &.asc {
-//           -webkit-mask: url("../images/icon-sort-up.svg") no-repeat center center;
-//           mask: url("../images/icon-sort-up.svg");
+//           -webkit-mask: url($image-prefix + "icon-sort-up.svg") no-repeat center center;
+//           mask: url($image-prefix + "icon-sort-up.svg");
 //           mask-repeat: no-repeat;
 //           mask-position: center center;
 //           -webkit-mask-size: 10px;
@@ -836,8 +838,8 @@ button {
 //     height: 40px;
 //     text-indent: -999em;
 //     background-color: #666;
-//     -webkit-mask-image: url("../images/icon-arrow-down.svg");
-//     mask-image: url("../images/icon-arrow-down.svg");
+//     -webkit-mask-image: url($image-prefix + "icon-arrow-down.svg");
+//     mask-image: url($image-prefix + "icon-arrow-down.svg");
 //     -webkit-mask-size: 28px;
 //     -webkit-mask-repeat: no-repeat;
 //     -webkit-mask-position: center center;
@@ -1265,9 +1267,9 @@ textarea:focus {
     background: theme-color("primary", "run-btn-green");
     i {
       &:before {
-        mask: url("../images/icon-run-btn.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-run-btn.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-run-btn.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-run-btn.svg") no-repeat center center;
         -webkit-mask-size:10px;
       }
     }
@@ -1283,9 +1285,9 @@ textarea:focus {
     background: theme-color("primary", "run-btn-green");
     i {
       &:before {
-        mask: url("../images/icon-save.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-save.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-save.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-save.svg") no-repeat center center;
         -webkit-mask-size:10px;
       }
     }
@@ -1295,9 +1297,9 @@ textarea:focus {
     background: theme-color("primary", "run-btn-green");
     i {
       &:before {
-        mask: url("../images/icon-share-new.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-share-new.svg") no-repeat center center;
         mask-size: 8px !important;
-        -webkit-mask: url("../images/icon-share-new.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-share-new.svg") no-repeat center center;
         -webkit-mask-size: 8px !important;
         height: 12px;
       }
@@ -1307,9 +1309,9 @@ textarea:focus {
     background: theme-color("primary", "yellow");
     i {
       &:before {
-        mask: url("../images/icon-close-lite.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-close-lite.svg") no-repeat center center;
         mask-size: 8px;
-        -webkit-mask: url("../images/icon-close-lite.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-close-lite.svg") no-repeat center center;
         -webkit-mask-size: 8px;
         transform: rotate(45deg);
       }
@@ -1325,9 +1327,9 @@ textarea:focus {
     background: theme-color("primary", "yellow");
     i {
       &:before {
-        mask: url("../images/icon-create.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-create.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-create.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-create.svg") no-repeat center center;
         -webkit-mask-size:10px;
       }
     }
@@ -1343,9 +1345,9 @@ textarea:focus {
     color: var(--reverse-font-color);
     i {
       &:before {
-        mask: url("../images/icon-reset-btn.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-reset-btn.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-reset-btn.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-reset-btn.svg") no-repeat center center;
         -webkit-mask-size:10px;
         height: 10px;
         background-color: var(--reverse-font-color);
@@ -1357,9 +1359,9 @@ textarea:focus {
     color: #fff;
     i {
       &:before {
-        mask: url("../images/icon-delete.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-delete.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #fff;
       }
@@ -1370,9 +1372,9 @@ textarea:focus {
     color: #000;
     i {
       &:before {
-        mask: url("../images/icon-archive.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-archive.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-archive.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-archive.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #000;
       }
@@ -1383,9 +1385,9 @@ textarea:focus {
     color: #000;
     i {
       &:before {
-        mask: url("../images/icon-edit.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-edit.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-edit.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-edit.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #000;
       }
@@ -1395,9 +1397,9 @@ textarea:focus {
     background: theme-color("primary", "light");
     i {
       &:before {
-        mask: url("../images/icon-run-btn.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-run-btn.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-run-btn.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-run-btn.svg") no-repeat center center;
         -webkit-mask-size:10px;
       }
     }
@@ -1407,9 +1409,9 @@ textarea:focus {
     color: #000;
     i {
       &:before {
-        mask: url("../images/icon-plus_round.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-plus_round.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-plus_round.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-plus_round.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #000;
       }
@@ -1420,9 +1422,9 @@ textarea:focus {
     color: #000;
     i {
       &:before {
-        mask: url("../images/icon-copy.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-copy.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-copy.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-copy.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #000;
       }
@@ -1433,9 +1435,9 @@ textarea:focus {
     color: #fff;
     i {
       &:before {
-        mask: url("../images/icon-close-lite.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-close-lite.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-close-lite.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-close-lite.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #fff;
       }
@@ -1446,9 +1448,9 @@ textarea:focus {
     color: #000;
     i {
       &:before {
-        mask: url("../images/icon-save.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-save.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-save.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-save.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #000;
       }
@@ -1458,9 +1460,9 @@ textarea:focus {
     background-color: #fff;
     i {
       &:before {
-        mask: url("../images/icon-preference.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-preference.svg") no-repeat center center;
         mask-size: 12px;
-        -webkit-mask: url("../images/icon-preference.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-preference.svg") no-repeat center center;
         -webkit-mask-size: 12px;
         background-color: var(--reverse-font-color);
       }
@@ -1471,9 +1473,9 @@ textarea:focus {
     color: #000;
     i {
       &:before {
-        mask: url("../images/icon-settings.svg") no-repeat center center;
+        mask: url($image-prefix + "icon-settings.svg") no-repeat center center;
         mask-size:10px;
-        -webkit-mask: url("../images/icon-settings.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-settings.svg") no-repeat center center;
         -webkit-mask-size:10px;
         background-color: #000;
       }
@@ -1515,8 +1517,8 @@ textarea:focus {
 //     transform: translateY(-50%);
 //     width: 12px;
 //     height: 12px;
-//     -webkit-mask: url("../images/icon-search.svg") no-repeat center center;
-//     mask: url("../images/icon-search.svg") no-repeat center center;
+//     -webkit-mask: url($image-prefix + "icon-search.svg") no-repeat center center;
+//     mask: url($image-prefix + "icon-search.svg") no-repeat center center;
 //     -webkit-mask-size: 12px;
 //     mask-size: 12px;
 //     background-color: var(--tm-global-search-icon-color);
@@ -1638,14 +1640,14 @@ textarea:focus {
 //             height: 10px;
             
 //             &.btn-expand {
-//               mask: url("../images/icon-more-menu.svg") no-repeat center center;
+//               mask: url($image-prefix + "icon-more-menu.svg") no-repeat center center;
 //               @include mask-size(12px);
 //               width: 12px;
 //               height: 12px;
 //             }
             
 //             &.btn-close {
-//               mask: url("../images/icon-close.svg") no-repeat center center;
+//               mask: url($image-prefix + "icon-close.svg") no-repeat center center;
 //               mask-size:10px;
 //             }
 //           }
@@ -1944,10 +1946,16 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
           .number {
             border-radius: 2px;
             padding: 3px;
-            background-color: grey;
+            background-color: #b1b2b3;
             font-size: 9px;
             width: 20px;
             height: 20px;
+            position: absolute !important;
+            right: 8px;
+            border: 1px solid #333;
+            padding-left: 7px;
+            color: #333;
+            text-align: center;
           }
         }
         
