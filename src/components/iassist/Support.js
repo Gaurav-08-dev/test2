@@ -904,7 +904,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             </div>}
 
-                        <div className='panel-body'>
+                        <div className='iassist-panel-body'>
                             <div className='filter-wrapper'>
 
                                 <div className={'tab-wrapper'}>

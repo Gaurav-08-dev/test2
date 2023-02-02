@@ -152,7 +152,7 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
                     {!header && <div className='title'>Add members from your team to this ticket.</div>}
 
-                    <div className='panel-body'>
+                    <div className='iassist-panel-body'>
                         <div className='search-wrapper'>
                             <div className='topic-filter-search'>
                                 <div className='search'>

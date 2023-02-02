@@ -630,7 +630,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
                         </div>
                         {showLoading && <LoadingScreen />}
-                        <div className='panel-body'>
+                        <div className='iassist-panel-body'>
                             <div className='create-ticket-wrapper'>
                                 <div className='field-w-label'>
                                     <label>Topic</label>

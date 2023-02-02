@@ -1773,7 +1773,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                     author={topic && topic.user_id}
                                     id='user-list' topic={topic}
                                 />}
-                    <div className='panel-body'>
+                    <div className='iassist-panel-body'>
                         <div className='msg-area'>
                         {
                                     !confirmDelete && !showUserDataFetching && showSearch && !messageList.length && <span className='no-message-notification'>No Message Available</span> 
