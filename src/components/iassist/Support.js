@@ -28,9 +28,9 @@ let defType = { 'name': 'All', 'id': 'All' };
 let defReporter = { 'first_name': 'All', 'id': 'All' };
 let reporter_id = 0;
 let type_id = 0;
-let allTopics = [];
-let activity = [];
-let unReadList = [];
+// let allTopics = [];
+// let activity = [];
+// let unReadList = [];
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
 let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
@@ -39,6 +39,12 @@ let btnId = document.getElementById("test-div").getAttribute("data-buttonid") ||
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
 const Support = ({ closePane, topicClick, webSocket }) => {
+
+    const allTopics = useRef([]);
+    const unReadList = useRef([]);
+    const activity = useRef([]);
+
+
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -137,11 +143,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         }
 
         if (isDelete === 'delete') {
-            allTopics = [];
-            unReadList = [];
+            allTopics.current = [];
+            unReadList.current = [];
             allUser.current = [];
             allAccount.current = [];
-            activity = [];
+            activity.current = [];
         }
 
 
@@ -167,13 +173,13 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                         if (key === 'topic_data') {
 
                             data?.forEach((topicValue) =>
-                                allTopics.push(topicValue)
+                                allTopics.current.push(topicValue)
                             )
 
                         } else if (key === 'unread_data') {
 
                             data?.forEach((unread) => {
-                                unReadList.push(unread);
+                                unReadList.current.push(unread);
                             })
 
                         } else if (key === 'pagination') {
@@ -197,7 +203,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                         } else if (key === 'activity') {
 
                             data?.forEach((act) => {
-                                activity.push(act);
+                                activity.current.push(act);
                             })
 
                         }
@@ -280,11 +286,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         if (key === 'topic_data') {
 
-                            allTopics = data;
+                            allTopics.current = data;
 
                         } else if (key === 'unread_data') {
 
-                            unReadList = data;
+                            unReadList.current = data;
 
                         } else if (key === 'pagination') {
 
@@ -294,7 +300,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'message' && data === 'no tickets found') {
 
-                            allTopics = [];
+                            allTopics.current = [];
 
                         } else if (key === 'user_data') {
 
@@ -306,7 +312,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                         } else if (key === 'activity') {
 
-                            activity = data;
+                            activity.current = data;
 
                         }
 
@@ -366,16 +372,16 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
             changeValue(isUnread);
         } else if (received_msg.type === 'chat') {
-            let user = getUser();
+            // let user = getUser();
             if (chatId !== received_msg.topic_id) {
                 if (!document.getElementById('iassist-unread')) {
                     console.log('check');
                     changeValue(true);
                 }
 
-                unReadList.filter((topic) => {
+                unReadList.current.filter((topic) => {
 
-                    if (allTopics.length > 0) {
+                    if (allTopics.current.length > 0) {
 
                         if (topic.topic_id === received_msg.topic_id) {
 
@@ -507,7 +513,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         }
 
-        // if (allTopics.length === 0) {
+        // if (allTopics.current.length === 0) {
 
         getTopics();
 
@@ -517,7 +523,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
             if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
 
-                let checkScroll = allTopics.length === pageNumber * 10;
+                let checkScroll = allTopics.current.length === pageNumber * 10;
 
                 if (checkScroll) {
 
@@ -569,11 +575,11 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const clearData = () => {
 
-        allTopics = [];
+        allTopics.current = [];
 
-        activity = [];
+        activity.current = [];
 
-        unReadList = [];
+        unReadList.current = [];
 
         pageNumber = 1;
 
@@ -585,7 +591,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         setLastActivity(data);
 
-        let checkIndex = unReadList.find((list) => {
+        let checkIndex = unReadList.current.find((list) => {
             return list.topic_id === topic.id;
         });
 
@@ -638,7 +644,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const showUnreadNotification = (id) => {
 
-        let data = unReadList.filter(read => {
+        let data = unReadList.current.filter(read => {
             return read.topic_id === id
 
         })
@@ -721,13 +727,15 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
     const clearFilter = () => {
 
-        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date') {
+        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date' || unRead) {
 
             reporter_id = 0;
 
             type_id = 0;
 
             dates = 'Date';
+
+            unRead = false;
 
             setTypeLabel('All');
 
@@ -754,20 +762,20 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     let result = response;
 
-                    if (allTopics.length > 10) {
+                    if (allTopics.current.length > 10) {
 
-                        let index = allTopics.findIndex((topic) => {
+                        let index = allTopics.current.findIndex((topic) => {
                             return topic.id === data;
                         })
 
-                        allTopics.splice(index, 1);
+                        allTopics.current.splice(index, 1);
 
                     } else {
 
                         getTopics('delete');
 
                     }
-                    
+
                     alertService.showToast('success', result.message);
 
                     setConfirmDelete(false);
@@ -786,7 +794,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
     const checkLastActivity = (id) => {
 
-        let data = activity.filter((val) => val.id === id);
+        let data = activity.current.filter((val) => val.id === id);
 
         return data.length > 0 && data[0].activity_status === 0 ? true : false;
 
@@ -797,7 +805,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             searchTopic(searchString)
         }
     }
-    
+
 
 
     return (
@@ -895,7 +903,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                             tabData = 'open';
                                             setStatusTab('open');
 
-                                            allTopics = [];
+                                            allTopics.current = [];
                                             clearData();
                                             getTopics();
                                         }
@@ -909,7 +917,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                         if (tabData !== 'resolved') {
                                             tabData = 'resolved';
                                             setStatusTab('resolved');
-                                            allTopics = [];
+                                            allTopics.current = [];
                                             clearData();
                                             getTopics();
                                         }
@@ -925,7 +933,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                             <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
 
-                                {!confirmDelete && allTopics.length > 0 && allTopics.map((topic, index) => {
+                                {!confirmDelete && allTopics.current.length > 0 && allTopics.current.map((topic, index) => {
 
                                     return (
                                         <div className='topic' key={topic.id}>
@@ -948,7 +956,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                             {<div className='topic-meta'>
 
-                                                {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
+                                                {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} />}
                                                 {feedBackId !== topic.id && (statusTab === 'open') &&
                                                     <div className='topic-buttons'>
 
@@ -970,7 +978,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                                     </div>}
 
-                                                {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics} setLoader={setShowLoader}/>}
+                                                {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} />}
                                                 {(statusTab === 'resolved') && <div className='topic-buttons'>
 
                                                     {getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
@@ -989,8 +997,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                     )
                                 })}
 
-                            {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
-                                {allTopics.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
+                                {confirmDelete && <Delete deleteTopic={deleteTopic} topic={deleteId} setConfirmDelete={setConfirmDelete} disable={setDisableButton} />}
+                                {allTopics.current.length === 0 && !initalLoad && <div className='no-record'>No Tickets Found </div>
 
                                 }
                             </div>
@@ -1001,7 +1009,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                 </div>}
 
 
-                      
+
             {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} />}
 
             {showChat && <ChatRoom closePane={closePanes} chatIds={chatId} unRead={unreadCount} topicDetail={indivTopic} allAccount={allAccount.current} allUser={allUser.current} type={type} activity={lastActivity} refresh={refresh} refreshState={refr} socketDetail={webSocket} />}

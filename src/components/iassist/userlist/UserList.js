@@ -1,7 +1,7 @@
 import React,{ useEffect, useState } from 'react';
 import alertService from '../../../services/alertService';
 import APIService from '../../../services/apiService';
-import { getToken, getUser } from '../../../utils/Common';
+import { getToken } from '../../../utils/Common';
 import * as Constants from '../../Constants';
 import Avatar from '../../Avatar/Avatar';
 import './UserList.scss'
@@ -13,7 +13,7 @@ import './UserList.scss'
 // userSelect => method to call when user got select
 // collaborator => selected userList
 // close =>  close the pane
-const UserList = ({ user, clientUser, supportUser, position, height, header, userSelect, collaborator, close, author, id, topic }) => {
+const UserList = ({clientUser, supportUser, position, header, userSelect, collaborator, close, author, id, topic }) => {
 
     const [userDetail, setUserDetails] = useState(clientUser ? clientUser : []);
 

@@ -12,7 +12,7 @@ let btnId = document.getElementById("test-div").getAttribute("data-buttonid") ||
 
 // let position = document.getElementById("test-div").getAttribute("data-position");
 
-console.log('btn', btnId);
+// console.log('btn', btnId);
 
 const SupportContainer = () => {
 

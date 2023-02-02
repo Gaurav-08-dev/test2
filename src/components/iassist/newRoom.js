@@ -83,8 +83,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [navigateHome, setNavigateHome] = useState(false);
 
-    const [users, setUser] = useState([]);
-
     const [searchString, setSearchString] = useState('');
 
     const [clientUser, setClientUser] = useState([]);
@@ -638,7 +636,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         } else if (received_msg.parent_note_id !== 0) {
 
-            messageList.filter((ms) => {
+            messageList.filter((ms) => { //! forEach can be used
 
                 if (ms.id === received_msg.parent_note_id) {
 
@@ -736,7 +734,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }, [topic.activity_collaborate, topic.activity_chat])
 
-    const getReply = (e, id, isNonZero, hideReply) => {
+    const getReply = (e, id, isNonZero, hideReply) => { //! unused variable
 
 
         if (hideReply && chatId === id) {
@@ -1327,7 +1325,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const fetchIndivTopic = async () => {
+    const fetchIndivTopic = async () => { //! unused function
 
         const status_flag = topic?.status_id === 3 ? true: false;
 
@@ -1390,7 +1388,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const uploadFile = async (blobs, message) => {
+    const uploadFile = async (blobs, message) => { //! unused variable
 
         const jwt_token = getTokenClient();
 
@@ -1446,7 +1444,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         }
     }
 
-    const saveAndClose = (e, blob, id, message, dataUrl) => {
+    const saveAndClose = (e, blob, id, message, dataUrl) => { //! unused variable
 
         setShowVideo(false);
 
@@ -1706,10 +1704,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
                     {showUserPane && <UserList
-                        user={users}
+                        // user={users}
                         clientUser={userData.client_participants}
                         position={'absolute'}
-                        height={150}
+                        // height={150}
                         header={true}
                         supportUser={userData.support_participants}
                         userSelect={userSelect}
