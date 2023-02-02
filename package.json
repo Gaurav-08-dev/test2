@@ -17,7 +17,8 @@
     "react-steno": "^1.0.5",
     "rxjs": "^6.6.6",
     "sass": "^1.56.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "framer-motion": "^4.1.17"
   },
   "scripts": {
     "start": "react-scripts start",

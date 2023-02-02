@@ -3,6 +3,7 @@
   border-top: 1px solid rgba(255,255,255,0.14);
   margin-top: 15px;
   z-index: 100000;
+  border-radius: 2px;
 
   .content-wrapper {
     padding-bottom: 10px;
@@ -51,7 +52,7 @@
     }
   }
 
-  .submit-wrapper {
+  .feedback-btn-wrapper  {
     width: 100%;
     display: flex;
     align-items: center;
@@ -73,23 +74,20 @@
   }
 }
 
-.feedback-wrapper {
-  position: absolute;
-  bottom: 0%;
-  padding: 10px;
-  margin: 10px;
-  max-width: 434px;
+.chat-wrapper {
+  background: #000000;
+  border: none !important;
+
+  .content-wrapper {
+
+    textarea {
+      padding: 0 !important;
+    }
+
+  }
 }
 
-.reopen-wrapper {
-  position: absolute;
-  bottom: 0%;
+.feedback-wrapper, .reopen-wrapper {
   padding: 10px;
-  margin: 10px;
-  max-width: 434px;
-  .content-wrapper {
-    .textarea {
-      margin-top: 10px;
-    }
-  }
+  margin: 0;
 }

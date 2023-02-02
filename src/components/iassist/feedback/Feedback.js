@@ -5,7 +5,7 @@ import { getTokenClient } from '../../../utils/Common';
 import './Feedback.scss'
 import * as Constants from '../../Constants';
 
-const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, Topic, setLoader }) => {
+const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, Topic, setLoader, placeHolders }) => {
 
     const [feedbackValue, setFeedBackValue] = useState('');
 
@@ -125,7 +125,9 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
         } else {
 
-            setDisableButton(true);
+            alertService.showToast("warn", "Feedback are required");
+
+            //setDisableButton(true);
 
             // validateRequiredDetails('create', false, suggestion);
 
@@ -164,14 +166,14 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
                         Unsatisfied</span>
 
                 </div>
-                <textarea className='textarea' value={suggestion} placeholder='Your Message' onChange={(e) => {
+                <textarea className='textarea' value={suggestion} placeholder={placeHolders} onChange={(e) => {
                     setSuggestion(e.target.value)
                 }
                 }></textarea>
 
             </div>
 
-            <div className='submit-wrapper'>
+            <div className='feedback-btn-wrapper'>
 
                 {<button className='btn-with-icon btn-approve btn-small' disabled={disableButton} onClick={submitFeedback}><i></i><span>Confirm</span></button>}
 

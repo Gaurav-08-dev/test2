@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from 'react';
+import React,{ useEffect, useState, useRef } from 'react';
 import alertService from '../../../services/alertService';
 import APIService from '../../../services/apiService';
 import { getToken } from '../../../utils/Common';
@@ -13,26 +13,29 @@ import './UserList.scss'
 // userSelect => method to call when user got select
 // collaborator => selected userList
 // close =>  close the pane
+<<<<<<< HEAD
 const UserList = ({clientUser, supportUser, position, header, userSelect, collaborator, close, author, id, topic }) => {
+=======
+const UserList = ({ clientUser, supportUser, position, header, userSelect, collaborator, close, author, id, topic }) => {
+>>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
 
     const [userDetail, setUserDetails] = useState(clientUser ? clientUser : []);
 
     const [UserData, setUserData] = useState([]);
 
-    const [supportUsers, setSupportUsers] = useState(supportUser ? supportUser : []);
+    const supportUsers = useRef(supportUser ? supportUser : []);
 
     const [selectedUser, setSelectedUser] = useState(clientUser ? clientUser : []);
 
-    const [showSupport, setShowSupport] = useState(false);
+    const showSupport = useRef(false);
 
-    const [collabs, setCollabs] = useState(collaborator ? collaborator : []);
+    const collabs = useRef(collaborator ? collaborator : []);
 
     const [disable, setDisable] = useState(false);
 
 
     const getUsers = async () => {
 
-        // let user = getUser();
 
         let Id = topic.account_id;
 
@@ -102,7 +105,7 @@ const UserList = ({clientUser, supportUser, position, header, userSelect, collab
 
         setSelectedUser([...selectedUser, user]);
 
-        collabs.push(user.id);
+        collabs.current.push(user.id);
 
         setDisable(false)
 
@@ -114,11 +117,11 @@ const UserList = ({clientUser, supportUser, position, header, userSelect, collab
 
         let index = selectedUser.findIndex((usr) => usr.id === user.id);
 
-        let collabIndex = collabs.findIndex((collab) => collab === user.id)
+        let collabIndex = collabs.current.findIndex((collab) => collab === user.id)
 
         if (collabIndex !== -1) {
 
-            collabs.splice(collabIndex, 1);
+            collabs.current.splice(collabIndex, 1);
 
         }
 
@@ -144,74 +147,62 @@ const UserList = ({clientUser, supportUser, position, header, userSelect, collab
 
             <div id='modal-content'>
 
-                <div className={"main-wrapper" + " " + position} id={id}>
+                <div className={"main-wrapper"} id={id}>
 
                     {header && <div className='header-wrapper'>
-
-                        <div className='header-inner'>Manage Team</div>
-
+                        <h4 className='header-title'>Manage Team</h4>
                         <button className='header-close' onClick={() => close(false)}></button>
-
                     </div>}
 
                     {!header && <div className='title'>Add members from your team to this ticket.</div>}
 
-                    <div className='search-wrapper'>
-
-                        <div className='topic-filter-search'>
-
-                            <div className='search'>
-
-                                <button className='btn' title='search'></button>
-
-                                <input type={'text'} title='Search' onChange={GetSearchUser} />
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div className='user-list-widget'>
-
-                        {header && <div className='user-heading'>Your Team</div>}
-
-                        {userDetail.length > 0 && userDetail.map((users) => {
-                            return (
-                                <div className='field-wrapper' key={users.id}>
-                                    <Avatar imgSrc={users.cover_img_url}
-                                        firstName={users.first_name}
-                                        lastName={users.last_name}
-                                        alt={`${users.first_name}'s pic`}
-                                        height={20}
-                                        width={20}
-                                        fontSize={9}
-                                        borderRadius={2} />
-
-                                    <span className='name'>{users.first_name} {users.last_name}</span>
-
-
-                                    <div className='user-button'>
-
-                                        {!collabs.includes(users.id) && users.id !== author && <button className='add' disabled={disable} onClick={(e) => selectusers(e, users)}>Add</button>}
-
-                                        {collabs.includes(users.id) && users.id !== author && <button className='remove' disabled={disable} onClick={(e) => removeUser(e, users)}>Remove</button>}
-
-                                    </div>
-
+                    <div className='panel-body'>
+                        <div className='search-wrapper'>
+                            <div className='topic-filter-search'>
+                                <div className='search'>
+                                    <button className='btn' title='search'></button>
+                                    <input type={'text'} title='Search' onChange={GetSearchUser} />
                                 </div>
-                            )
-                        })}
+                            </div>
+                        </div>
+                        <div className='user-list-widget'>
+                            {header && <div className='user-heading'>Your Team</div>}
+                            <div className='user-list-wrapper'>
+                                {userDetail.length > 0 && userDetail.map((users) => {
+                                    return (
+                                        <div className='field-wrapper' key={users.id}>
+                                            <div className='left'>
+                                                <Avatar imgSrc={users.cover_img_url}
+                                                    firstName={users.first_name}
+                                                    lastName={users.last_name}
+                                                    alt={`${users.first_name}'s pic`}
+                                                    height={20}
+                                                    width={20}
+                                                    fontSize={9}
+                                                    borderRadius={2} />
 
-                        {userDetail.length === 0 && <div style={{ color: '#B1B2B3' }}>No members added yet</div>}
+                                                <span className='name'>{users.first_name} {users.last_name}</span>
+                                            </div>
 
+                                            <div className='user-button'>
+                                                {!collabs.current.includes(users.id) && users.id !== author && <button className='add' disabled={disable} onClick={(e) => selectusers(e, users)}>Add</button>}
+                                                {collabs.current.includes(users.id) && users.id !== author && <button className='remove' disabled={disable} onClick={(e) => removeUser(e, users)}>Remove</button>}
+                                            </div>
+
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            {userDetail.length === 0 && <div style={{ color: '#B1B2B3' }}>No members added yet</div>}
+                        </div>
                     </div>
 
-                    {showSupport && <div className='support-user-list-widget'>
+
+                    {showSupport.current && <div className='support-user-list-widget'>
 
                         {header && <div className='user-heading'>Support Agents</div>}
 
-                        {supportUsers.length > 0 && supportUsers.map((users) => {
+                        {supportUsers.current.length > 0 && supportUsers.current.map((users) => {
                             return (
                                 <div className='field-wrapper' key={users.id}>
                                     <Avatar imgSrc={users.cover_img_url}
@@ -229,7 +220,7 @@ const UserList = ({clientUser, supportUser, position, header, userSelect, collab
                             )
                         })}
 
-                        {supportUsers.length === 0 && <div className='alert'>No support Agents Assigned</div>}
+                        {supportUsers.current.length === 0 && <div className='alert'>No support Agents Assigned</div>}
 
                     </div>}
 

@@ -6,20 +6,22 @@ import '../../style/Global.scss'
 
 
 let webSocket;
-let tokenConstant = document.getElementById("test-div").getAttribute("data-token") || 'sight';
+let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
-let btnId = document.getElementById("test-div").getAttribute("data-buttonid") || 'btn';
+let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
-// let position = document.getElementById("test-div").getAttribute("data-position");
-
-// console.log('btn', btnId);
 
 const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
 
-    const simplifyToken = async() => {
-        let token = localStorage.getItem(tokenConstant + '_token');
+    // if (webSocket === undefined) {
+    //     let buttonElement = document.getElementById(btnId);
+    //     if(buttonElement && buttonElement.children.length > 0)buttonElement.children[0].disabled = true;
+    // }
+
+    const simplifyToken = async () => {
+        let token = localStorage.getItem(tokenConstant + 'token');
         const user = getUserDetailsFromToken(token);
         let userData = user?.identity || user;
         setUserData(userData);
@@ -41,66 +43,73 @@ const SupportContainer = () => {
 
     const connectSocket = () => {
         if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
-            if (webSocket=== undefined || (webSocket.readyState !== WebSocket.OPEN && webSocket.readyState !== WebSocket.CONNECTING)) {
-            if (webSocket=== undefined || webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING) {
-                const jwt_token = getTokenClient();
-                console.log("here")
-                webSocket= new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token);
-            //    setOpenSupport(true) // when we have to open without click
+            if (webSocket === undefined || (webSocket.readyState !== WebSocket.OPEN && webSocket.readyState !== WebSocket.CONNECTING)) {
+                if (webSocket === undefined || webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING) {
+                    const jwt_token = getTokenClient();
 
-            }
-            console.log('listen connection');
+                    webSocket = new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token);
+                    //    setOpenSupport(true) // when we have to open without click
+
+                }
+                let buttonElement = document.getElementById(btnId);
+                if (buttonElement && buttonElement.children.length > 0) buttonElement.children[0].disabled = false;
+                console.log('listen connection');
             }
             webSocket.onmessage = function (evt) {
                 var received_msg = JSON.parse(evt.data);
-                if(received_msg.type === 'count') {
-                    let isUnread = received_msg.unread_tickets_count > 0? true: false;
+                if (received_msg.type === 'count') {
+                    let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
                     localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
                     changeValue(isUnread);
-                } if(received_msg.type === 'chat') {
+                } if (received_msg.type === 'chat') {
                     changeValue(true);
                 }
             };
-            
+
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
             };
-            
+
             webSocket.onclose = function () {
                 console.log("connection listen Closed");
             };
         }
     }
-  
-        const changeValue = (unread) => {
 
-            if (unread) {
-                let btn = document.getElementById(btnId);
-                let span = document.createElement('span');
-                span.id = 'iassist-unread';
-                span.style.backgroundColor = 'red';
-                span.style.position = 'absolute';
-                span.style.width = '6px';
-                span.style.height = '6px';
-                span.style.marginLeft = '3px';
-                span.style.borderRadius = '50%';
-                span.style.marginTop = '-16px';
-                // span.style.top = '6px';
-                if(btn) btn.append(span);
-            }
+    const changeValue = (unread) => {
+
+        if (unread) {
+            let btn = document.getElementById(btnId);
+            let span = document.createElement('span');
+            span.id = 'iassist-unread';
+            span.style.backgroundColor = 'red';
+            span.style.position = 'absolute';
+            span.style.width = '6px';
+            span.style.height = '6px';
+            span.style.marginLeft = '3px';
+            span.style.borderRadius = '50%';
+            span.style.marginTop = '-16px';
+            // span.style.top = '6px';
+            if (btn) btn.append(span);
         }
-  
+    }
+
 
     const closePane = () => {
-        
-            // if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
-            // if(document.getElementById('iassist-html'))document.getElementById('iassist-html').remove();
-            setOpenSupport(false);
-            // if(document.getElementById('test-div'))document.getElementById('test-div').remove();
-        
+
+        // if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
+        // if(document.getElementById('iassist-html'))document.getElementById('iassist-html').remove();
+        setOpenSupport(false);
+        // if(document.getElementById('test-div'))document.getElementById('test-div').remove();
+
     }
-  
+
     useEffect(() => {
+
+        if (!webSocket) {
+            let buttonElement = document.getElementById(btnId);
+            if (buttonElement && buttonElement.children.length > 0) buttonElement.children[0].disabled = true;
+        }
 
         const bodyElement = document.getElementsByTagName('body')[0];
 
@@ -109,24 +118,24 @@ const SupportContainer = () => {
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
-        
+
         if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
             if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
                 simplifyToken();
             }
-            
+
             setTimeout(() => {
-            connectSocket();
+                connectSocket();
 
-        }, 200);
-           
-       }
+            }, 200);
+
+        }
 
 
-       console.log(document.getElementById(btnId))
-       document.getElementById(btnId)?.addEventListener('click', supportButtonClick)
+        //    console.log(document.getElementById(btnId))
+        document.getElementById(btnId)?.addEventListener('click', supportButtonClick)
 
-    },[])
+    }, [])
 
     const supportButtonClick = (e) => {
         e.preventDefault();
@@ -136,7 +145,7 @@ const SupportContainer = () => {
     useEffect(() => {
 
         simplifyToken();
-        // let container = document.getElementById('support-main-conatiner');
+        let container = document.getElementById('support-main-conatiner');
 
         //     if (container && position) {
         //         if (position.toLowerCase() === 'left') {
@@ -165,15 +174,14 @@ const SupportContainer = () => {
 
     }, [])
 
-    
+
     return (
         <div id="support-main-conatiner">
-       
 
-            { btnId === 'btn' && <button id="btn">one</button>}
-            {OpenSupport && <Support closePane={closePane} webSocket={webSocket}/>}
-
+            {btnId === 'btn' && <div id="btn"> <button>one</button></div>}
+            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} />}
         </div>
+
     )
 }
 

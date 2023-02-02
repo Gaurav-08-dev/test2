@@ -20,7 +20,6 @@ const descriptionMaxChar = 150;
 
 const nameMaxChar = 45;
 
-// let height = document.getElementById("test-div").getAttribute("data-height");
 
 const CreateChatRoom = ({ closePane, socketDetail }) => {
 
@@ -79,12 +78,16 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
     const [videoUrl, setVideoUrl] = useState([]);
 
     const [disableCreate, setDisableCreate] = useState(false);
+    
+    const [disableCancel, setDisableCancel] = useState(false);
 
     const controller = new AbortController();
 
     const [displayMessage, setDisplayMessage] = useState([]);
 
     const [deleteSavedItem, setDeleteSavedItem] = useState(false);
+
+    const [openPopUp, setOpenPopUp] = useState(false);
 
     const fetchTypeData = async () => {
 
@@ -209,7 +212,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
     }
 
     const debouncedChangeHandler = useCallback(
-    debounce(getTagSuggestion, 500)
+    ()=>debounce(getTagSuggestion, 500)
         , []);
 
     const handleInputChange = (e, type) => {
@@ -376,6 +379,8 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (token && validation) {
 
+            setDisableCancel(true);
+
             setShowLoading(true);
 
             let res = await fetch(url, {
@@ -389,6 +394,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
             let result = await res.json();
 
             setDisableCreate(false);
+            setDisableCancel(false);
 
             if (result.message && result.data) {
 
@@ -432,9 +438,9 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
     function onKeyDownEvent(e) {
 
-        let a = e;
+        // let a = e;
 
-        console.log(a);
+
 
         e.persist();
 
@@ -597,177 +603,154 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
         <>
 
             {!showVideo && !chatRoom &&
-                <div id='create-chat-room' className='create-chat-room'>
+                <div id='create-chat-room' className='create-chat-room support-wrapper'>
+                    <div className='support-wrapper-inner'>
+                        <div className='header-wrapper'>
+                            <div className='title-with-breadcrumb'>
+                                <h4 className='header-title' onClick={() => setOpenPopUp(true)}>iAssist</h4>
+                                <div className="breadcrumb">
+                                    <ul>
+                                        <li>New Ticket</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-                    <div className='header-wrapper'>
-
-                        <div className='header-inner'>
-
-                            <div onClick={() => setNavigateSupport(true)}>iAssist</div>
-
-                            <div className="breadcrumb">
-
-                                <ul>
-
-                                    <li>New Ticket</li>
-
-                                </ul>
-
+                            <div className='header-right'>
+                                <button onClick={() => closePane()} className='header-close'></button>
                             </div>
 
                         </div>
+                        {showLoading && <LoadingScreen />}
+                        <div className='panel-body'>
+                            <div className='create-ticket-wrapper'>
+                                <div className='field-w-label'>
+                                    <label>Topic</label>
+                                    <div className='field' onClick={() => titleRef.current.focus()}>
+                                        {/* <textarea ref={titleRef} rows={topicRow} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></textarea> */}
+                                        <input ref={titleRef} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></input>
+                                        <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
+                                    </div>
+                                </div>
+                                <div className='field-w-label'>
+                                    <label>Tags</label>
+                                    <div className='field tags' onClick={() => tagRef.current.focus()}>
+                                        {tagList.length > 0 && tagList.map((tag, index) => (
+                                            <div className={'tag-box'} key={index}>
+                                                <div className={'tag-text'}>{tag}</div>
+                                                <button className={'close-btn'} onClick={(e) => removeTag(e, tag)}></button>
+                                            </div>
+                                        ))}
 
-                        <div className='header-other-functionality-wrapper'>
+                                        <div className='field-block'>
+                                            <input className='field-control' ref={tagRef} value={tags} onChange={(e) => handleInputChange(e, 'tag')} onKeyUp={onKeyDownEvent} onBlur={handleFocusOut} />
+                                        </div>
 
-                            <button onClick={() => closePane()} className='header-close'></button>
+                                        {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
 
-                        </div>
+                                            <>
+                                                {tagSuggestion.length > 0 && tagSuggestion.map((suggest, index) => {
+                                                    return (<li style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
+                                                })}
+                                            </>
 
-                    </div>
-
-                    {showLoading && <LoadingScreen />}
-
-                    <div className='create-wrapper'>
-
-                        <span className='title-main'>Topic</span>
-
-                        <div className='field-with-label' onClick={() => titleRef.current.focus()}>
-
-                            <textarea ref={titleRef} rows={topicRow} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></textarea>
-
-                            <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
-
-                        </div>
-
-                        <label className='title-main' >Tags</label>
-
-                        <div className='field-with-label tags' onClick={() => tagRef.current.focus()}>
-
-                            {tagList.length > 0 && tagList.map((tag, index) => (
-                                <div className={'tag-box'} key={index}>
-
-                                    <div className={'tag-text'}>{tag}</div>
-
-                                    <button className={'close-btn'} onClick={(e) => removeTag(e, tag)}></button>
-
+                                        </div>}
+                                    </div>
+                                </div>
+                                <div className='field-w-label'>
+                                    <label>Description</label>
+                                    <div className='field textarea'>
+                                        <textarea value={topicDescriptions} rows={row} onChange={(e) => handleInputChange(e, 'description')}></textarea>
+                                        <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
+                                    </div>
                                 </div>
 
-                            ))}
-                            <div className='field-block'>
 
-                                <input className='field-control' ref={tagRef} value={tags} onChange={(e) => handleInputChange(e, 'tag')} onKeyUp={onKeyDownEvent} onBlur={handleFocusOut} />
 
-                            </div>
+                                <div className='filter-dropdown'>
+                                    <div className='type no-bg'>
+                                        <SpeedSelect options={allCategories} selectLabel={catLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => categorySelect(value, 'Category')} />
+                                    </div>
 
-                            {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
-
-                                <>
-
-                                    {tagSuggestion.length > 0 && tagSuggestion.map((suggest, index) => {
-                                        return (<li style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
-                                    })}
-
-                                </>
-
-                            </div>}
-
-                        </div>
-
-                        <span className='title-main'>Description</span>
-
-                        <div className='field-with-label field-with-label-description'>
-
-                            {/* <label>Description</label> */}
-                            <textarea value={topicDescriptions} rows={row} onChange={(e) => handleInputChange(e, 'description')}></textarea>
-
-                            <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
-
-                        </div>
-
-                        <div className='filter-wrapper'>
-
-                            <div className='categories-wrapper'>
-
-                                <div className='category'>
-
-                                    <SpeedSelect options={allCategories} selectLabel={catLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => categorySelect(value, 'Category')} />
-
+                                    <div className='priority no-bg'>
+                                        <SpeedSelect options={priority} selectLabel={priorityLabel} prominentLabel='Priority' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='value' onSelect={(value) => selectPriority(value, 'priority')} />
+                                    </div>
                                 </div>
 
-                                <div className='category'>
+                                <div className='record-wrapper'>
 
-                                    <SpeedSelect options={priority} selectLabel={priorityLabel} prominentLabel='Priority' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='value' onSelect={(value) => selectPriority(value, 'priority')} />
+                                    <div className='record-header'>
 
-                                </div>
+                                        <div className='text'>Capture current tab</div>
 
-                            </div>
-
-                        </div>
-
-                        <div className='record-wrapper'>
-
-                            <div className='record-header'>
-
-                                <div className='text'>Capture current tab</div>
-
-                                <div className='record-button'>
-
-                                    <button onClick={() => {
-                                        setDisplayMessage('Record');
-                                        setShowVideo(true);
-                                    }} className='record'>Record</button>
-
-                                    <button onClick={() => {
-                                        setDisplayMessage('Shot');
-                                        setShowVideo(true);
-                                    }} className='shot'>Screenshot</button>
-
-                                </div>
-
-                            </div>
-
-                            {videoUrl.length > 0 && <div className='video-content-wrapper'>
-                                {videoUrl.map((vid, index) => {
-                                    return <div key={vid.id} className='vid-content'>
-
-                                        {vid.video && <video src={vid.video} controls></video>}
-
-                                        {vid.image && <img alt="" src={vid.image}></img>}
-
-                                        <div className='footer'>
-
-                                            <div className='id'>{vid.id} </div>
+                                        <div className='record-button'>
 
                                             <button onClick={() => {
-                                                videoUrl.splice(index, 1)
-                                                setDeleteSavedItem(!deleteSavedItem);
-                                            }}></button>
+                                                setDisplayMessage('Record');
+                                                setShowVideo(true);
+                                            }} className='record'>Record</button>
+
+                                            <button onClick={() => {
+                                                setDisplayMessage('Shot');
+                                                setShowVideo(true);
+                                            }} className='shot'>Screenshot</button>
 
                                         </div>
 
                                     </div>
 
-                                })}
+                                    {videoUrl.length > 0 && <div className='video-content-wrapper'>
+                                        {videoUrl.map((vid, index) => {
+                                            return <div key={vid.id} className='vid-content'>
 
-                            </div>}
+                                                {vid.video && <video src={vid.video} controls></video>}
 
-                            {videoUrl.length === 0 && <span className='not-found'>No file attached</span>}
+                                                {vid.image && <img alt="" src={vid.image}></img>}
 
+                                                <div className='footer'>
+
+                                                    <div className='id'>{vid.id} </div>
+
+                                                    <button onClick={() => {
+                                                        videoUrl.splice(index, 1)
+                                                        setDeleteSavedItem(!deleteSavedItem);
+                                                    }}></button>
+
+                                                </div>
+
+                                            </div>
+
+                                        })}
+
+                                    </div>}
+
+                                    {videoUrl.length === 0 && <span className='not-found'>No file attached</span>}
+
+                                </div>
+
+                            </div>
                         </div>
-
                         <div className='submit-wrapper'>
                             {/* topicData.length === 0 && */}
                             <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
 
                             {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
 
-                            <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCreate} onClick={() => setNavigateSupport(true)}><i></i><span>Cancel</span></button>
+                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => setOpenPopUp(true)}><i></i><span>Cancel</span></button>
 
                         </div>
-
                     </div>
+                    {openPopUp && <div className='iassist-panel-popup-wrapper'>
 
+                            <div className='details'> Do you want to go back?</div>
+                            <div className='iassist-panel-btn'>
+                                <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
+
+                                <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
+                            </div>
+
+                        </div>}
                 </div>
+
 
             }
             {!showVideo && chatRoom &&
