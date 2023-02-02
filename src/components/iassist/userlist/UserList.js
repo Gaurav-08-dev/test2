@@ -13,11 +13,7 @@ import './UserList.scss'
 // userSelect => method to call when user got select
 // collaborator => selected userList
 // close =>  close the pane
-<<<<<<< HEAD
-const UserList = ({clientUser, supportUser, position, header, userSelect, collaborator, close, author, id, topic }) => {
-=======
 const UserList = ({ clientUser, supportUser, position, header, userSelect, collaborator, close, author, id, topic }) => {
->>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
 
     const [userDetail, setUserDetails] = useState(clientUser ? clientUser : []);
 
@@ -149,7 +145,7 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
                 <div className={"main-wrapper"} id={id}>
 
-                    {header && <div className='header-wrapper'>
+                    {header && <div className='iassist-panel-header'>
                         <h4 className='header-title'>Manage Team</h4>
                         <button className='header-close' onClick={() => close(false)}></button>
                     </div>}

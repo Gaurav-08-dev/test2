@@ -125,7 +125,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
         } else {
 
-            alertService.showToast("warn", "Feedback are required");
+            alertService.showToast("warn", "Select appropriate feedback to close this ticket");
 
             //setDisableButton(true);
 

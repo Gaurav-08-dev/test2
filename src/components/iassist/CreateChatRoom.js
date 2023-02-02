@@ -23,7 +23,7 @@ const nameMaxChar = 45;
 
 const CreateChatRoom = ({ closePane, socketDetail }) => {
 
-    const [priority] = useState(JSON.parse('[{"id":1,"value":"High"},{"id":2,"value":"Medium"},{"id":3,"value":"Low"}]'));
+    const [priority] = useState(JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]'));
 
     const [topic, setTopic] = useState('');
 
@@ -128,7 +128,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('create-chat-room');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             // conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -156,7 +156,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
                 suggestIndex = -1;
 
             }
-            let container = document.getElementById('create-chat-room');
+            let container = document.getElementById('iassist-panel');
 
             if ((container && !(container.contains(event.target)))) {
 
@@ -333,6 +333,15 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
              data && alertService.showToast('warn', err); 
             return false;
 
+        }
+    }
+
+    const discardChanges = () => {
+
+        if (topic || topicDescriptions || priorities !== 0 || tagId.length > 0 || video.length > 0 || category !== 0) {
+            setOpenPopUp(true)
+        } else {
+            setNavigateSupport(true);
         }
     }
 
@@ -586,7 +595,7 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('create-chat-room');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             // conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -603,11 +612,11 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
         <>
 
             {!showVideo && !chatRoom &&
-                <div id='create-chat-room' className='create-chat-room support-wrapper'>
-                    <div className='support-wrapper-inner'>
-                        <div className='header-wrapper'>
+                <div id='iassist-panel' className='iassist-panel'>
+                    <div className='iassist-panel-inner'>
+                        <div className='iassist-panel-header'>
                             <div className='title-with-breadcrumb'>
-                                <h4 className='header-title' onClick={() => setOpenPopUp(true)}>iAssist</h4>
+                                <h4 className='header-title' onClick={() => discardChanges()}>iAssist</h4>
                                 <div className="breadcrumb">
                                     <ul>
                                         <li>New Ticket</li>
@@ -735,13 +744,13 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
                             {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
 
-                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => setOpenPopUp(true)}><i></i><span>Cancel</span></button>
+                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => discardChanges()}><i></i><span>Cancel</span></button>
 
                         </div>
                     </div>
                     {openPopUp && <div className='iassist-panel-popup-wrapper'>
 
-                            <div className='details'> Do you want to go back?</div>
+                            <div className='details'> Are you sure you want to discard changes? </div>
                             <div className='iassist-panel-btn'>
                                 <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
 

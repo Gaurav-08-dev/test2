@@ -145,7 +145,7 @@ const SupportContainer = () => {
     useEffect(() => {
 
         simplifyToken();
-        let container = document.getElementById('support-main-conatiner');
+        // let container = document.getElementById('support-main-container');
 
         //     if (container && position) {
         //         if (position.toLowerCase() === 'left') {
@@ -158,29 +158,30 @@ const SupportContainer = () => {
         //     }
 
         document.addEventListener('mouseup', (event) => {
-            let container = document.getElementById('support-main-conatiner');
+            // let container = document.getElementById('support-main-conatiner');
 
 
-            let buttonIcon = document.getElementById(btnId);
+            // let buttonIcon = document.getElementById(btnId);
 
-            let recorderWrapper = document.getElementById('video-record-wrapper');
+            // let recorderWrapper = document.getElementById('video-record-wrapper');
 
-            if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target)) && !recorderWrapper) {
+            // if ((container && !(container.contains(event.target))) && buttonIcon && !(buttonIcon.contains(event.target)) && !recorderWrapper) {
 
-                closePane();
+            //     closePane();
 
-            }
+            // }
         })
 
     }, [])
 
 
     return (
-        <div id="support-main-conatiner">
+        // support-main-conatiner
+        <>
 
             {btnId === 'btn' && <div id="btn"> <button>one</button></div>}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket} />}
-        </div>
+        </>
 
     )
 }

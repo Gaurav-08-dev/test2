@@ -1,35 +1,33 @@
-$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+$image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 
-#main-chat-container {
-  .header-wrapper {
+#iassist-panel{
+  .iassist-panel-header {
     .header-back {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        color: #b1b2b3;
-        cursor: pointer;
-        &::before {
-          content: "";
-          mask: url($image-prefix + "icon-arrow-left.svg") no-repeat center center;
-          mask-size: 15px;
-          -webkit-mask: url($image-prefix + "icon-arrow-left.svg") no-repeat center center;
-          -webkit-mask-size: 15px;
-          width: 15px;
-          height: 12px;
-          background-color: #b1b2b3;
-        }
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #b1b2b3;
+      cursor: pointer;
+      &::before {
+        content: "";
+        mask: url($image-prefix + "icon-arrow-left.svg") no-repeat center center;
+        mask-size: 15px;
+        -webkit-mask: url($image-prefix + "icon-arrow-left.svg") no-repeat
+          center center;
+        -webkit-mask-size: 15px;
+        width: 15px;
+        height: 12px;
+        background-color: #b1b2b3;
+      }
     }
-    
+
     .header-right {
       .author-list {
-        display: flex;
-        cursor: pointer;
-        margin: 0 10px 0 15px;
-        span{
+        span {
           position: relative;
           z-index: 1;
         }
-        
+
         img {
           border-radius: 2px;
           object-fit: cover;
@@ -89,8 +87,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         width: 12px;
         height: 12px;
         mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat center center;
-        -webkit-mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat center
-          center;
+        -webkit-mask: url($image-prefix + "icon-arrow-desc.svg") no-repeat
+          center center;
         transition: 300ms all;
         background: #fff;
         margin: 1px 6px;
@@ -109,12 +107,20 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       white-space: normal;
     }
   }
-  .msg-area{
+  .msg-area {
     height: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    position: relative;
+
+    .no-message-notification {
+      position: absolute;
+      top: 35%;
+      left: 36%;
+      color: #ff0000;
+    }
   }
 
   .chat-list-wrapper {
@@ -142,13 +148,13 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
       width: 100%;
       max-width: 100%;
 
-      &.chat-feedback-wrapper{
+      &.chat-feedback-wrapper {
         .support-header {
-          background-color: #1A1F26;
+          background-color: #1a1f26;
           padding: 10px;
           border-radius: 2px;
           margin-bottom: 20px;
-          .support-header-left .content-wrapper .content{
+          .support-header-left .content-wrapper .content {
             padding-bottom: 0;
           }
         }
@@ -161,7 +167,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         .support-header-left {
           width: 100%;
           display: flex;
-          .chat-avatar{
+          .chat-avatar {
             width: 30px;
           }
           img {
@@ -178,7 +184,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
               align-items: center;
               margin-top: 2px;
               margin-bottom: 6px;
-              h4{
+              h4 {
                 margin: 0;
                 font-size: 12px;
                 font-weight: 500;
@@ -201,9 +207,9 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                 color: #666;
               }
             }
-            
+
             .steno-wrapper {
-              .editor-fileList-wrapper{
+              .editor-fileList-wrapper {
                 margin: 0 !important;
                 border: none !important;
                 #steno-editor {
@@ -242,8 +248,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                 border-radius: 2px;
                 padding: 0 5px 0 0;
 
-                span{
-
+                span {
                   display: flex;
                   margin-right: 4px;
                   display: flex;
@@ -254,7 +259,6 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                   background: #00000033;
                 }
                 .save {
-
                   &::before {
                     content: "";
                     mask: url($image-prefix + "icon-save.svg") no-repeat center
@@ -349,7 +353,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                 font-size: 11px;
                 font-weight: 500;
                 padding: 0;
-                .feedback{
+                .feedback {
                   color: #ffffff;
                   cursor: pointer;
                   text-transform: capitalize;
@@ -357,15 +361,17 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                   align-items: center;
                   grid-gap: 5px;
                   gap: 5px;
-                  &:before{
+                  &:before {
                     content: "•";
                     font-size: 11px;
                   }
                   .arrow {
                     display: block;
                     content: "";
-                    -webkit-mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center center;
-                    mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center center;
+                    -webkit-mask: url($image-prefix + "icon-down-arrow.svg")
+                      no-repeat center center;
+                    mask: url($image-prefix + "icon-down-arrow.svg") no-repeat
+                      center center;
                     display: block;
                     transform: rotate(-90deg);
                     cursor: pointer;
@@ -381,9 +387,9 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                   }
                 }
               }
-              .text{
+              .text {
                 margin-top: 7px;
-                color: #fff;  
+                color: #fff;
               }
             }
           }
@@ -453,15 +459,16 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
           display: flex;
           font-size: 11px;
           padding: 0;
-    
+
           &::after {
             content: "";
-            mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center center;
-            -webkit-mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center
+            mask: url($image-prefix + "icon-down-arrow.svg") no-repeat center
               center;
+            -webkit-mask: url($image-prefix + "icon-down-arrow.svg") no-repeat
+              center center;
             mask-size: 9px;
             -webkit-mask-size: 9px;
-    
+
             width: 10px;
             height: 10px;
             background-color: #fff;
@@ -469,7 +476,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             transform: rotate(-90deg);
           }
         }
-    
+
         .reply-rotate {
           &::after {
             margin: 3px 4px;
@@ -539,7 +546,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             padding: 5px 10px;
             right: 10px;
             z-index: 1;
-            background: #FFFFFF;
+            background: #ffffff;
             font-size: 11px;
             border-radius: 3px;
             li {
@@ -548,7 +555,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
               right: 10px;
               //padding: 5px;
 
-              &:hover{
+              &:hover {
                 background-color: #eeeeee;
               }
             }
@@ -579,12 +586,12 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         display: flex;
         padding-bottom: 20px;
         gap: 10px;
-        .topic-filter-search-iassist{
+        .topic-filter-search-iassist {
           position: relative;
-          .search{
+          .search {
             padding-left: 15px;
           }
-          .screen-wrapper{
+          .screen-wrapper {
             left: 10px !important;
             bottom: 100% !important;
           }
@@ -596,8 +603,9 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             button {
               cursor: pointer;
               content: "";
-              -webkit-mask: url("../../images/icon-plus.svg") no-repeat center center;
-              mask: url("../../images/icon-plus.svg") no-repeat center center;
+              -webkit-mask: url($image-prefix + "icon-plus.svg") no-repeat
+                center center;
+              mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
               min-width: 12px;
               width: 17px;
               height: 17px;
@@ -607,7 +615,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             }
           }
         }
-        .reply-chat-wrapper{
+        .reply-chat-wrapper {
           background-color: #000;
           border-radius: 2px;
           width: 100%;
@@ -640,7 +648,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             content: "";
             mask: url($image-prefix + "icon-send.svg") no-repeat center center;
             mask-size: 12px;
-            -webkit-mask: url($image-prefix + "icon-send.svg") no-repeat center center;
+            -webkit-mask: url($image-prefix + "icon-send.svg") no-repeat center
+              center;
             -webkit-mask-size: 12px;
             width: 30px;
             height: 28px;
@@ -699,7 +708,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             margin: 0 !important;
             font-size: 10px;
             border: none !important;
-            #steno-editor{
+            #steno-editor {
               padding: 8px 10px !important;
               width: 100% !important;
               font-size: 11px !important;
@@ -712,7 +721,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
           content: "";
           mask: url($image-prefix + "icon-send.svg") no-repeat center center;
           mask-size: 12px;
-          -webkit-mask: url($image-prefix + "icon-send.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-send.svg") no-repeat center
+            center;
           -webkit-mask-size: 12px;
           width: 30px;
           height: 28px;
@@ -775,8 +785,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             content: "";
             mask: url($image-prefix + "icon-record-filled.svg") no-repeat center
               center;
-            -webkit-mask: url($image-prefix + "icon-record-filled.svg") no-repeat
-              center center;
+            -webkit-mask: url($image-prefix + "icon-record-filled.svg")
+              no-repeat center center;
             mask-size: 10px;
             -webkit-mask-size: 10px;
 
@@ -814,8 +824,9 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         button {
           cursor: pointer;
           content: "";
-          -webkit-mask: url("../../images/icon-plus.svg") no-repeat center center;
-          mask: url("../../images/icon-plus.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-plus.svg") no-repeat center
+            center;
+          mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
           min-width: 12px;
           width: 17px;
           height: 17px;
@@ -838,7 +849,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         button {
           content: "";
           mask: url($image-prefix + "icon-run.svg") no-repeat center center;
-          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center
+            center;
 
           mask-size: 10px;
           -webkit-mask-size: 10px;
@@ -866,7 +878,8 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
         button {
           content: "";
           mask: url($image-prefix + "icon-run.svg") no-repeat center center;
-          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat center
+            center;
           mask-size: 10px;
           -webkit-mask-size: 10px;
 

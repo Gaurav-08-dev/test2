@@ -19,7 +19,7 @@ import PlayButton from './Player/PlayButton';
 import RecordOption from './MediaOption/RecordOption';
 import Steno from 'react-steno';
 import parse from 'html-react-parser';
-import {getUserNameBasedOnId , getUserNameImage} from "./Utilityfunction";
+import { getUserNameBasedOnId, getUserNameImage } from "./Utilityfunction";
 
 let msg = [];
 
@@ -82,10 +82,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [navigateHome, setNavigateHome] = useState(false);
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
     const [searchString, setSearchString] = useState('');
 
     const [clientUser, setClientUser] = useState([]);
@@ -307,8 +304,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             setReplyMessage(event.target.value);
 
-        } 
-        
+        }
+
         // else if (type === 'search') {
 
         //     // setSearchString(event.target.value);
@@ -324,7 +321,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     }
 
     const handleKeyDown = (e) => {
-        if ((e.keyCode === 13 || e==='click') && (searchString !== '' || prevSearchValue.current)) {
+        if ((e.keyCode === 13 || e === 'click') && (searchString !== '' || prevSearchValue.current)) {
             prevSearchValue.current = searchString;
 
             if (searchString !== '') {
@@ -519,7 +516,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -534,7 +531,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 scrollHeight = bodyRef.current.scrollHeight;
 
                 setScrolls(true);
-                
+
                 singleScroll = true;
 
                 Size.current += pageSize;
@@ -591,7 +588,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let chatContainer = document.getElementById('main-chat-container');
+            let chatContainer = document.getElementById('iassist-panel');
 
             // if (chatContainer && height) {
 
@@ -668,9 +665,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         } else if (received_msg.parent_note_id !== 0) {
 
-<<<<<<< HEAD
-            messageList.filter((ms) => { //! forEach can be used
-=======
 
 
             // const currentParentChatIndex=messageList.findIndex(item=> item.id === received_msg.parent_note_id);
@@ -680,7 +674,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             //     messageList[currentParentChatIndex].replies=[...currentReplies,received_msg]
             // }
             messageList.forEach((ms) => {
->>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
 
                 if (ms.id === received_msg.parent_note_id) {
                     ms.replies = [...ms.replies, received_msg];
@@ -775,11 +768,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }, [topic.activity_collaborate, topic.activity_chat])
 
-<<<<<<< HEAD
-    const getReply = (e, id, isNonZero, hideReply) => { //! unused variable
-=======
     const getReply = (e, id, hideReply) => {
->>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
 
 
         if (hideReply && chatId === id) {
@@ -1107,7 +1096,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         let d = new Date(date);
 
-        let dateOptions = { year: 'numeric', month: 'short' };
+        let dateOptions = { year: 'numeric', month: 'long' };
 
         let timeOptions = { hour12: true, hour: '2-digit', minute: '2-digit' };
 
@@ -1119,6 +1108,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             time = getDiffDay(a);
 
         } else {
+
 
             time = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
 
@@ -1328,16 +1318,16 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const getDiffDay = (time) => {
 
-        var dt1 = new Date();
+        let dt1 = new Date();
 
-        var dt2 = new Date(time);
+        let dt2 = new Date(time);
 
-        var diff = (dt2.getTime() - (dt1.getTime())) / 1000;
+        console.log('dt1 -- ',dt1 ,'dt2 -- ',dt2)
+        let diff = (dt2.getTime() - (dt1.getTime())) / 1000;
 
         diff /= 60;
 
-        let timeDiff
-
+        let timeDiff;
         let min = Math.abs(Math.round(diff));
 
         if (min < 1) {
@@ -1346,7 +1336,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         } else if (min >= 1 && min < 60) {
 
-            timeDiff = Math.round(min) + 'm ago'
+
+            min=Math.round(min)
+            const suffix=min<2 ? ' Minute':' Minutes'
+            timeDiff = min + suffix +' ago'
 
         } else if (min > 59) {
 
@@ -1354,7 +1347,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             if (hour < 24) {
 
-                timeDiff = Math.round(hour) + 'h ago'
+                hour=Math.round(hour);
+                const suffix=hour<2 ? ' Hour' : ' Hours'
+                timeDiff =  hour + suffix +' ago'
 
             } else {
 
@@ -1362,14 +1357,16 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
 
                 if (day < 31) {
-
-                    timeDiff = Math.round(day) + 'd ago';
+                    day=Math.round(day);
+                    const suffix=day<2 ? ' Day' : ' Days'
+                    timeDiff =  day + suffix +' ago'
 
                 } else {
 
                     let month = day / 31;
-
-                    timeDiff = Math.round(month) + 'm ago'
+                    month=Math.round(month);
+                    const suffix=month<2 ? ' Month' : ' Months'
+                    timeDiff =  month + suffix +' ago'
 
                 }
 
@@ -1381,11 +1378,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-<<<<<<< HEAD
-    const fetchIndivTopic = async () => { //! unused function
-=======
     // const fetchIndivTopic = async () => {
->>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
 
     //     const status_flag = topic?.status_id === 3 ? true: false;
 
@@ -1448,7 +1441,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const uploadFile = async (blobs, message) => { //! unused variable
+    const uploadFile = async (blobs, message) => {
 
         const jwt_token = getTokenClient();
 
@@ -1504,7 +1497,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         }
     }
 
-    const saveAndClose = (e, blob, id, message, dataUrl) => { //! unused variable
+    const saveAndClose = (e, blob, id, message, dataUrl) => {
 
         setShowVideo(false);
 
@@ -1573,7 +1566,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('support-wrapper');
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
             conatinerWrapper[0].style.maxHeight = '92.5%';
@@ -1675,15 +1668,15 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         <>
 
-            {!showVideo && <div id='main-chat-container' className='support-wrapper'>
-                <div className='support-wrapper-inner'>
-                    <div className='header-wrapper'>
+            {!showVideo && <div id='iassist-panel' className='iassist-panel'>
+                <div className='iassist-panel-inner'>
+                    <div className='iassist-panel-header'>
 
-                            <div className='header-back' onClick={() => {
-                                ws.close();
-                                clickBackButton = true;
+                        <div className='header-back' onClick={() => {
+                            ws.close();
+                            clickBackButton = true;
 
-                            }}>Back</div>
+                        }}>Back</div>
 
 
                         <div className='header-right'>
@@ -1691,9 +1684,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                             <div className='search'>
                                 <button onClick={getChatSearch} className='btn' title='search'></button>
 
-                                <input type={'text'} title='Search' 
-                                placeholder='Search' 
-                                onChange={(e) => setSearchString(e.target.value)} 
+                                <input type={'text'} title='Search'
+                                    placeholder='Search'
+                                    onChange={(e) => setSearchString(e.target.value.trim())}
                                     onKeyDown={handleKeyDown}
                                 />
 
@@ -1704,7 +1697,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 {clientUser && clientUser.map((user, index) => {
 
                                     if (index <= 2) {
-                                        return <span key={user.id + index.toString()} style={{zIndex:clientUser.length-index}}>
+                                        return <span key={user.id + index.toString()} style={{ zIndex: clientUser.length - index }}>
                                             {
                                                 <Avatar imgSrc={user.cover_img_url}
                                                     firstName={user.first_name}
@@ -1724,91 +1717,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                             return <span className='number' key={index}> {clientUser.length - 3}</span>
 
-<<<<<<< HEAD
-                                        return <span className='number' key={index}> +{clientUser.length - 3}</span>
-
-                                    } else { return }
-
-                                }
-
-                            })}
-
-                            <div className='add-icon-wrapper'>
-
-                                <button className='add-icon'></button>
-
-
-                            </div>
-
-                        </div>
-
-                        {noneRead !== undefined && noneRead !== 0 && <div className='unread'>
-
-                            <span>{noneRead}</span>
-
-                        </div>}
-
-                        <button className='header-close' onClick={() => close()}></button>
-
-                    </div>
-
-                </div>
-
-                {showLoader && <LoadingScreen />}
-
-                {openPopupPlayer && <Player id='media-player' url={playerUrl} type={playerType} close={setOpenPopupPlayer} />}
-
-                <div className='title-widget'>
-
-                    <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic && topic.name}
-
-                        <button className={'button' + (showExpand ? ' full-button' : '')} title='expand'></button>
-
-                    </div>
-
-                    <div className={'description' + (showExpand ? ' full-description' : '')}>{topic && topic.description}</div>
-
-                    <Detail topic={topic} type={type} allAccount={allAccount} allUser={allUser} />
-
-                </div>
-
-                {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper'} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader}/>}
-
-                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper'} Topic={topic} setLoader={setShowLoader} />}
-
-                <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
-
-                    {showUserPane && <UserList
-                        // user={users}
-                        clientUser={userData.client_participants}
-                        position={'absolute'}
-                        // height={150}
-                        header={true}
-                        supportUser={userData.support_participants}
-                        userSelect={userSelect}
-                        collaborator={collabId}
-                        close={setShowUserPane}
-                        author={topic && topic.user_id}
-                        id='user-list' topic={topic}
-                    />}
-
-                    {!confirmDelete && messageList.length > 0 && messageList.map((messages, index) => {
-                        return (
-                            <div className='chat-wrapper' key={messages.id} style={{ border: borderChatId === messages.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
-
-                                <div className='support-header'>
-
-                                    {showMainMenu && Ids === messages.id &&
-                                        <ul id='menu' className='pane'>
-
-                                            <li onClick={(e) => reply(e, messages)}>Reply</li>
-
-                                            {editAccess && <li onClick={(e) => editMessageClick(e, messages)}>Edit</li>}
-
-                                        </ul>
-=======
                                         } else { return }
->>>>>>> 3cdd86da02dd9af5b5446c44d033988243f85c1c
 
                                     }
 
@@ -1851,12 +1760,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     </div>
 
-                    <div className='panel-body'>
-                        <div className='msg-area'>
-
-                            <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
-
-                                {showUserPane && <UserList
+                    {showUserPane && <UserList
                                     // user={users}
                                     clientUser={userData.client_participants}
                                     position={'absolute'}
@@ -1869,6 +1773,14 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                     author={topic && topic.user_id}
                                     id='user-list' topic={topic}
                                 />}
+                    <div className='panel-body'>
+                        <div className='msg-area'>
+                        {
+                                    !confirmDelete && !showUserDataFetching && showSearch && !messageList.length && <span className='no-message-notification'>No Message Available</span> 
+                                }
+                            <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
+
+                                
 
                                 {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages, index) => {
                                     return (
@@ -1889,12 +1801,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                 <div className='support-header-left'>
 
-                                                    {getUserNameImage(messageUserDetails,messages.user_id, false,'message_detail')}
+                                                    {getUserNameImage(messageUserDetails, messages.user_id, false, 'message_detail')}
 
                                                     <div className='content-wrapper' id={`content${messages.id}`}>
 
                                                         <div className='name'>
-                                                            <h4>{getUserNameBasedOnId(messageUserDetails,messages.user_id,'message_detail')}</h4>
+                                                            <h4>{getUserNameBasedOnId(messageUserDetails, messages.user_id, 'message_detail')}</h4>
                                                             <span className='card-label'>{getUserCardLabel(messages.user_id)}</span>
                                                             <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)}</span>
                                                         </div>
@@ -1956,7 +1868,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                 <a className={'feedback'} onClick={() => openFeedbackMessage(messages.id)}>
                                                                     {messages.note.feedback}
                                                                     {messages.note.text !== '' && <span className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></span>}
-                                                                </a>                                                                
+                                                                </a>
                                                             </div>
                                                             {messages.note.text !== '' && feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
 
@@ -2031,11 +1943,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                         }
                                                                         <div className='reply-header-wrapper'>
 
-                                                                            {getUserNameImage(messageUserDetails,msg.user_id, false,'message_detail')}
+                                                                            {getUserNameImage(messageUserDetails, msg.user_id, false, 'message_detail')}
 
                                                                             <div className='reply-sub-wrapper'>
                                                                                 <div className='name'>
-                                                                                    <h4>{getUserNameBasedOnId(messageUserDetails,msg.user_id,'message_detail')}</h4>
+                                                                                    <h4>{getUserNameBasedOnId(messageUserDetails, msg.user_id, 'message_detail')}</h4>
                                                                                     <span className='card-label'>{getUserCardLabel(msg.user_id)}</span>
                                                                                     <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
                                                                                 </div>
@@ -2081,8 +1993,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                                             <span className='save'></span>
                                                                                             save</button>
                                                                                         <button type='button' className='cancel-btn' onClick={editCancel}>
-                                                                                        <span className='cancel'></span>
-                                                                                        cancel</button>
+                                                                                            <span className='cancel'></span>
+                                                                                            cancel</button>
 
                                                                                     </div>
                                                                                 </div>}
@@ -2149,7 +2061,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                         {showReply && chatId === messages.id && <div className='reply-chat' id={`textbox-${messages.id}`}>
 
-                                                            {getUserNameImage(messageUserDetails,currentUserId, true,'message_detail')}
+                                                            {getUserNameImage(messageUserDetails, currentUserId, true, 'message_detail')}
 
                                                             {showReply && chatId === messages.id && <div className='reply-chat-wrapper'>
                                                                 <div className='topic-filter-search-iassist'>
@@ -2205,6 +2117,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                         </div>
                                     )
                                 })}
+
+                                
 
                                 {confirmDelete && <Delete deleteTopic={deleteTopic} topic={topic} setConfirmDelete={setConfirmDelete} disable={setConfirmDelete} />}
 
