@@ -15,6 +15,10 @@ const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
 
+    window.init = ({ appId}) => {
+        console.log(appId);
+    }
+
     // if (webSocket === undefined) {
     //     let buttonElement = document.getElementById(btnId);
     //     if(buttonElement && buttonElement.children.length > 0)buttonElement.children[0].disabled = true;
@@ -187,7 +191,3 @@ const SupportContainer = () => {
 }
 
 export default memo(SupportContainer);
-
-window.init = ({ appId}) => {
-    console.log(appId);
-}
