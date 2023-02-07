@@ -13,7 +13,7 @@ let tokenConstant = window?.iAssist;
 let btnId ='trigger-btn'
 //  document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
-// console.log(window?.iAssist)
+ console.log(window?.iAssist)
 
 const SupportContainer = () => {
 
@@ -29,6 +29,7 @@ const SupportContainer = () => {
     // }
 
     const simplifyToken = async () => {
+        console.log('count');
         let token = tokenConstant;
         // localStorage.getItem(tokenConstant + 'token');
         const user = getUserDetailsFromToken(token);
@@ -131,6 +132,7 @@ const SupportContainer = () => {
         if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
             if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
                 simplifyToken();
+                
             }
 
             setTimeout(() => {
@@ -148,6 +150,7 @@ const SupportContainer = () => {
 
     const supportButtonClick = (e) => {
         e.preventDefault();
+        console.log('click');
         setOpenSupport(true);
     }
 
