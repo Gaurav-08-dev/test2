@@ -147,7 +147,7 @@ const SupportContainer = () => {
 
 
         //    console.log(document.getElementById(btnId))
-        setTimeout(()=>document.getElementById(btnId)?.addEventListener('click', supportButtonClick),200)
+        setTimeout(()=>document.getElementById(btnId)?.addEventListener('click', supportButtonClick),3000)
 
     }, [])
 
