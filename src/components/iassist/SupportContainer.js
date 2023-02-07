@@ -143,7 +143,7 @@ const SupportContainer = () => {
         }
 
 
-        //    console.log(document.getElementById(btnId))
+           console.log(document.getElementById(btnId))
         document.getElementById(btnId)?.addEventListener('click', supportButtonClick)
 
     }, [])
