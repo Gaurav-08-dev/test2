@@ -150,6 +150,7 @@ const SupportContainer = () => {
 
     const supportButtonClick = (e) => {
         e.preventDefault();
+        console.log('click');
         setOpenSupport(true);
     }
 
