@@ -5,7 +5,7 @@ export function trigger(target) {
     const div = document.createElement('div')
     div.id = 'test-div';
     div.dataset.token = 'sight';
-    div.dataset.buttonid = 'btn';
+    div.dataset.buttonid = target;
     bodyElement.append(div);
 
     // const linkTag = document.createElement("link")
