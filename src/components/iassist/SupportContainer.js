@@ -6,9 +6,11 @@ import '../../style/Global.scss'
 
 
 let webSocket;
-let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
+let tokenConstant = 'sight_'
+// document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
-let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
+let btnId ='trigger-btn'
+//  document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
 console.log(window.iAssist)
 
