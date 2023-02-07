@@ -29,7 +29,8 @@ const SupportContainer = () => {
     // }
 
     const simplifyToken = async () => {
-        let token = localStorage.getItem(tokenConstant + 'token');
+        let token = tokenConstant;
+        // localStorage.getItem(tokenConstant + 'token');
         const user = getUserDetailsFromToken(token);
         let userData = user?.identity || user;
         setUserData(userData);
