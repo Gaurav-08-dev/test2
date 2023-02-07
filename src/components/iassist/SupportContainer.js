@@ -148,6 +148,10 @@ const SupportContainer = () => {
 
     }, [])
 
+    useEffect(() => {
+        document.getElementById(btnId)?.addEventListener('click', supportButtonClick)
+    })
+
     const supportButtonClick = (e) => {
         e.preventDefault();
         console.log('click');
