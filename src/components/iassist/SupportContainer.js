@@ -77,7 +77,8 @@ const SupportContainer = () => {
             };
 
             webSocket.onopen = function () {
-        setOpenSupport(true);
+
+
 
                 console.log("websocket listen connected")
             };
@@ -146,7 +147,7 @@ const SupportContainer = () => {
 
 
         //    console.log(document.getElementById(btnId))
-        document.getElementById(btnId)?.addEventListener('click', supportButtonClick)
+        setTimeout(()=>document.getElementById(btnId)?.addEventListener('click', supportButtonClick),3000)
 
     }, [])
 
