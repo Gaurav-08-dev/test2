@@ -28,7 +28,8 @@ let reporter_id = 0;
 let type_id = 0;
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
-let btnId = document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
+let btnId = 'trigger-btn';
+// document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 

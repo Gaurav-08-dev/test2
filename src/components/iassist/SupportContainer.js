@@ -12,7 +12,7 @@ let tokenConstant = 'sight_'
 let btnId ='trigger-btn'
 //  document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
-console.log(window.iAssist)
+console.log(window?.iAssist)
 
 const SupportContainer = () => {
 
