@@ -10,14 +10,15 @@ let tokenConstant = document.getElementById("iassist-panel-wrapper").getAttribut
 
 let btnId = document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
+console.log(window.iAssist)
 
 const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
 
-    window.init = ({ appId}) => {
-        console.log(appId);
-    }
+    // window.init = ({ appId}) => {
+    //     console.log(appId);
+    // }
 
     // if (webSocket === undefined) {
     //     let buttonElement = document.getElementById(btnId);
@@ -163,7 +164,6 @@ const SupportContainer = () => {
 
         document.addEventListener('mouseup', (event) => {
             // let container = document.getElementById('support-main-conatiner');
-
 
             // let buttonIcon = document.getElementById(btnId);
 
