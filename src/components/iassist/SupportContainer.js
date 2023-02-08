@@ -137,14 +137,17 @@ const SupportContainer = () => {
 
 
         //    console.log(document.getElementById(btnId))
-        setTimeout(()=>document.getElementById(btnId)?.addEventListener('click', supportButtonClick),3000)
+        document.addEventListener('click', supportButtonClick);
 
     }, [])
 
     const supportButtonClick = (e) => {
-        e.preventDefault();
-        console.log('click');
-        setOpenSupport(true);
+        const triggeredButton = document.getElementById(btnId);
+        if (triggeredButton?.contains(e.target)) {
+            e.preventDefault();
+            console.log('click');
+            setOpenSupport(true);
+        }
     }
 
     useEffect(() => {
