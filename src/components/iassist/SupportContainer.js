@@ -6,14 +6,14 @@ import '../../style/Global.scss';
 
 
 let webSocket;
-let tokenConstant = window?.iAssist;
-// 'sight_'
+let tokenConstant = 'iassist_token';
+// window?.iAssist;
+
 // document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
-let btnId ='trigger-btn'
+let btnId ='btn'
 //  document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
- console.log(window?.iAssist)
 
 const SupportContainer = () => {
 

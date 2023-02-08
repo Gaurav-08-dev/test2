@@ -27,7 +27,7 @@ let defReporter = { 'first_name': 'All', 'id': 'All' };
 let reporter_id = 0;
 let type_id = 0;
 let chatId = '';
-let refresh = false, unRead = false, disableUnreadButton = false;
+let refresh = false;
 let btnId = 'trigger-btn';//document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
 let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
@@ -39,6 +39,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     const allTopics = useRef([]);
     const unReadList = useRef([]);
     const activity = useRef([]);
+    const unRead = useRef(false);
+    const disableUnreadButton = useRef(false);
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -87,7 +89,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const allAccount = useRef([]);
 
-    const [initalLoad, setInitialLoad] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
 
     const [getTopicId, setGetTopicId] = useState('');
 
@@ -234,7 +236,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         let searchStringFlag = searchString ? `&topic_search=${searchString}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
-        let unReadFlag = unRead ? `&unread=${unRead}` : ''
+        let unReadFlag = unRead.current ? `&unread=${unRead.current}` : ''
 
 
         if (dates === 'Date') {
@@ -253,7 +255,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const getTopicsBasedOnFilter = async (searchQuery) => {
 
-        disableUnreadButton = true;
+        disableUnreadButton.current = true;
 
         setInitialLoad(false);
 
@@ -314,7 +316,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                     }
 
-                    disableUnreadButton = false;
+                    disableUnreadButton.current = false;
 
                     setDisableButton(false)
 
@@ -328,7 +330,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             .catch(err => {
                 setDisableButton(false)
 
-                disableUnreadButton = false;
+                disableUnreadButton.current = false;
 
                 setShowLoader(false);
 
@@ -580,6 +582,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         return () => {
             clearData();
             // webSocket.close();
+            setInitialLoad(true)
         }
 
     }, [])
@@ -593,6 +596,8 @@ const Support = ({ closePane, topicClick, webSocket }) => {
         unReadList.current = [];
 
         pageNumber = 1;
+        unRead.current=false;
+        disableUnreadButton.current=false;
 
     }
 
@@ -735,7 +740,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
     const showUnread = () => {
 
-        unRead = !unRead;
+        unRead.current = !unRead.current;
         getTopicsBasedOnFilter()
     }
     const clearFilter = () => {
@@ -747,7 +752,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
             type_id = 0;
 
             dates = 'Date';
-            unRead = false;
+            unRead.current = false;
             setTypeLabel('All');
 
             setReportersLabel('Select');
@@ -909,7 +914,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
                                 </div>
                                 <div className='divider'></div>
-                                <div className={unRead ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton} onClick={() => showUnread()}>Unread</button></div>
+                                <div className={unRead.current ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton.current} onClick={() => showUnread()}>Unread</button></div>
                                 {/* <div className='divider'></div> */}
 
                                 <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
@@ -1036,9 +1041,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                                     topic={deleteId}
                                     setConfirmDelete={setConfirmDelete}
                                     disable={setDisableButton} />}
-                                {allTopics.current.length === 0 && !initalLoad && !showLoader && <div className='no-record'>No Tickets Found </div>
-
-                                }
+                                {allTopics.current.length === 0 && !initialLoad && !showLoader && <div className='no-record'>No Tickets Found </div>}
                             </div>
                         </div>
 
