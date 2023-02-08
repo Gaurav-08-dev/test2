@@ -11,7 +11,7 @@ let tokenConstant = window?.iAssist;
 
 // document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
 
-let btnId ='btn'
+let btnId ='trigger-btn';
 //  document.getElementById("iassist-panel-wrapper").getAttribute("data-buttonid") || 'btn';
 
 
