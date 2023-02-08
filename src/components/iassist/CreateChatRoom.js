@@ -20,6 +20,8 @@ const descriptionMaxChar = 150;
 
 const nameMaxChar = 45;
 
+let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
+
 
 const CreateChatRoom = ({ closePane, socketDetail }) => {
 
@@ -115,6 +117,17 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
     };
 
     useEffect(() => {
+
+        if (panelPosition && panelPosition !== 'Right') {
+            let containerWrapper = document.getElementById('iassist-panel');
+            if (panelPosition.toLowerCase() === 'left') {
+                containerWrapper.style.left = 0;
+            } else if (panelPosition.toLowerCase() === 'center') {
+                var screenWidth = window.innerWidth;
+                containerWrapper.style.left = (screenWidth/2) - (containerWrapper.offsetWidth/2) + "px";
+            }
+            
+        }
 
         // let supportContainer = document.getElementById('create-chat-room');
 
