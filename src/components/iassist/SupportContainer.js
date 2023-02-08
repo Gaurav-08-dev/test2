@@ -6,7 +6,7 @@ import '../../style/Global.scss';
 
 
 let webSocket;
-let tokenConstant = 'iassist_token';
+let tokenConstant = window?.iAssist;
 // window?.iAssist;
 
 // document.getElementById("iassist-panel-wrapper").getAttribute("data-token") || 'sight_';
