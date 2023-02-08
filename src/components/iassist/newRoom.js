@@ -49,6 +49,8 @@ let clickBackButton = false;
 
 let singleScroll = false;
 
+let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
+
 
 const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail }) => {
 
@@ -487,6 +489,17 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
 
     useEffect(() => {
+
+        if (panelPosition && panelPosition !== 'Right') {
+            let containerWrapper = document.getElementById('iassist-panel');
+            if (panelPosition.toLowerCase() === 'left') {
+                containerWrapper.style.left = 0;
+            } else if (panelPosition.toLowerCase() === 'center') {
+                var screenWidth = window.innerWidth;
+                containerWrapper.style.left = (screenWidth/2) - (containerWrapper.offsetWidth/2) + "px";
+            }
+            
+        }
 
         singleScroll = false;
 
@@ -1322,7 +1335,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         let dt2 = new Date(time);
 
-        console.log('dt1 -- ',dt1 ,'dt2 -- ',dt2)
+        // console.log('dt1 -- ',dt1 ,'dt2 -- ',dt2)
         let diff = (dt2.getTime() - (dt1.getTime())) / 1000;
 
         diff /= 60;

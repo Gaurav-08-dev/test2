@@ -28,8 +28,8 @@ let reporter_id = 0;
 let type_id = 0;
 let chatId = '';
 let refresh = false, unRead = false, disableUnreadButton = false;
-let btnId = 'trigger-btn';
-// document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
+let btnId = 'trigger-btn';//document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
+let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
@@ -480,6 +480,17 @@ const Support = ({ closePane, topicClick, webSocket }) => {
     }
 
     useEffect(() => {
+
+        if (panelPosition && panelPosition !== 'Right') {
+            let containerWrapper = document.getElementById('iassist-panel');
+            if (panelPosition.toLowerCase() === 'left') {
+                containerWrapper.style.left = 0;
+            } else if (panelPosition.toLowerCase() === 'center') {
+                var screenWidth = window.innerWidth;
+                containerWrapper.style.left = (screenWidth/2) - (containerWrapper.offsetWidth/2) + "px";
+            }
+            
+        }
 
         if (type.length === 0) {
 

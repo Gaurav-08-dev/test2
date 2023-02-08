@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
-import '../../style/Global.scss'
+import '../../style/Global.scss';
 
 
 let webSocket;
@@ -19,19 +19,13 @@ const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
 
-    // window.init = ({ appId}) => {
-    //     console.log(appId);
-    // }
-
     // if (webSocket === undefined) {
     //     let buttonElement = document.getElementById(btnId);
     //     if(buttonElement && buttonElement.children.length > 0)buttonElement.children[0].disabled = true;
     // }
 
     const simplifyToken = async () => {
-        console.log('count');
-        let token = tokenConstant;
-        // localStorage.getItem(tokenConstant + 'token');
+        let token = localStorage.getItem(tokenConstant);
         const user = getUserDetailsFromToken(token);
         let userData = user?.identity || user;
         setUserData(userData);
@@ -77,9 +71,6 @@ const SupportContainer = () => {
             };
 
             webSocket.onopen = function () {
-
-
-
                 console.log("websocket listen connected")
             };
 
@@ -135,7 +126,6 @@ const SupportContainer = () => {
         if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
             if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
                 simplifyToken();
-                
             }
 
             setTimeout(() => {
