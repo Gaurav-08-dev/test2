@@ -40,7 +40,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     const unReadList = useRef([]);
     const activity = useRef([]);
     const unRead = useRef(false);
-    const btnId = useRef(localStorage?.getItem(Constants.SITE_PREFIX + 'buttonId'));
+    const btnId = useRef(localStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
     const disableUnreadButton = useRef(false);
     console.log("btnId", btnId);
 
