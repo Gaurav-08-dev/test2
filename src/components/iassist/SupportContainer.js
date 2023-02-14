@@ -181,9 +181,11 @@ const SupportContainer = () => {
 
     const supportButtonClick = (e) => {
         const triggeredButton = document.getElementById(btnId.current);
-        if (triggeredButton?.contains(e.target)) {
+        if (triggeredButton?.contains(e.target) && webSocket) {
             e.preventDefault();
             setOpenSupport(true);
+        } else {
+            {!webSocket && triggeredButton?.contains(e.target) && alertService.showToast('Refresh the page using CMD + R command')}
         }
     }
 
