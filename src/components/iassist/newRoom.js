@@ -49,10 +49,10 @@ let clickBackButton = false;
 
 let singleScroll = false;
 
-let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
+// let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
 
-const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail }) => {
+const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition }) => {
 
     const bodyRef = useRef();
 
@@ -2206,7 +2206,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} />)
+    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition}/>)
 
 }
 

@@ -13,8 +13,8 @@ const staticToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzU5MTgxMj
 const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
-    const AppId = useRef(window?.iAssist);
-    // || 'were-wrww-rssf-2dsw'
+    const AppId = useRef(window?.iAssistAppId);
+    // console.log(AppId.current)
     const tokenConstant = useRef('');
     const btnId = useRef('trigger-btn');
     const panelPosition = useRef('Right');
@@ -33,9 +33,9 @@ const SupportContainer = () => {
                             btnId.current = response.button_id;
                             panelPosition.current = response.app_position;
                             top.current = response.top_position;
-                            console.log(response)
-                            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'appid', AppId.current);
-                            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'config',JSON.stringify(response));
+                            // console.log(response)
+                            // localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'appid', AppId.current);
+                            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
                             simplifyToken()
 
                         }
@@ -122,7 +122,6 @@ const SupportContainer = () => {
         }
     }
 
-
     const closePane = () => {
 
         // if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
@@ -134,9 +133,7 @@ const SupportContainer = () => {
 
     useEffect(() => {
         const PrevAppId = localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        console.log('prevappid', PrevAppId);
         const configDetails = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
-        console.log(configDetails, 'prvconfig', configDetails);
 
         if (PrevAppId !== AppId.current || !configDetails) {
             getConfigDetails();
@@ -177,7 +174,6 @@ const SupportContainer = () => {
 
             }
         }
-
         //    console.log(document.getElementById(btnId))
         document.addEventListener('click', supportButtonClick);
 
@@ -187,7 +183,6 @@ const SupportContainer = () => {
         const triggeredButton = document.getElementById(btnId.current);
         if (triggeredButton?.contains(e.target)) {
             e.preventDefault();
-            console.log('click');
             setOpenSupport(true);
         }
     }
@@ -198,7 +193,7 @@ const SupportContainer = () => {
         <>
 
             {/* {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>} */}
-            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} />}
+            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} panelPosition={panelPosition.current}/>}
         </>
 
     )

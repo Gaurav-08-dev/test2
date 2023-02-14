@@ -20,10 +20,10 @@ const descriptionMaxChar = 150;
 
 const nameMaxChar = 45;
 
-let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
+// let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
 
-const CreateChatRoom = ({ closePane, socketDetail }) => {
+const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     const [priority] = useState(JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]'));
 
@@ -776,14 +776,14 @@ const CreateChatRoom = ({ closePane, socketDetail }) => {
 
             }
             {!showVideo && chatRoom &&
-                <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail} />
+                <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail} panelPosition={panelPosition}/>
             }
 
             {showVideo && !chatRoom && <VideoRecord save={saveAndClose} close={setShowVideo} message={displayMessage} />}
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} />)
+    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition}/>)
     // } else {
 
     //     return (<Support closePane={closePane} />)
