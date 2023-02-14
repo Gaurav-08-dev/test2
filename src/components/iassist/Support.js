@@ -28,19 +28,21 @@ let reporter_id = 0;
 let type_id = 0;
 let chatId = '';
 let refresh = false;
-let btnId = 'trigger-btn';//document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
-let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
+// let btnId = 'trigger-btn';//document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
+// let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
 export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
 
-const Support = ({ closePane, topicClick, webSocket }) => {
+const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     const prevSearchValue = useRef();
     const allTopics = useRef([]);
     const unReadList = useRef([]);
     const activity = useRef([]);
     const unRead = useRef(false);
+    const btnId = useRef(localStorage?.getItem(Constants.SITE_PREFIX + 'buttonId'));
     const disableUnreadButton = useRef(false);
+    console.log("btnId", btnId);
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -344,7 +346,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
         if (unread) {
 
-            let btn = document.getElementById(btnId);
+            let btn = document.getElementById(btnId.current);
             let span = document.createElement('span');
             span.id = 'iassist-unread';
             span.style.backgroundColor = 'red';
@@ -1051,7 +1053,7 @@ const Support = ({ closePane, topicClick, webSocket }) => {
 
 
 
-            {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} />}
+            {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} />}
 
             {showChat && <ChatRoom closePane={closePanes}
                 chatIds={chatId}
@@ -1063,7 +1065,9 @@ const Support = ({ closePane, topicClick, webSocket }) => {
                 activity={lastActivity}
                 refresh={refresh}
                 refreshState={refr}
-                socketDetail={webSocket} />
+                socketDetail={webSocket} 
+                panelPosition={panelPosition}
+                />
             }
 
         </>
