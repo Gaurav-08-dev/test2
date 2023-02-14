@@ -185,7 +185,7 @@ const SupportContainer = () => {
             e.preventDefault();
             setOpenSupport(true);
         } else {
-            {!webSocket && triggeredButton?.contains(e.target) && alertService.showToast('Refresh the page using CMD + R command')}
+            {!webSocket && triggeredButton?.contains(e.target) && alertService.showToast('warn', 'Refresh the page using CMD + R command')}
         }
     }
 
