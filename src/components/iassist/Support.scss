@@ -616,6 +616,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                   label {
                     color: #000;
                     background-color: #fff;
+                    text-transform: capitalize;
                   }
                 }
               }

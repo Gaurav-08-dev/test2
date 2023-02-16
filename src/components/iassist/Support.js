@@ -42,7 +42,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     const unRead = useRef(false);
     const btnId = useRef(localStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
     const disableUnreadButton = useRef(false);
-    console.log("btnId", btnId);
 
     const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
 
@@ -747,7 +746,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     }
     const clearFilter = () => {
 
-        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date' || unRead) {
+        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date' || unRead?.current) {
 
             reporter_id = 0;
 
