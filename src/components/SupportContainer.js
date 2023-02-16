@@ -19,7 +19,7 @@ const SupportContainer = () => {
     const btnId = useRef('trigger-btn');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    // const [configData, setConfigData] = useState('');
+    const [configData, setConfigData] = useState('');
 
     const getConfigDetails = async () => {
         if (staticToken) {
@@ -28,7 +28,7 @@ const SupportContainer = () => {
                     .then(response => {
 
                         if (response) {
-                            // setConfigData(response)
+                            setConfigData(response)
                             tokenConstant.current = response.user_session_key;
                             btnId.current = response.button_id;
                             panelPosition.current = response.app_position;
@@ -142,7 +142,7 @@ const SupportContainer = () => {
         const bodyElement = document.getElementsByTagName('body')[0];
 
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
