@@ -177,7 +177,7 @@ const SupportContainer = () => {
         //    console.log(document.getElementById(btnId))
         document.addEventListener('click', supportButtonClick);
 
-    }, [btnId.current])
+    }, [btnId.current, tokenConstant.current])
 
     const supportButtonClick = (e) => {
         const triggeredButton = document.getElementById(btnId.current);
@@ -185,7 +185,12 @@ const SupportContainer = () => {
             e.preventDefault();
             setOpenSupport(true);
         } else {
-            {!webSocket && triggeredButton?.contains(e.target) && alertService.showToast('warn', 'Refresh the page using CMD + R command')}
+            if (!webSocket && triggeredButton?.contains(e.target)) {
+                
+                getConfigDetails();
+
+                alertService.showToast('process', 'Wait For Some Time');
+            }
         }
     }
 
