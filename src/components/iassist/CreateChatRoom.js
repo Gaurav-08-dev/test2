@@ -20,12 +20,10 @@ const descriptionMaxChar = 150;
 
 const nameMaxChar = 45;
 
-// let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
-
-
 const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
-    const [priority] = useState(JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]'));
+    const priority = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
+
 
     const [topic, setTopic] = useState('');
 
@@ -67,8 +65,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     const [row, setRow] = useState(2);
 
-    const [topicRow] = useState(1);
-
     const [userData, setUserData] = useState([]);
 
     const [accountData, setAccountData] = useState([]);
@@ -80,7 +76,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
     const [videoUrl, setVideoUrl] = useState([]);
 
     const [disableCreate, setDisableCreate] = useState(false);
-    
+
     const [disableCancel, setDisableCancel] = useState(false);
 
     const controller = new AbortController();
@@ -116,70 +112,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
             });
     };
 
-    useEffect(() => {
-
-        if (panelPosition && panelPosition !== 'Right') {
-            let containerWrapper = document.getElementById('iassist-panel');
-            if (panelPosition.toLowerCase() === 'left') {
-                containerWrapper.style.left = 0;
-            } else if (panelPosition.toLowerCase() === 'center') {
-                var screenWidth = window.innerWidth;
-                containerWrapper.style.left = (screenWidth/2) - (containerWrapper.offsetWidth/2) + "px";
-            }
-            
-        }
-
-        // let supportContainer = document.getElementById('create-chat-room');
-
-        // if (supportContainer && height) {
-
-        //     supportContainer.style.height = height;
-            
-        // }
-
-        const subheaderAvailable = document.getElementById('app-sub-header');
-
-        if (subheaderAvailable) {
-
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
-
-            conatinerWrapper[0].style.top = '65px';
-            // conatinerWrapper[0].style.maxHeight = '92.5%';
-
-
-        }
-      
-        if (allCategories.length === 0) {
-
-            fetchTypeData();
-
-        }
-
-        document.addEventListener("mouseup", (event) => {
-
-
-            let suggestion = document.getElementById('suggestion');
-
-
-
-            if (suggestion && !(suggestion.contains(event.target))) {
-
-                setShowSuggestion(false);
-
-                suggestIndex = -1;
-
-            }
-            let container = document.getElementById('iassist-panel');
-
-            if ((container && !(container.contains(event.target)))) {
-
-                closePanes()
-
-            }
-
-        })
-
-    }, [])
+    
 
     const categorySelect = (value) => {
 
@@ -206,7 +139,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                     if (result && result.data) {
 
-                        setTagSuggestion(result.data);
+                        setTagSuggestion(result.data.filter(item=>item.name.length > 1));
 
                     } else {
 
@@ -224,8 +157,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
             });
     }
 
-    const debouncedChangeHandler = useCallback(
-    ()=>debounce(getTagSuggestion, 500)
+    const debouncedChangeHandler = useCallback( // eslint-disable-line 
+        debounce(getTagSuggestion, 500)
         , []);
 
     const handleInputChange = (e, type) => {
@@ -236,9 +169,11 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 setTags(e.target.value);
 
-                setShowSuggestion(true);
+                if (e.target.value.trim()) {
+                    setShowSuggestion(true);
 
-                debouncedChangeHandler(e.target.value);
+                    debouncedChangeHandler(e.target.value);
+                }
 
             }
 
@@ -270,28 +205,27 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
     }
-    const handleFocusOut = (e) => {
 
-        if (e.target.value) {
+    // const handleFocusOut = (e) => {
 
-            const wordsLeft = e.target.value;
 
-            // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
+    //     if (e.target.value.trim() && e.target.value.length > 1) {
 
-            setTagList([...tagList, wordsLeft])
+    //         const wordsLeft = e.target.value;
 
-            setTags('')
+    //         // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
 
-            setTagId([...tagList, wordsLeft])
+    //         setTagList([...tagList, wordsLeft])
+    //         setTagId([...tagList, wordsLeft])
+    //         setTags('')
 
-            // setTagList([...tagList,...wordsLeft])
-            // setTags('')
-            // setTagId([...tagList,...wordsLeft])
+    //         // setTagList([...tagList,...wordsLeft])
+    //         // setTags('')
+    //         // setTagId([...tagList,...wordsLeft])
 
-        }
+    //     }
 
-    }
-
+    // }
 
     const selectPriority = (value) => {
 
@@ -307,12 +241,12 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         let err = [];
 
-        if (topic === '') {
+        if (!topic.trim()) {
 
             err = [...err, 'Name'];
 
         }
-        if (topicDescriptions === '') {
+        if (!topicDescriptions.trim()) {
 
             err = [...err, 'Description']
 
@@ -343,7 +277,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
         } else {
 
             err = err.join(" , ").concat(' are Required');
-             data && alertService.showToast('warn', err); 
+            data && alertService.showToast('warn', err);
+            setDisableCreate(false)
             return false;
 
         }
@@ -458,19 +393,22 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     }
 
+    const bringSelectedTagInView=(item)=>{
+        document.getElementById(`li-${item}`).scrollIntoView()
+        setTags(item)
+        setTagRemove(!tagRemove);
+    }
+    
     function onKeyDownEvent(e) {
-
-        // let a = e;
-
-
 
         e.persist();
 
         if (e.key === 'Enter' && e.target.value.length <= 1) return;
-
+        
         if (e.key === 'Enter') {
+            // setShowSuggestion(false)
 
-            if (suggestIndex !== -1) {
+            if (suggestIndex !== -1 && tagSuggestion[suggestIndex]) {
 
                 selectTag(e, tagSuggestion[suggestIndex]);
 
@@ -485,11 +423,13 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
             })
 
+
             if (index !== -1) {
 
                 selectTag(e, tagSuggestion[index]);
 
             } else if (tagList.includes(tags)) {
+
 
                 setTags('');
 
@@ -497,21 +437,17 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 return;
 
-            } else {
+            }  else if (tags.trim()) {
 
-                if (tags !== '') {
 
-                    setTagList([...tagList, tags]);
+                setTagList([...tagList, tags]);
 
-                    setTagId([...tagId, tags])
+                setTagId([...tagId, tags])
 
-                    // console.log([...tagList, tags]);
 
-                    setTags('');
+                setTags('');
 
-                    suggestIndex = -1;
-
-                }
+                suggestIndex = -1;
 
             }
         } else if (e.key === 'ArrowDown' && (tagSuggestion.length > 0)) {
@@ -526,7 +462,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
             }
 
-            setTagRemove(!tagRemove);
+            bringSelectedTagInView(tagSuggestion[suggestIndex].name)
+            
 
         } else if (e.key === 'ArrowUp' && (tagSuggestion.length > 0)) {
 
@@ -539,8 +476,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                 suggestIndex = tagSuggestion.length - 1;
 
             }
-
-            setTagRemove(!tagRemove);
+            bringSelectedTagInView(tagSuggestion[suggestIndex].name)
 
         }
     }
@@ -562,13 +498,21 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
     const selectTag = (e, value) => {
 
         e.preventDefault();
+        if(tagList.includes(value.name)){alertService.showToast('warn', 'Tag is Already Added'); return;}
 
+        // const currentTagList = tagList;
+        // currentTagList.pop();
+        // setTagList(currentTagList)
         setTagList([...tagList, value.name]);
+
+        // const currentTagId = tagId;
+        // currentTagId.pop();
 
         setTagId([...tagId, value.name]);
 
         setTags('');
 
+        setTagSuggestion([])
         setShowSuggestion(false);
 
     }
@@ -579,7 +523,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         if (blob) {
 
-            // console.log(dataURL);
             if (message === 'Record') {
 
                 let videoBlobUrl = URL.createObjectURL(blob);
@@ -604,6 +547,17 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     useEffect(() => {
 
+        if (panelPosition && panelPosition !== 'Right') {
+            let containerWrapper = document.getElementById('iassist-panel');
+            if (panelPosition.toLowerCase() === 'left') {
+                containerWrapper.style.left = 0;
+            } else if (panelPosition.toLowerCase() === 'center') {
+                var screenWidth = window.innerWidth;
+                containerWrapper.style.left = (screenWidth / 2) - (containerWrapper.offsetWidth / 2) + "px";
+            }
+
+        }
+
         const subheaderAvailable = document.getElementById('app-sub-header');
 
         if (subheaderAvailable) {
@@ -611,14 +565,54 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
             let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
             conatinerWrapper[0].style.top = '65px';
-            // conatinerWrapper[0].style.maxHeight = '92.5%';
 
+        }
+
+        if (allCategories.length === 0) {
+
+            fetchTypeData();
+
+        }
+
+        document.addEventListener("mouseup", (event) => {
+
+
+            let suggestion = document.getElementById('suggestion');
+
+
+            if (suggestion && !(suggestion.contains(event.target))) {
+
+
+                setShowSuggestion(false);
+
+                suggestIndex = -1;
+
+            }
+            let container = document.getElementById('iassist-panel');
+
+            if ((container && !(container.contains(event.target)))) {
+
+                closePanes()
+
+            }
+
+        })
+
+    }, []) // eslint-disable-line
+
+    useEffect(() => {
+
+        const subheaderAvailable = document.getElementById('app-sub-header');
+
+        if (subheaderAvailable) {
+
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+
+            conatinerWrapper[0].style.top = '65px';
 
         }
 
     }, [videoUrl.length])
-
-    // if (!navigateSupport) {
 
     return !navigateSupport ? (
 
@@ -648,7 +642,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                                 <div className='field-w-label'>
                                     <label>Topic</label>
                                     <div className='field' onClick={() => titleRef.current.focus()}>
-                                        {/* <textarea ref={titleRef} rows={topicRow} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></textarea> */}
                                         <input ref={titleRef} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></input>
                                         <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
                                     </div>
@@ -664,14 +657,21 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                                         ))}
 
                                         <div className='field-block'>
-                                            <input className='field-control' ref={tagRef} value={tags} onChange={(e) => handleInputChange(e, 'tag')} onKeyUp={onKeyDownEvent} onBlur={handleFocusOut} />
+                                            <input
+                                                className='field-control'
+                                                ref={tagRef}
+                                                value={tags}
+                                                onChange={(e) => handleInputChange(e, 'tag')}
+                                                onKeyUp={onKeyDownEvent}
+                                                // onBlur={handleFocusOut}
+                                            />
                                         </div>
 
                                         {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
 
                                             <>
                                                 {tagSuggestion.length > 0 && tagSuggestion.map((suggest, index) => {
-                                                    return (<li style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
+                                                    return (<li id={`li-${suggest.name}`} style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
                                                 })}
                                             </>
 
@@ -734,6 +734,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                                                     <button onClick={() => {
                                                         videoUrl.splice(index, 1)
+                                                        video.splice(index, 1);
                                                         setDeleteSavedItem(!deleteSavedItem);
                                                     }}></button>
 
@@ -752,44 +753,35 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                             </div>
                         </div>
                         <div className='submit-wrapper'>
-                            {/* topicData.length === 0 && */}
                             <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
 
-                            {/* {topicData.length !== 0 && <button className='btn-with-icon btn-small btn-approve' onClick={editRoom}><i></i><span>Edit</span></button>} */}
-
-                                <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => discardChanges()}><i></i><span>Cancel</span></button>
+                            <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => discardChanges()}><i></i><span>Cancel</span></button>
 
                         </div>
                     </div>
                     {openPopUp && <div className='iassist-panel-popup-wrapper'>
 
-                            <div className='details'> Are you sure you want to discard changes? </div>
-                            <div className='iassist-panel-btn'>
-                                <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
+                        <div className='details'> Are you sure you want to discard changes? </div>
+                        <div className='iassist-panel-btn'>
+                            <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
 
-                                <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
-                            </div>
+                            <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
+                        </div>
 
-                        </div>}
+                    </div>}
                 </div>
 
 
             }
             {!showVideo && chatRoom &&
-                <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail} panelPosition={panelPosition}/>
+                <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail} panelPosition={panelPosition} />
             }
 
             {showVideo && !chatRoom && <VideoRecord save={saveAndClose} close={setShowVideo} message={displayMessage} />}
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition}/>)
-    // } else {
-
-    //     return (<Support closePane={closePane} />)
-
-    // }
-
+    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} />)
 }
 
 export default CreateChatRoom;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, memo, useReducer } from 'react';
 import debounce from "lodash.debounce";
 import './newRoom.scss';
 import * as Constants from '../Constants';
@@ -19,52 +19,56 @@ import PlayButton from './Player/PlayButton';
 import RecordOption from './MediaOption/RecordOption';
 import Steno from 'react-steno';
 import parse from 'html-react-parser';
-import { getUserNameBasedOnId, getUserNameImage } from "./Utilityfunction";
+import { getUserNameBasedOnId, getUserNameImage, getTimeZone } from "./Utilityfunction";
 
-let msg = [];
-
-let Ids = '';
-
-let ws;
 
 const pageNumber = 1;
-
 const pageSize = 10;
-
+let msg = [];
+let ws;
 let scrollHeight = 0;
-
 let totalCount = 0;
-
 let borderChatId = '';
-
 let parent_note_id = 0;
-
 let collabId = [];
-
-let TakeSupportId = [];
-
+let takeSupportId = [];
 let playerType = '';
-
 let clickBackButton = false;
-
 let singleScroll = false;
 
 // let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
+// const actionType={};
+// const reducer=(state,action)=>{
+// }
 
 const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition }) => {
 
+    // const initialState={}
     const bodyRef = useRef();
-
+    const currentSelectId = useRef('');
     const topScroll = useRef();
     const prevSearchValue = useRef();
+    const topic = useRef(topicDetail);
+    const chatActivity = useRef((topic.current.activity_collaborate || topic.current.activity_chat) ? true : false);
+    const editorRef = useRef();
+    const fnRef = useRef();
+    const replyEditorRef = useRef();
+    const editEditorRef = useRef();
+    const editFnRef = useRef()
+    const fnReplyRef = useRef();
+    const getMessageHeight = useRef();
+    const [editedMessage, setEditedMessage] = useState('');
+    const Size = useRef(pageSize);
+    const fetchedClientUsers=useRef([])
+
 
     const [messageList, setMessageList] = useState([]);
 
     const [message, setMessage] = useState("");
 
     //Don't remove borderChat
-    const [borderChat, setBorderChat] = useState('');
+    const [borderChat, setBorderChat] = useState('');  // eslint-disable-line 
 
     const [showMainMenu, setShowMainMenu] = useState(false);
 
@@ -80,14 +84,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [scrolls, setScrolls] = useState(false);
 
-    const [topic, setTopic] = useState(topicDetail);
-
     const [navigateHome, setNavigateHome] = useState(false);
-
 
     const [searchString, setSearchString] = useState('');
 
-    const [clientUser, setClientUser] = useState([]);
+    // const [clientUser, setClientUser] = useState([]);
 
     const [showSearch, setShowSearch] = useState(false);
 
@@ -151,25 +152,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [showUserDataFetching, setShowUserDataFetching] = useState(true);
 
-    const chatActivity = useRef((topic.activity_collaborate || topic.activity_chat) ? true : false);
 
-    const editorRef = useRef();
-
-    const fnRef = useRef();
-
-    const replyEditorRef = useRef();
-
-    const editEditorRef = useRef();
-
-    const editFnRef = useRef()
-
-    const fnReplyRef = useRef();
-
-    const getMessageHeight = useRef();
-
-    const [editedMessage, setEditedMessage] = useState('');
-
-    const Size = useRef(pageSize);
 
     if (!clickBackButton && (ws === undefined || (ws.readyState !== WebSocket.OPEN && ws.readyState !== WebSocket.CONNECTING))) {
 
@@ -262,7 +245,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     setUserData(json);
 
-                    setClientUser(json.client_participants);
+                    fetchedClientUsers.current=json.client_participants;
+                    // setClientUser(json.client_participants);
 
                     setMessageUserDetails(json?.all_users);
 
@@ -272,7 +256,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     collabId = collabUser;
 
-                    TakeSupportId = supportUsers;
+                    takeSupportId = supportUsers;
 
                     setShowLoader(false);
 
@@ -310,7 +294,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         // else if (type === 'search') {
 
-        //     // setSearchString(event.target.value);
+        // setSearchString(event.target.value);
 
         //     if (event !== '') {
         //         getChatSearch(event, event.target.value)
@@ -344,29 +328,30 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         setSearchScroll(false);
 
-        if (type === 'reply') {
+        // if (type === 'reply') {
 
-            msg = {
-                "message": {
-                    "file": saveDataUrl,
-                    "message": replyMessage
-                },
-                "is_file": saveDataUrl.length > 0 ? 1 : 0,
-                "parent_note_id": messageId
-            }
-
-        } else {
-
-            msg = {
-                "message": {
-                    "file": saveDataUrl,
-                    "message": message
-                },
-                "is_file": saveDataUrl.length > 0 ? 1 : 0,
-                "parent_note_id": 0
-            }
-
+        msg = {
+            "message": {
+                "file": saveDataUrl,
+                "message": type === 'reply' ? replyMessage : message
+            },
+            "is_file": saveDataUrl.length > 0 ? 1 : 0,
+            "parent_note_id": type === 'reply' ? messageId : 0
         }
+
+        // } 
+        // else {
+
+        //     msg = {
+        //         "message": {
+        //             "file": saveDataUrl,
+        //             "message": message
+        //         },
+        //         "is_file": saveDataUrl.length > 0 ? 1 : 0,
+        //         "parent_note_id": 0
+        //     }
+
+        // }
 
         let validateText = message.replaceAll("&nbsp;", "");
 
@@ -455,7 +440,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const chatmenu = (e, key, msg) => {
 
-        Ids = key;
+        currentSelectId.current = key;
 
         validateEditChat(msg, true);
 
@@ -471,7 +456,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         }
 
-    }, [refreshState])
+    }, [refreshState]) // eslint-disable-line 
 
     useEffect(() => {
 
@@ -483,7 +468,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         }
 
-    }, [chatIds])
+    }, [chatIds]) // eslint-disable-line 
 
 
 
@@ -491,19 +476,21 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     useEffect(() => {
 
         if (panelPosition && panelPosition !== 'Right') {
+
             let containerWrapper = document.getElementById('iassist-panel');
             if (panelPosition.toLowerCase() === 'left') {
                 containerWrapper.style.left = 0;
-            } else if (panelPosition.toLowerCase() === 'center') {
-                var screenWidth = window.innerWidth;
-                containerWrapper.style.left = (screenWidth/2) - (containerWrapper.offsetWidth/2) + "px";
             }
-            
+            else if (panelPosition.toLowerCase() === 'center') {
+                let screenWidth = window.innerWidth;
+                containerWrapper.style.left = (screenWidth / 2) - (containerWrapper.offsetWidth / 2) + "px";
+            }
+
         }
 
         singleScroll = false;
 
-        let unreadDataList = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread'));
+        let unreadDataList = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread'));
 
         if (unreadDataList?.length > 0 && unreadDataList.includes(chatIds)) {
             let index = unreadDataList.findIndex((data) => data === chatIds)
@@ -512,7 +499,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 if (document.getElementById('iassist-unread')) document.getElementById('iassist-unread').remove();
             }
-            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(unreadDataList));
+            sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(unreadDataList));
         }
 
         let user = getUser();
@@ -567,7 +554,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             let head = document.getElementById('menu');
 
-            let reply = document.getElementById('rply-menu');
+            // let reply = document.getElementById('rply-menu');
 
             if ((head && !(head.contains(event.target)))) {
 
@@ -623,6 +610,14 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         window.addEventListener('offline', onOffline)
 
+
+        setTimeout(() => {
+            if (bodyRef.current) {
+                const ele = document.getElementById("chat-list-wrapper");
+                ele.scrollTop = ele.scrollHeight;
+            }
+        }, 1000);
+
         return () => {
             Size.current = pageSize;
 
@@ -633,7 +628,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             window.removeEventListener('offline', onOffline)
         }
 
-    }, [])
+    }, []) // eslint-disable-line 
 
     const onOffline = (event) => {
 
@@ -674,11 +669,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            editorRef.current.focus();
+            if (editorRef.current) editorRef.current.focus();
 
         } else if (received_msg.parent_note_id !== 0) {
-
-
 
             // const currentParentChatIndex=messageList.findIndex(item=> item.id === received_msg.parent_note_id);
 
@@ -704,7 +697,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             setRestrictScrollOnReply(!restrictScrollOnReply);
 
-            replyEditorRef.current.focus();
+            if (replyEditorRef.current) replyEditorRef.current.focus();
 
         }
 
@@ -749,11 +742,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         }
 
-    }, [restrictScrollOnReply])
+    }, [restrictScrollOnReply]) // eslint-disable-line 
 
     const reply = (e, message) => {
 
-        setChatId(Ids);
+        setChatId(currentSelectId.current);
 
 
         setShowMainMenu(false);
@@ -777,9 +770,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     useEffect(() => {
 
-        chatActivity.current = (topic.activity_collaborate || topic.activity_chat) ? true : false;
+        chatActivity.current = (topic.current.activity_collaborate || topic.current.activity_chat) ? true : false;
 
-    }, [topic.activity_collaborate, topic.activity_chat])
+    }, [topic.current.activity_collaborate, topic.current.activity_chat])
 
     const getReply = (e, id, hideReply) => {
 
@@ -849,7 +842,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         singleScroll = false;
 
-    }, [messageList, showScreenButton])
+    }, [messageList, showScreenButton]) // eslint-disable-line 
 
     const scrollIntoLastMessage = () => {
 
@@ -954,9 +947,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         }
 
-        for (let i = 0; i < TakeSupportId.length; i++) {
+        for (let i = 0; i < takeSupportId.length; i++) {
 
-            if (TakeSupportId[i] === id) {
+            if (takeSupportId[i] === id) {
 
                 label = label !== '' ? label + ' + AGENT' : 'AGENT';
 
@@ -995,21 +988,21 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     // }
 
-    const searchClick = async (topic) => {
+    const searchClick = async (item) => {
 
         if (showSearch) {
 
             const jwt_token = getTokenClient()
 
-            borderChatId = topic.id;
+            borderChatId = item.id;
 
-            setBorderChat(topic.id);
+            setBorderChat(item.id);
 
-            let id = topic.parent_note_id === 0 ? topic.id : topic.parent_note_id
+            let id = item.parent_note_id === 0 ? item.id : item.parent_note_id
 
-            if (topic?.parent_note_id !== 0) {
+            if (item?.parent_note_id !== 0) {
 
-                setChatId(topic.parent_note_id);
+                setChatId(item.parent_note_id);
 
                 setHideReply(true);
 
@@ -1017,7 +1010,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             const token = `Bearer ${jwt_token}`;
 
-            APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/page/?topic_id=${topic.topic_id}&chat_id=${id}`, null, false, 'GET', controller, token)
+            APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/page/?topic_id=${item.topic_id}&chat_id=${id}`, null, false, 'GET', controller, token)
                 .then(response => {
 
                     if (response) {
@@ -1045,6 +1038,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                 fetchData();
 
                                 setSearchScroll(true);
+
+                                setSearchString('');
 
                             }
 
@@ -1103,33 +1098,33 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     // }
 
-    const getTimeZone = (date, isDateFormat) => { //* change with other timeZone function in support center
+    // const getTimeZone = (date, isDateFormat) => { 
 
-        date = date.replace('T', " ").concat(' GMT');
+    //     date = date.replace('T', " ").concat(' GMT');
 
-        let d = new Date(date);
+    //     let d = new Date(date);
 
-        let dateOptions = { year: 'numeric', month: 'long' };
+    //     let dateOptions = { year: 'numeric', month: 'long' };
 
-        let timeOptions = { hour12: true, hour: '2-digit', minute: '2-digit' };
+    //     let timeOptions = { hour12: true, hour: '2-digit', minute: '2-digit',second:'2-digit' };
 
-        let a = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
-        let time;
+    //     let a = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
+    //     let time;
 
-        if (!isDateFormat) {
+    //     if (!isDateFormat) {
 
-            time = getDiffDay(a);
+    //         time = getDiffDay(a);
 
-        } else {
+    //     } else {
 
 
-            time = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
+    //         time = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
 
-        }
+    //     }
 
-        return time;
+    //     return time;
 
-    }
+    // }
 
     const editMessageClick = (e, msg) => {
 
@@ -1159,7 +1154,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const editMessage = async (e) => {
 
-        let Index = -1;
+        let currentIndex = -1;
 
         let jwt_token = getTokenClient();
 
@@ -1179,20 +1174,20 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     let json = response;
 
-                    messageList.map((msg, index) => {
 
+                    messageList.forEach((msg, index) => {
                         if (msg.id === json.chat_data.id) {
 
                             msg = json.chat_data;
 
-                            Index = index;
+                            currentIndex = index;
 
                         }
-
                     }
                     )
 
-                    messageList.splice(Index, 1, json.chat_data);
+
+                    messageList.splice(currentIndex, 1, json.chat_data);
 
                     setEditId('');
 
@@ -1219,7 +1214,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const userSelect = (e, id, add) => {
+    const userSelect = (e, id, add, disableAddOrRemove) => {
 
         let data = {
             topic_id: chatIds,
@@ -1255,6 +1250,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                         }
 
                     }
+
+                    if (disableAddOrRemove) disableAddOrRemove(false);
 
                     // if (add)
                     // collabId = [...collabId, json.data[0].user_id]
@@ -1329,67 +1326,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const getDiffDay = (time) => {
-
-        let dt1 = new Date();
-
-        let dt2 = new Date(time);
-
-        // console.log('dt1 -- ',dt1 ,'dt2 -- ',dt2)
-        let diff = (dt2.getTime() - (dt1.getTime())) / 1000;
-
-        diff /= 60;
-
-        let timeDiff;
-        let min = Math.abs(Math.round(diff));
-
-        if (min < 1) {
-
-            timeDiff = 'Now'
-
-        } else if (min >= 1 && min < 60) {
-
-
-            min=Math.round(min)
-            const suffix=min<2 ? ' Minute':' Minutes'
-            timeDiff = min + suffix +' ago'
-
-        } else if (min > 59) {
-
-            let hour = min / 60;
-
-            if (hour < 24) {
-
-                hour=Math.round(hour);
-                const suffix=hour<2 ? ' Hour' : ' Hours'
-                timeDiff =  hour + suffix +' ago'
-
-            } else {
-
-                let day = hour / 24;
-
-
-                if (day < 31) {
-                    day=Math.round(day);
-                    const suffix=day<2 ? ' Day' : ' Days'
-                    timeDiff =  day + suffix +' ago'
-
-                } else {
-
-                    let month = day / 31;
-                    month=Math.round(month);
-                    const suffix=month<2 ? ' Month' : ' Months'
-                    timeDiff =  month + suffix +' ago'
-
-                }
-
-            }
-
-        }
-
-        return timeDiff;
-
-    }
 
     // const fetchIndivTopic = async () => {
 
@@ -1512,6 +1448,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const saveAndClose = (e, blob, id, message, dataUrl) => {
 
+        uploadFile(blob, message)
+
         setShowVideo(false);
 
         setShowScreenButton(false);
@@ -1519,8 +1457,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         setShowVideoLoader(true);
 
         setShowReplyScreenButton(false);
-
-        uploadFile(blob, message)
 
         // let length = saveDataUrl.length + 1;
 
@@ -1597,7 +1533,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         scrollIntoLastMessage();
 
-    }, [videoUrl.length])
+    }, [videoUrl.length]) // eslint-disable-line 
 
     const debouncedResults = useMemo(() => {
         return debounce(handleInputChange, 500);
@@ -1608,7 +1544,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             debouncedResults.cancel();
         };
-    }, [searchString]);
+    }, [searchString]); // eslint-disable-line 
 
     const videoClick = (file) => {
 
@@ -1659,7 +1595,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     }
 
     const onClickSteno = () => {
-        if (topic.status_id === 3) {
+        if (topic.current.status_id === 3) {
             setShowReopen(true);
         }
     }
@@ -1686,8 +1622,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     <div className='iassist-panel-header'>
 
                         <div className='header-back' onClick={() => {
-                            ws.close();
-                            clickBackButton = true;
+                            if (ws === undefined || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
+                                setNavigateHome(true);
+                            } else {
+                                ws.close();
+                                clickBackButton = true;
+                            }
 
                         }}>Back</div>
 
@@ -1701,16 +1641,17 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                     placeholder='Search'
                                     onChange={(e) => setSearchString(e.target.value.trim())}
                                     onKeyDown={handleKeyDown}
+                                    value={searchString}
                                 />
 
                             </div>
                             <div className='topic-filter-search-iassist' id='search-box'></div>
 
                             <div className='author-list' onClick={() => setShowUserPane(true)}>
-                                {clientUser && clientUser.map((user, index) => {
+                                {fetchedClientUsers.current && fetchedClientUsers.current.map((user, index) => {
 
                                     if (index <= 2) {
-                                        return <span key={user.id + index.toString()} style={{ zIndex: clientUser.length - index }}>
+                                        return <span key={user.id + index.toString()} style={{ zIndex: fetchedClientUsers.current.length - index }}>
                                             {
                                                 <Avatar imgSrc={user.cover_img_url}
                                                     firstName={user.first_name}
@@ -1728,9 +1669,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                         if (index === 3) {
 
-                                            return <span className='number' key={index}> {clientUser.length - 3}</span>
+                                            return <span className='number' key={index}> {fetchedClientUsers.current.length - 3}</span>
 
-                                        } else { return }
+                                        } else { return } // eslint-disable-line 
 
                                     }
 
@@ -1761,47 +1702,47 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     <div className='title-widget'>
 
-                        <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic && topic.name}
+                        <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic.current && topic.current.name}
 
-                            <button className={'button' + (showExpand && getTextWidth(topic?.description) ? ' full-button' : '')} title='expand'></button>
+                            <button className={'button' + (showExpand && getTextWidth(topic.current?.description) ? ' full-button' : '')} title='expand'></button>
 
                         </div>
 
-                        <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')}>{topic && topic.description}</div>
+                        <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')}>{topic.current && topic.current.description}</div>
 
-                        <Detail topic={topic} type={type} allAccount={allAccount} allUser={allUser} />
+                        <Detail topic={topic.current} type={type} allAccount={allAccount} allUser={allUser} />
 
                     </div>
 
                     {showUserPane && <UserList
-                                    // user={users}
-                                    clientUser={userData.client_participants}
-                                    position={'absolute'}
-                                    height={150}
-                                    header={true}
-                                    supportUser={userData.support_participants}
-                                    userSelect={userSelect}
-                                    collaborator={collabId}
-                                    close={setShowUserPane}
-                                    author={topic && topic.user_id}
-                                    id='user-list' topic={topic}
-                                />}
+                        // user={users}
+                        clientUser={userData.client_participants}
+                        position={'absolute'}
+                        height={150}
+                        header={true}
+                        supportUser={userData.support_participants}
+                        userSelect={userSelect}
+                        collaborator={collabId}
+                        close={setShowUserPane}
+                        author={topic.current && topic.current.user_id}
+                        id='user-list' topic={topic.current}
+                    />}
                     <div className='iassist-panel-body'>
                         <div className='msg-area'>
-                        {
-                                    !confirmDelete && !showUserDataFetching && showSearch && !messageList.length && <span className='no-message-notification'>No Message Available</span> 
-                                }
+                            {
+                                !confirmDelete && !showUserDataFetching && showSearch && !messageList.length && <span className='no-message-notification'>No Message Available</span>
+                            }
                             <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
-                                
 
-                                {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages, index) => {
+
+                                {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages) => {
                                     return (
-                                        <div className={'chat-wrapper ' + (messages.is_feedback || messages.is_reopen ? 'chat-feedback-wrapper' : '')} key={messages.id} style={{ border: borderChatId === messages.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
+                                        <div className={'chat-wrapper ' + ((messages.is_feedback || messages.is_reopen) && !messages.is_file ? 'chat-feedback-wrapper' : '')} key={messages.id} style={{ border: +borderChatId === +messages.id ? '1px solid #00BB5A' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
 
                                             <div className='support-header'>
 
-                                                {showMainMenu && Ids === messages.id &&
+                                                {showMainMenu && currentSelectId.current === messages.id &&
                                                     <ul id='menu' className='pane'>
 
                                                         <li onClick={(e) => reply(e, messages)}>Reply</li>
@@ -1878,10 +1819,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                             <div className='feedback-wrapper'>
                                                                 <label>Feedback Given</label>
-                                                                <a className={'feedback'} onClick={() => openFeedbackMessage(messages.id)}>
+                                                                <button className={'feedback'} onClick={() => openFeedbackMessage(messages.id)}>
                                                                     {messages.note.feedback}
                                                                     {messages.note.text !== '' && <span className={'arrow' + (showFeedbackMessage && feedId === messages.id ? ' rotate' : '')} title='arrowdown'></span>}
-                                                                </a>
+                                                                </button>
                                                             </div>
                                                             {messages.note.text !== '' && feedId === messages.id && showFeedbackMessage && <div className='text'>{messages.note.text}</div>}
 
@@ -1941,136 +1882,136 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                         </span>}
 
-                                                        {hideReply && messages.replies && messages.replies.length > 0 && chatId === messages.id && messages.replies.map((msg, index) => {
-                                                            if (messages.id === msg.parent_note_id) {
+                                                        {hideReply && messages.replies && messages.replies.length > 0 && chatId === messages.id &&
+                                                            messages.replies.map((msg) => { //eslint-disable-line
+                                                                if (messages.id === msg.parent_note_id) {
 
-                                                                return (<div className='reply-wrapper' key={msg.id} style={{ border: borderChatId === msg.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }}>
-                                                                    <div className='header-reply'>
+                                                                    return (<div className='reply-wrapper' key={msg.id} style={{ border: borderChatId === msg.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }}>
+                                                                        <div className='header-reply'>
 
-                                                                        {showMainMenu && Ids === msg.id &&
-                                                                            <ul id='menu' className='panes'>
+                                                                            {showMainMenu && currentSelectId.current === msg.id &&
+                                                                                <ul id='menu' className='panes'>
 
-                                                                                {editAccess && <li onClick={(e) => editMessageClick(e, msg)}>Edit</li>}
+                                                                                    {editAccess && <li onClick={(e) => editMessageClick(e, msg)}>Edit</li>}
 
-                                                                            </ul>
-                                                                        }
-                                                                        <div className='reply-header-wrapper'>
+                                                                                </ul>
+                                                                            }
+                                                                            <div className='reply-header-wrapper'>
 
-                                                                            {getUserNameImage(messageUserDetails, msg.user_id, false, 'message_detail')}
+                                                                                {getUserNameImage(messageUserDetails, msg.user_id, false, 'message_detail')}
 
-                                                                            <div className='reply-sub-wrapper'>
-                                                                                <div className='name'>
-                                                                                    <h4>{getUserNameBasedOnId(messageUserDetails, msg.user_id, 'message_detail')}</h4>
-                                                                                    <span className='card-label'>{getUserCardLabel(msg.user_id)}</span>
-                                                                                    <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
+                                                                                <div className='reply-sub-wrapper'>
+                                                                                    <div className='name'>
+                                                                                        <h4>{getUserNameBasedOnId(messageUserDetails, msg.user_id, 'message_detail')}</h4>
+                                                                                        <span className='card-label'>{getUserCardLabel(msg.user_id)}</span>
+                                                                                        <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
+                                                                                    </div>
+
+                                                                                    {editId !== msg.id && !msg.is_file && <div className='content-reply'>
+
+                                                                                        {parse(msg.note, options)}
+
+                                                                                    </div>}
+
+                                                                                    {editId === msg.id && !msg.is_feedback && !msg.is_reopen && <div className='content'>
+
+                                                                                        <Steno
+                                                                                            html={editedMessage}
+                                                                                            disable={false} //indicate that the editor has to be in edit mode
+                                                                                            onChange={(val) => {
+                                                                                                // console.log(val);
+                                                                                                setEditedMessage(val)
+                                                                                            }}
+                                                                                            innerRef={editEditorRef} //ref attached to the editor
+                                                                                            backgroundColor={'#000'}
+                                                                                            onChangeBackgroundColor={() => { }}
+                                                                                            fontColor={'#fff'}
+                                                                                            onChangeFontColor={() => { }}
+                                                                                            functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                                                            isToolBarVisible={false} //to show/hide the toolbar options
+                                                                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                                                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                                                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                                                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                                                                            fileList={[]} //List of file object to track the files selected by user
+                                                                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                                                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                                                                            sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                                                                            onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                                                                            minEditorHeight='20px' // Default will be 100px
+                                                                                            maxEditorHeight="300px" // Default maxHeight will be 250px
+                                                                                            placeHolder="Message"
+                                                                                        />
+                                                                                        <div className='edit-btn'>
+                                                                                            <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
+                                                                                                <span className='save'></span>
+                                                                                                save</button>
+                                                                                            <button type='button' className='cancel-btn' onClick={editCancel}>
+                                                                                                <span className='cancel'></span>
+                                                                                                cancel</button>
+
+                                                                                        </div>
+                                                                                    </div>}
+
+                                                                                    {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
+
+                                                                                        {editId !== msg.id && parse(msg?.note?.message, options)}
+
+                                                                                        <div className='content-video'>
+
+                                                                                            {msg.note.file.map((files, index) => {
+                                                                                                return (<div className='content-wrapper-media' key={index}>
+
+                                                                                                    {checkVideo(files, 'video') && <div className='wrapper-media'> <video src={files.file} onClick={() => {
+
+                                                                                                        videoClick(files.file)
+
+                                                                                                    }}>
+
+                                                                                                    </video>
+
+                                                                                                        {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
+
+                                                                                                        <div className='media-id'>{files?.name}</div>
+
+                                                                                                    </div>}
+
+                                                                                                    {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file}
+                                                                                                        onClick={() => {
+                                                                                                            playerType = 'image';
+                                                                                                            setOpenPopupPlayer(true);
+                                                                                                            setPlayerUrl(files.file);
+                                                                                                        }}></img>
+
+                                                                                                        <div className='media-id'>{files?.name}</div>
+
+                                                                                                    </div>}
+
+                                                                                                </div>)
+
+                                                                                            })}
+
+                                                                                        </div>
+
+                                                                                    </div>}
+
                                                                                 </div>
 
-                                                                                {editId !== msg.id && !msg.is_file && <div className='content-reply'>
+                                                                                {validateEditChat(msg, false) && <div className='dot'>
 
-                                                                                    {parse(msg.note, options)}
-
-                                                                                </div>}
-
-                                                                                {editId === msg.id && !msg.is_feedback && !msg.is_reopen && <div className='content'>
-
-                                                                                    <Steno
-                                                                                        html={editedMessage}
-                                                                                        disable={false} //indicate that the editor has to be in edit mode
-                                                                                        onChange={(val) => {
-                                                                                            // console.log(val);
-                                                                                            setEditedMessage(val)
-                                                                                        }}
-                                                                                        innerRef={editEditorRef} //ref attached to the editor
-                                                                                        backgroundColor={'#000'}
-                                                                                        onChangeBackgroundColor={() => { }}
-                                                                                        fontColor={'#fff'}
-                                                                                        onChangeFontColor={() => { }}
-                                                                                        functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
-                                                                                        isToolBarVisible={false} //to show/hide the toolbar options
-                                                                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                                                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                                                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                                                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                                                                        fileList={[]} //List of file object to track the files selected by user
-                                                                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                                                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                                                                        sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                                                                        onEnterClickLogic={editMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                                                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                                                                        minEditorHeight='20px' // Default will be 100px
-                                                                                        maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                                                        placeHolder="Message"
-                                                                                    />
-                                                                                    <div className='edit-btn'>
-                                                                                        <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
-                                                                                            <span className='save'></span>
-                                                                                            save</button>
-                                                                                        <button type='button' className='cancel-btn' onClick={editCancel}>
-                                                                                            <span className='cancel'></span>
-                                                                                            cancel</button>
-
-                                                                                    </div>
-                                                                                </div>}
-
-                                                                                {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
-
-                                                                                    {editId !== msg.id && parse(msg?.note?.message, options)}
-
-                                                                                    <div className='content-video'>
-
-                                                                                        {msg.note.file.map((files, index) => {
-                                                                                            return (<div className='content-wrapper-media' key={index}>
-
-                                                                                                {checkVideo(files, 'video') && <div className='wrapper-media'> <video src={files.file} onClick={() => {
-
-                                                                                                    videoClick(files.file)
-
-                                                                                                }}>
-
-                                                                                                </video>
-
-                                                                                                    {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
-
-                                                                                                    <div className='media-id'>{files?.name}</div>
-
-                                                                                                </div>}
-
-                                                                                                {checkImage(files) && <div className='wrapper-media'><img alt="" src={files.file}
-                                                                                                    onClick={() => {
-                                                                                                        playerType = 'image';
-                                                                                                        setOpenPopupPlayer(true);
-                                                                                                        setPlayerUrl(files.file);
-                                                                                                    }}></img>
-
-                                                                                                    <div className='media-id'>{files?.name}</div>
-
-                                                                                                </div>}
-
-                                                                                            </div>)
-
-                                                                                        })}
-
-                                                                                    </div>
+                                                                                    <button onClick={(e) => chatmenu(e, msg.id, msg)} title="option"></button>
 
                                                                                 </div>}
 
                                                                             </div>
 
-                                                                            {validateEditChat(msg, false) && <div className='dot'>
-
-                                                                                <button onClick={(e) => chatmenu(e, msg.id, msg)} title="option"></button>
-
-                                                                            </div>}
-
                                                                         </div>
 
                                                                     </div>
-
-                                                                </div>
-
-                                                                )
-                                                            }
-                                                        })}
+                                                                    )
+                                                                }
+                                                            })}
 
                                                         {showReply && chatId === messages.id && <div className='reply-chat' id={`textbox-${messages.id}`}>
 
@@ -2124,25 +2065,28 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                 </div>
 
-                                                {!showSearch && editId !== messages.id && !messages.is_feedback && !messages.is_reopen && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>}
+
+                                                {!showSearch && editId !== messages.id && ((!messages.is_feedback && !messages.is_reopen) || messages.is_file) && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>
+                                                }
                                             </div>
 
                                         </div>
                                     )
                                 })}
 
-                                
 
-                                {confirmDelete && <Delete deleteTopic={deleteTopic} topic={topic} setConfirmDelete={setConfirmDelete} disable={setConfirmDelete} />}
+
+                                {confirmDelete && <Delete deleteTopic={deleteTopic} topic={topic.current} setConfirmDelete={setConfirmDelete} disable={setConfirmDelete} />}
 
                             </div>
                         </div>
 
                         {!showSearch && !confirmDelete && <div className='message' id='message'>
-                            {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
+                            {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' />}
 
                             {/* Reopen Msg */}
-                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} Topic={topic} setLoader={setShowLoader} placeHolders='Message' />}
+
+                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' />}
 
                             {!showFeedback && !showReopen && <div className='topic-filter-search-iassist'>
 
@@ -2171,11 +2115,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                         autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                         minEditorHeight='20px' // Default will be 100px
                                         maxEditorHeight="300px" // Default maxHeight will be 250px
-                                        placeHolder={topic.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
+                                        placeHolder={topic.current.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
                                         onClick={() => onClickSteno()}
                                     />
 
-                                    <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader || !message}></button>
+                                    <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader || (!message && !videoUrl.length)}></button>
 
                                 </div>}
 
@@ -2183,16 +2127,16 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                             {!showFeedback && !showReopen && <div className='wrap-record'>
 
-                                <RecordOption showScreenButton={showScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'message'} videoUrl={videoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
+                                <RecordOption showScreenButton={showScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'message'} videoUrl={videoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader} dataUrl={saveDataUrl}></RecordOption>
 
                             </div>}
                             {!showFeedback && !showReopen && <div className='bottom-wrapper'>
 
                                 <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
 
-                                {((!activity || chatActivity.current) && topic && topic.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
+                                {((!activity || chatActivity.current) && topic.current && topic.current.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
 
-                                {activity && !chatActivity.current && topic.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
+                                {activity && !chatActivity.current && topic.current.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
 
                             </div>}
 
@@ -2206,7 +2150,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition}/>)
+    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} />)
 
 }
 

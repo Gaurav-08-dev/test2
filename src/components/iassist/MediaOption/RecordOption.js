@@ -4,7 +4,7 @@ import './RecordOption.scss';
 
 const RecordOption = (
     {
-        setShowVideo, setDisplayMessage, showScreenButton, type, videoUrl, setDeleteSavedItem, deleteSavedItem, loader
+        setShowVideo, setDisplayMessage, showScreenButton, type, videoUrl, setDeleteSavedItem, deleteSavedItem, loader, dataUrl
     }) => {
 
 
@@ -29,6 +29,7 @@ const RecordOption = (
 
                             <button onClick={() => {
                                 videoUrl.splice(index, 1)
+                                dataUrl.splice(index, 1);
                                 setDeleteSavedItem(!deleteSavedItem);
                             }}></button>
 

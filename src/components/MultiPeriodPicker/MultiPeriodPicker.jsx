@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useRef } from 'react';
 import { DatePanel, MonthPanel, QuarterPanel, YearPanel } from './components/Panels';
@@ -14,7 +15,7 @@ const DEFAULT_PERIOD_BGCOLORS = ['#1890ff', '#06A535', '#ff7373', '#ffa500'];
 const DEFAULT_PERIOD_COLORS = ['#fff', '#fff', '#fff', '#fff'];
 const PREDEFINED_DATES = ['LAST_7_DAYS', 'LAST_30_DAYS', 'THIS_MONTH', 'LAST_MONTH']; // used only when used for selecting a single range only
 
-const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods, periodBGColors = DEFAULT_PERIOD_BGCOLORS, periodColors = DEFAULT_PERIOD_COLORS, benchmarkIndex, disableBenchmarkChange, singleRangeonly, forceDisplayDate = null, dateForLastDaysCalculation = null, maxPeriodCount = MAX_PERIOD_COUNT, onChange, disableFn }) => {
+const MultiPeriodPickerPanel = ({ periods, periodBGColors = DEFAULT_PERIOD_BGCOLORS, periodColors = DEFAULT_PERIOD_COLORS, benchmarkIndex, disableBenchmarkChange, singleRangeonly, forceDisplayDate = null, dateForLastDaysCalculation = null, maxPeriodCount = MAX_PERIOD_COUNT, onChange, disableFn }) => {
     // periods = periods && periods.length ? periods : singleRangeonly ? [[null, null]] : [[null, null], [null, null]];
     const defaultRanges = singleRangeonly ? [[null, null, periodBGColors[0], periodColors[0]]] : [[null, null, periodBGColors[0], periodColors[0]], [null, null, periodBGColors[1], periodColors[1]]];
     const initialRanges = periods && periods.length ? periods.map((p, i) => [...p, periodBGColors[i], periodColors[i]]) : defaultRanges;
@@ -32,8 +33,8 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     const [benchmarkRangeIndex, setBenchmarkRangeIndex] = useState(defaultBmIndex);
     const [currentRangeIndex, setCurrentRangeIndex] = useState(0);
     const [currentRangeDateType, setCurrentRangeDateType] = useState(null);
-    // const [currentRangeIndexForExtension, setCurrentRangeIndexForExtension] = useState(0);
-    // const [currentRangeDateTypeForExtension, setCurrentRangeDateTypeForExtension] = useState(null);
+    const [currentRangeIndexForExtension, setCurrentRangeIndexForExtension] = useState(0);
+    const [currentRangeDateTypeForExtension, setCurrentRangeDateTypeForExtension] = useState(null);
 
     const endYear = startMonth < 11 ? startYear : startYear + 1;
     const endMonth = startMonth < 11 ? startMonth + 1 : 0;
@@ -52,7 +53,6 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     }, [forceDisplayDateStr]);
 
     useEffect(() => {
-        // console.log('running effect  : picker, singleRangeonly changed ');
         if (!isMounted.current) { return; }
         setPanel(picker);
         setPrevPanel('');
@@ -65,13 +65,11 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     }, [picker, singleRangeonly]);
 
     useEffect(() => {
-        // console.log('running effect  : picker changed ');
         if (!isMounted.current) { return; }
         notifyRangesChange(defaultRanges, 0);
     }, [picker]);
 
     useEffect(() => {
-        // console.log('running effect  : periods changed ');
         if (!isMounted.current) { return; }
         setRanges(initialRanges);
     }, [periods]);
@@ -383,7 +381,6 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     };
 
     const handleMonthClick = ([year, month]) => {
-        // console.log('month clicked', month);
         if (picker === 'date') {
             setStartMonth(month);
             changePanels('', 'date');
@@ -395,7 +392,6 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     }
 
     const handleYearClick = ([year]) => {
-        // console.log('year clicked', year);
         if (picker === 'date' || picker === 'month' || picker === 'quarter') {
             setStartYear(year);
             changePanels('', prevPanel);
@@ -427,26 +423,25 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
         });
     };
 
-    const handlePrevMonthClick = () => {
+    const handlePrevMonthClick = (e) => {
         const prevStartMonth = startMonth === 0 ? 11 : startMonth - 1;
         const prevStartYear = startMonth === 0 ? startYear - 1 : startYear;
         setStartMonth(prevStartMonth);
         setStartYear(prevStartYear);
     };
-    const handleNextMonthClick = () => {
+    const handleNextMonthClick = (e) => {
         const nextStartMonth = (startMonth + 1) % 12;
         const nextStartYear = startMonth === 11 ? startYear + 1 : startYear;
         setStartMonth(nextStartMonth);
         setStartYear(nextStartYear);
     };
 
-    const handlePrevYearClick = () => setStartYear(startYear - 1);
-    const handleNextYearClick = () => setStartYear(startYear + 1);
+    const handlePrevYearClick = (e) => setStartYear(startYear - 1);
+    const handleNextYearClick = (e) => setStartYear(startYear + 1);
     const handlePrevDecadeClick = () => setStartYear(startYear - 10);
     const handleNextDecadeClick = () => setStartYear(startYear + 10);
 
     const handleDateHover = (hoverDate) => {
-        // console.log('rangeHoverDate', hoverDate);
         if (currentRangeIndex === null) {
             setRangeHoverDate(null);
             return;
@@ -455,17 +450,17 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
         const strt = ranges[currentRangeIndex][0];
         const end = ranges[currentRangeIndex][1];
         if (!strt && !end && hoverRangeForNonBenchmarkRanges > 0) {
-            // const hoverRangeStrt = hoverDate;
+            const hoverRangeStrt = hoverDate;
             // const hoverRangeEnd = giveNextNthDate(hoverRangeStrt, hoverRangeForNonBenchmarkRanges - 1);
-            // const hoverRangeEnd = giveProposedEndDate(hoverRangeStrt);
+            const hoverRangeEnd = giveProposedEndDate(hoverRangeStrt);
             // if (isOverlapingWithAnyRange([hoverRangeStrt, hoverRangeEnd])) {
             //     setRangeHoverDate(null);
             //     return;
             // }
         }
         if (strt && !end) {
-            // const proposedStart = strt;
-            // const proposedEnd = hoverDate;
+            const proposedStart = strt;
+            const proposedEnd = hoverDate;
             // if (currentRangeDateType === 'start' || isOverlapingWithOtherRanges([proposedStart, proposedEnd], currentRangeIndex)) {
             //     setRangeHoverDate(null);
             //     return;
@@ -481,9 +476,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
             //     proposedStart = end;
             //     proposedEnd = hoverDate;
             // }
-            // // console.log('overlapping', proposedStart, proposedEnd);
-            // // console.log('overlapping', isOv÷erlapingWithOtherRanges([proposedStart, proposedEnd], currentRangeIndex));
-            // if (isOverlapingWithOtherRanges([proposedStart, proposedEnd], currentRangeIndex)) {
+           // if (isOverlapingWithOtherRanges([proposedStart, proposedEnd], currentRangeIndex)) {
             //     setRangeHoverDate(null);
             //     return;
             // }
@@ -492,20 +485,19 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
 
     };
 
-    // const isOverlapingWithAnyRange = ([sDate, eDate]) => {
-    //     let overlap = false;
-    //     for (let i = 0; i < ranges.length; i++) {
-    //         if (ranges[i][0] && ranges[i][1] &&
-    //             (isDateEqual(sDate, ranges[i][0]) || isDateEqual(eDate, ranges[i][1]) || !(isDateGreater(sDate, ranges[i][1]) || isDateSmaller(eDate, ranges[i][0])))
-    //         ) {
-    //             overlap = true;
-    //             break;
-    //         }
-    //     }
-    //     return overlap;
-    // };
+    const isOverlapingWithAnyRange = ([sDate, eDate]) => {
+        let overlap = false;
+        for (let i = 0; i < ranges.length; i++) {
+            if (ranges[i][0] && ranges[i][1] &&
+                (isDateEqual(sDate, ranges[i][0]) || isDateEqual(eDate, ranges[i][1]) || !(isDateGreater(sDate, ranges[i][1]) || isDateSmaller(eDate, ranges[i][0])))
+            ) {
+                overlap = true;
+                break;
+            }
+        }
+        return overlap;
+    };
     const isOverlapingWithOtherRanges = ([sDate, eDate], selfRangeIndex) => {
-        // console.log('-------------------', sDate, eDate, selfRangeIndex);
         let overlap = false;
         for (let i = 0; i < ranges.length; i++) {
             if (i !== selfRangeIndex && ranges[i][0] && ranges[i][1] &&
@@ -565,10 +557,9 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     };
 
     useEffect(() => {
-        // console.log('running date input setting effect');
         ranges.forEach((range, index) => {
-            const startInputRef = document.getElementById(elementId + index + 'start');
-            const endInputRef = document.getElementById(elementId + index + 'end');
+            const startInputRef = document.getElementById('asc-picker-date-input-ref' + index + 'start');
+            const endInputRef = document.getElementById('asc-picker-date-input-ref' + index + 'end');
             startInputRef.value = range[0] ? giveFormattedDate(range[0]) : '';
             endInputRef.value = range[1] ? giveFormattedDate(range[1]) : '';
 
@@ -667,20 +658,21 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
     }
 
     return (
-        <div className={'asc-picker asc-picker-multi-range' + (singleRangeonly ? ' single-range-only' : '')}>
-            <div className="asc-picker-inner-wrapper">
-                <div className="asc-picker-view-tabs">
+        <div className={'asc-picker-multi-range' + (!singleRangeonly ? ' single-range-only' : '') + ' ' + 'asc-picker' + ' asc-picker'}>
+            <div className={'asc-picker-inner-wrapper-position'}>
+            <div className={'asc-picker-inner-wrapper'}>
+                <div className={'asc-picker-view-tabs'}>
                     {['day', 'month', 'quarter', 'year'].map(view => (
-                        <div key={view} onClick={() => handlePickerTabClick(view === 'day' ? 'date' : view)} className={'asc-picker-view-tab' + (picker === (view === 'day' ? 'date' : view) ? ' asc-picker-view-tab-selected' : '')}>
+                        <div key={view} onClick={() => handlePickerTabClick(view === 'day' ? 'date' : view)} className={'asc-picker-view-tab' + ' ' + (picker === (view === 'day' ? 'date' : view) ? 'asc-picker-view-tab-selected' : '')}>
                             {view[0].toUpperCase() + view.slice(1)}
                         </div>
                     ))}
                 </div>
 
-                <div className="asc-picker-panels">
+                <div className={'asc-picker-panels'}>
                     {panel === 'date' &&
                         <React.Fragment>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <DatePanel year={startYear} month={startMonth}
                                     onDateClick={handleDateClick}
                                     onMonthBtn={handleMonthBtnOnDateRangePanel}
@@ -695,7 +687,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                                     onDateHover={handleDateHover}
                                 />
                             </div>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <DatePanel year={endYear} month={endMonth}
                                     onDateClick={handleDateClick}
                                     onMonthBtn={handleMonthBtnOnDateRangePanel}
@@ -714,7 +706,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                     }
                     {panel === 'month' &&
                         <React.Fragment>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <MonthPanel year={startYear} month={startMonth}
                                     onMonthClick={handleMonthClick}
                                     onYearBtn={handleYearBtnOnMonthRangePanel}
@@ -728,7 +720,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                                     disable={picker === 'month' ? disableFn : () => false}
                                 />
                             </div>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <MonthPanel year={startYear + 1} month={endMonth}
                                     onMonthClick={handleMonthClick}
                                     onYearBtn={handleYearBtnOnMonthRangePanel}
@@ -746,7 +738,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                     }
                     {panel === 'year' &&
                         <React.Fragment>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <YearPanel year={startYear}
                                     onYearClick={handleYearClick}
                                     onPrevDecadeBtn={handlePrevDecadeClick}
@@ -760,7 +752,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
 
                                 />
                             </div>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <YearPanel year={startYear + 10}
                                     onYearClick={handleYearClick}
                                     onNextDecadeBtn={handleNextDecadeClick}
@@ -777,7 +769,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                     }
                     {panel === 'quarter' &&
                         <React.Fragment>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <QuarterPanel year={startYear}
                                     onQuarterClick={handleQuarterClick}
                                     onYearBtn={handleYearBtnOnQuarterRangePanel}
@@ -791,7 +783,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                                     disable={picker === 'quarter' ? disableFn : () => false}
                                 />
                             </div>
-                            <div className="asc-picker-panel">
+                            <div className={'asc-picker-panel'}>
                                 <QuarterPanel year={startYear + 1}
                                     onQuarterClick={handleQuarterClick}
                                     onYearBtn={handleYearBtnOnQuarterRangePanel}
@@ -809,7 +801,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                     }
 
                     {panel === 'month-single' &&
-                        <div className="asc-picker-panel">
+                        <div className={'asc-picker-panel'}>
                             <MonthPanel year={startYear} month={startMonth}
                                 onMonthClick={handleMonthClick}
                                 onYearBtn={handleYearBtnOnMonthPanel}
@@ -824,7 +816,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                         </div>
                     }
                     {panel === 'year-single' &&
-                        <div className="asc-picker-panel">
+                        <div className={'asc-picker-panel'}>
                             <YearPanel year={startYear}
                                 onYearClick={handleYearClick}
                                 onPrevDecadeBtn={handlePrevDecadeClick}
@@ -837,16 +829,16 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                             />
                         </div>
                     }
-                </div >
+                </div>
 
                 {singleRangeonly &&
-                    <div className="asc-picker-predefined-wrapper">
+                    <div className={'asc-picker-predefined-wrapper'}>
                         {PREDEFINED_DATES.slice(0, 4).map((pd) => {
                             const label = pd.split('_').map(str => str[0].toUpperCase() + str.slice(1).toLowerCase()).join(' ')
                             const isSelected = ranges[0] && ranges[0][0] && ranges[0][1] ? isPredefinedDateSelected(pd) : false;
                             return (
                                 <div key={label} className={'asc-picker-predefined-date' + (isSelected ? ' asc-picker-predefined-date-selected' : '')} onClick={() => handlePredefinedDateClick(pd)}>
-                                    <span className="asc-picker-predefined-date-label">{label}</span>
+                                    <span className={'asc-picker-predefined-date-label'}>{label}</span>
                                 </div>
                             );
                         })}
@@ -854,7 +846,7 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                 }
             </div>
 
-            <div className="asc-picker-periods-wrapper">
+            <div className={'asc-picker-periods-wrapper'}>
                 {ranges.map((range, index) => {
 
                     // const startDateValue = range[0] ? giveFormattedDate(range[0]) : '';
@@ -862,18 +854,18 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                     const daysCount = range[0] && range[1] ? giveDaysCountInRange(range[0], range[1]) : null;
                     return (
                         <div key={index} className={'asc-picker-period' + (currentRangeIndex === index ? ' asc-picker-period-focused' : '')}>
-                            <div className="asc-picker-input-wrapper">
-                                <div className="asc-picker-input" style={{ borderColor: range[2] }}>
-                                    <div className={'asc-picker-input-inner start' + (currentRangeIndex === index && currentRangeDateType === 'start' ? ' focused' : '')}>
-                                        <input id={elementId + index + 'start'} type="date" className={'asc-picker-input-date-start' + (currentRangeIndex === index && currentRangeDateType === 'start' ? ' asc-picker-input-focused' : '')}
+                            <div className={'asc-picker-input-wrapper'}>
+                                <div className={'asc-picker-input'} style={{ borderColor: range[2] }}>
+                                    <div className={'asc-picker-input-inner' + (currentRangeIndex === index && currentRangeDateType === 'start' ? ' focused' : '') + ' ' + 'start'}>
+                                        <input id={'asc-picker-date-input-ref' + index + 'start'} type="date" className={'asc-picker-input-date-start' + (currentRangeIndex === index && currentRangeDateType === 'start' ? ' asc-picker-input-focused' : '')}
                                             disabled={!hoverRangeForNonBenchmarkRanges && index !== benchmarkRangeIndex}
                                             onChange={(e) => handleDateInputChange(e, index, 'start')}
                                             onFocus={() => handleRangeInputFocus('start', index)}
                                         />
                                     </div>
-                                    <span className="asc-picker-input-date-separator">-</span>
-                                    <div className={'asc-picker-input-inner end' + (currentRangeIndex === index && currentRangeDateType === 'end' ? ' focused' : '')}>
-                                        <input id={elementId + index + 'end'} type="date" className={'asc-picker-input-date-start' + (currentRangeIndex === index && currentRangeDateType === 'end' ? ' asc-picker-input-focused' : '')}
+                                    <span className={'asc-picker-input-date-separator'}>-</span>
+                                    <div className={'asc-picker-input-inner' + (currentRangeIndex === index && currentRangeDateType === 'end' ? ' focused' : '') + ' ' + ['end']}>
+                                        <input id={'asc-picker-date-input-ref' + index + 'end'} type="date" className={'asc-picker-input-date-start' + (currentRangeIndex === index && currentRangeDateType === 'end' ? ' asc-picker-input-focused' : '')}
                                             disabled={!hoverRangeForNonBenchmarkRanges && index !== benchmarkRangeIndex}
                                             onChange={(e) => handleDateInputChange(e, index, 'end')}
                                             onFocus={() => handleRangeInputFocus('end', index)}
@@ -884,16 +876,16 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                                 {daysCount && <span className="days">{daysCount + ' Days'}</span>}
                             </div>
                             {!singleRangeonly &&
-                                <div className="asc-picker-period-extras">
-                                    <div className="asc-picker-period-checkbox">
+                                <div className={'asc-picker-period-extras'}>
+                                    <div className={'asc-picker-period-checkbox'}>
                                         {/* {daysCount && <span className="days">{daysCount + 'D'}</span>} */}
-                                        {index === benchmarkRangeIndex && <span className="benchmark">Benchmark</span>}
+                                        {index === benchmarkRangeIndex && <span className={'benchmark'}>Benchmark</span>}
                                         {!disableBenchmarkChange && index !== benchmarkRangeIndex &&
-                                            <input type="checkbox" className="checkbox" disabled={daysCount === null} checked={index === benchmarkRangeIndex} onChange={(e) => handleBenchmarkCheckbox(e.target.checked, index)} />
+                                            <input type="checkbox" className={'checkbox'} disabled={daysCount === null} checked={index === benchmarkRangeIndex} onChange={(e) => handleBenchmarkCheckbox(e.target.checked, index)} />
                                         }
                                     </div>
                                     {index !== benchmarkRangeIndex && ranges.length > 2 &&
-                                        <span className="asc-picker-remove" onClick={() => handleRangeRemoveBtn(index)}></span>
+                                        <span className={'asc-picker-remove'} onClick={() => handleRangeRemoveBtn(index)}></span>
                                     }
                                     {/* {index === ranges.length - 1 && ranges.length < maxPeriodCount &&
                                         <button className="asc-picker-add-period" disabled={daysCount === null} onClick={handlePeriodAddBtn}>Add Period</button>
@@ -916,8 +908,9 @@ const MultiPeriodPickerPanel = ({ elementId='asc-picker-date-input-ref', periods
                     );
                 })}
             </div>
-        </div >
+            </div>
+        </div>
     );
 };
 
-export { MultiPeriodPickerPanel };
+export default MultiPeriodPickerPanel;
