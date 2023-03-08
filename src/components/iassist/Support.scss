@@ -167,6 +167,9 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           background: transparent !important;
           position: relative !important;
           // color: #fff !important;
+          .asc-picker-body .asc-picker-cell.asc-picker-cell-in-view {
+            color: #a4a2a2;
+          }
         }
 
         .period-picker {
