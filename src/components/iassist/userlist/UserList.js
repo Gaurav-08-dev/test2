@@ -1,4 +1,4 @@
-import React,{ useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import alertService from '../../../services/alertService';
 import APIService from '../../../services/apiService';
 import { getToken } from '../../../utils/Common';
@@ -19,11 +19,11 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
     const [UserData, setUserData] = useState([]);
 
-    const supportUsers = useRef(supportUser ? supportUser : []);
+    // const supportUsers = useRef(supportUser ? supportUser : []);
 
     const [selectedUser, setSelectedUser] = useState(clientUser ? clientUser : []);
 
-    const showSupport = useRef(false);
+    // const showSupport = useRef(false);
 
     const collabs = useRef(collaborator ? collaborator : []);
 
@@ -47,7 +47,7 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
                     // if (result.message === 'Success') {
 
-                        setUserData(result);
+                    setUserData(result);
 
                     // }
                 }
@@ -93,21 +93,21 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
     }
 
-    const selectusers = (e, user) => {
+    const selectusers = async (e, user) => {
 
         setDisable(true);
 
-        userSelect(e, user.id, true);
+        await userSelect(e, user.id, true, setDisable);
 
         setSelectedUser([...selectedUser, user]);
 
         collabs.current.push(user.id);
 
-        setDisable(false)
+        //setDisable(false)
 
     }
 
-    const removeUser = async(e, user) => {
+    const removeUser = async (e, user) => {
 
         setDisable(true);
 
@@ -127,9 +127,9 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
         }
 
-        await userSelect(e, user.id, false)
+        await userSelect(e, user.id, false, setDisable)
 
-        setDisable(false);
+        // setDisable(false);
 
     }
 
@@ -162,11 +162,11 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
                             </div>
                         </div>
                         <div className='user-list-widget'>
-                            {header && <div className='user-heading'>Your Team</div>}
+                            {header && <div className='user-heading'>Client Team</div>}
                             <div className='user-list-wrapper'>
                                 {userDetail.length > 0 && userDetail.map((users) => {
                                     return (
-                                        <div className='field-wrapper' key={users.id}>
+                                        <div className='user-list-field-wrapper' key={users.id}>
                                             <div className='left'>
                                                 <Avatar imgSrc={users.cover_img_url}
                                                     firstName={users.first_name}
@@ -194,7 +194,8 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
                     </div>
 
 
-                    {showSupport.current && <div className='support-user-list-widget'>
+                    {/* support agensts list commented as it's no more required as per design */}
+                    {/* {showSupport.current && <div className='support-user-list-widget'>
 
                         {header && <div className='user-heading'>Support Agents</div>}
 
@@ -218,7 +219,7 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
 
                         {supportUsers.current.length === 0 && <div className='alert'>No support Agents Assigned</div>}
 
-                    </div>}
+                    </div>} */}
 
                 </div>
 

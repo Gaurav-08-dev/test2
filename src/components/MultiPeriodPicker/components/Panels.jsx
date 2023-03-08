@@ -1,11 +1,14 @@
 import React from 'react';
 import { isDateEqual, isDateInRange, isDateInBetween, isDateSmaller, isDateGreater, giveNextNthDate, giveEndDateOfNextNthMonth, giveEndDateOfNextNthYear, giveEndDateOfNextNthQuarter, giveQuarterFromMonth, giveDaysCountInRange, giveMonthsCountInRange, giveYearsCountInRange, giveQuartersCountInRange } from './utils';
+import "../multi-period-styles.scss";
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+// const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /**Gives the lighten version of given color */
 const ColorLuminance = (hex, lum) => {
+
     // validate hex string
     hex = String(hex).replace(/[^0-9a-f]/gi, '');
     if (hex.length < 6) {
@@ -112,6 +115,7 @@ const isDateEndOfAny = (dObj, ranges) => {
 };
 
 const isDateHovered = (dObj, ranges, currentRangeIndex, currentRangeDateType, rangeHoverDate, hoverRangeForNonBenchmarkRanges, pickerType) => {
+
     // check for not any date input focused for selection
     if (currentRangeIndex === null) return false;
 
@@ -141,8 +145,8 @@ const isDateHovered = (dObj, ranges, currentRangeIndex, currentRangeDateType, ra
     }
     return false;
 };
-
 const isDateHoveredStart = (dObj, ranges, currentRangeIndex, currentRangeDateType, rangeHoverDate, hoverRangeForNonBenchmarkRanges, pickerType) => {
+
     if (currentRangeIndex === null) return false;
 
     const strt = ranges[currentRangeIndex][0];
@@ -168,8 +172,8 @@ const isDateHoveredStart = (dObj, ranges, currentRangeIndex, currentRangeDateTyp
         return isDateEqual(dObj, rangeHoverDate);
     }
 };
-
 const isDateHoveredEnd = (dObj, ranges, currentRangeIndex, currentRangeDateType, rangeHoverDate, hoverRangeForNonBenchmarkRanges, pickerType) => {
+
     if (currentRangeIndex === null) return false;
 
     const strt = ranges[currentRangeIndex][0];
@@ -205,13 +209,19 @@ const isDateSelectedForEdit = (dObj, ranges, currentRangeIndex, currentRangeDate
     return toEdit;
 };
 
+
 const DatePanel = ({ year, month, onDateClick, onMonthBtn, onYearBtn, onPrevMonthBtn, onNextMonthBtn, disable = () => false, ranges, currentRangeIndex, currentRangeDateType, hoverRangeForNonBenchmarkRanges, rangeHoverDate, onDateHover = () => { } }) => {
+
+
     const firstDay = (new Date(year, month)).getDay(); // btwn 0-6
     const daysInMonth = 32 - new Date(year, month, 32).getDate();
 
+
     const getMonthData = () => {
+
         let data = [[], [], [], [], [], []]; // data will be a 2-D array
         let weekCounter = 0, cellInWeekCounter = 1, dateCounter = 1;
+
         const prevMonthLastDate = new Date(year, month, 0);
 
         // FOR FIRST WEEK  
@@ -304,11 +314,12 @@ const DatePanel = ({ year, month, onDateClick, onMonthBtn, onYearBtn, onPrevMont
     const data = getMonthData();
     // console.log('Month data', month, data);
     return (
-        <div className="asc-picker-date-panel">
+
+        <div className={'asc-picker-date-panel'}>
             <PanelHeader panel="date" year={year} month={month}
                 onPrevBtn={onPrevMonthBtn} onNextBtn={onNextMonthBtn} onMonthBtn={onMonthBtn} onYearBtn={onYearBtn} />
-            <div className="asc-picker-body">
-                <table className="asc-picker-content">
+            <div className={'asc-picker-body'}>
+                <table className={'asc-picker-content'}>
                     <thead >
                         <tr>
                             {WEEKDAYS.map((w, i) => {
@@ -318,14 +329,14 @@ const DatePanel = ({ year, month, onDateClick, onMonthBtn, onYearBtn, onPrevMont
                     </thead>
                     <tbody>
                         {data.map((week, weekIndex) => {
-                            return <tr key={weekIndex} className="asc-picker-week-row">
+                            return <tr key={weekIndex} className={'asc-picker-week-row'}>
                                 {week.map((cell, cellIndex) => {
                                     const currDate = new Date(new Date().setHours(0, 0, 0, 0));
                                     const isToday = isDateEqual(currDate, new Date(...cell.fullDate));
                                     const isFirstDay = cell.fullDate[2] === 1;
                                     const isLastDay = cell.fullDate[2] === new Date(cell.fullDate[0], cell.fullDate[1] + 1, 0).getDate();
                                     // let colorRangeSelected = cell.rangeSelected && cell.isInView ? getColorOfSelected(new Date(...cell.fullDate), ranges) : '';
-                                    let colorRangeSelected = cell.rangeSelected && cell.isInView ? '#fff' : '';
+                                    let colorRangeSelected = cell.rangeSelected && cell.isInView ? '#green' : '';
                                     if ((cell.rangeStart || cell.rangeEnd) && cell.isInView) {
                                         colorRangeSelected = getColorOfStartOrEnd(new Date(...cell.fullDate), ranges);
                                     }
@@ -346,20 +357,20 @@ const DatePanel = ({ year, month, onDateClick, onMonthBtn, onYearBtn, onPrevMont
                                         (cell.isInView ? ' asc-picker-cell-in-view' : '') +
                                         (cell.disabled ? ' asc-picker-cell-disabled' : '') +
                                         (cell.rangeSelected ? ' asc-picker-cell-range-selected' : '') +
-                                        (cell.rangeStart ? ' asc-picker-cell-range-selected-start' : '') +
-                                        (cell.rangeEnd ? ' asc-picker-cell-range-selected-end' : '') +
-                                        (cell.rangeHover ? ' asc-picker-cell-range-hover' : '') +
-                                        (cell.rangeHoverStart ? ' asc-picker-cell-range-hover-start' : '') +
-                                        (cell.rangeHoverEnd ? ' asc-picker-cell-range-hover-end' : '') +
+                                        (cell.rangeStart ? ' ' + 'asc-picker-cell-range-selected-start' : '') +
+                                        (cell.rangeEnd ? ' ' + 'asc-picker-cell-range-selected-end' : '') +
+                                        (cell.rangeHover ? ' ' + 'asc-picker-cell-range-hover' : '') +
+                                        (cell.rangeHoverStart ? ' ' + 'asc-picker-cell-range-hover-start' : '') +
+                                        (cell.rangeHoverEnd ? ' ' + 'asc-picker-cell-range-hover-end' : '') +
                                         (isSelectedForExtendingRange ? ' asc-picker-cell-edit-ready' : '') +
-                                        (isStartOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-left-one-among-two' : '') +
-                                        (isEndOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-right-one-among-two' : '') +
-                                        (isToday ? ' asc-picker-cell-today' : '') +
-                                        (isFirstDay ? ' asc-picker-cell-first-inview-cell' : '') +
+                                        (isStartOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-left-one-among-two' : '') +
+                                        (isEndOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-right-one-among-two' : '') +
+                                        (isToday ? ' ' + 'asc-picker-cell-today' : '') +
+                                        (isFirstDay ? ' ' + 'asc-picker-cell-first-inview-cell' : '') +
                                         (isLastDay ? ' asc-picker-cell-last-inview-cell' : '');
                                     return <td key={cellIndex} className={className} onClick={() => onDateClick(cell.fullDate)} onMouseEnter={() => onDateHover(new Date(...cell.fullDate))}>
-                                        <div className="asc-picker-cell-before" style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
-                                        <div className="asc-picker-cell-inner" style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.date}</div>
+                                        <div className={'asc-picker-cell-before'} style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
+                                        <div className={'asc-picker-cell-inner'} style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.date}</div>
                                     </td>
                                 })}
                             </tr>
@@ -373,7 +384,8 @@ const DatePanel = ({ year, month, onDateClick, onMonthBtn, onYearBtn, onPrevMont
     );
 };
 
-const MonthPanel = ({ year, onMonthClick, onYearBtn, onPrevYearBtn, onNextYearBtn, disable = () => false, ranges, currentRangeIndex, currentRangeDateType, hoverRangeForNonBenchmarkRanges, rangeHoverDate, onDateHover = () => { }, useInSingleView = false }) => {
+
+const MonthPanel = ({ year, month, onMonthClick, onYearBtn, onPrevYearBtn, onNextYearBtn, disable = () => false, ranges, currentRangeIndex, currentRangeDateType, hoverRangeForNonBenchmarkRanges, rangeHoverDate, onDateHover = () => { }, useInSingleView = false }) => {
     const getData = () => {
         let data = [[], [], [], []];
         let monthCounter = 0, quarterCounter = 0;
@@ -403,15 +415,18 @@ const MonthPanel = ({ year, onMonthClick, onYearBtn, onPrevYearBtn, onNextYearBt
         return data;
     };
 
+
     const data = getData();
+
+
     return (
-        <div className="asc-picker-month-panel">
+        <div className={'asc-picker-month-panel'}>
             <PanelHeader panel="month" year={year}
                 onYearBtn={onYearBtn}
                 onPrevBtn={onPrevYearBtn}
                 onNextBtn={onNextYearBtn} />
-            <div className="asc-picker-body">
-                <table className="asc-picker-content">
+            <div className={'asc-picker-body'}>
+                <table className={'asc-picker-content'}>
                     <tbody>
                         {data.map((quarter, quarterIndex) => {
                             return <tr key={quarterIndex} >
@@ -432,20 +447,20 @@ const MonthPanel = ({ year, onMonthClick, onYearBtn, onPrevYearBtn, onNextYearBt
                                         isEndOneWhenRangeHasOnlyTwo = cell.rangeEnd && range[0] && range[1] && giveMonthsCountInRange(range[0], range[1]) === 2;
                                     }
 
-                                    let className = 'asc-picker-cell asc-picker-cell-in-view' +
-                                        (cell.disabled ? ' asc-picker-cell-disabled' : '') +
-                                        (cell.rangeSelected ? ' asc-picker-cell-range-selected' : '') +
-                                        (cell.rangeStart ? ' asc-picker-cell-range-selected-start' : '') +
-                                        (cell.rangeEnd ? ' asc-picker-cell-range-selected-end' : '') +
-                                        (cell.rangeHover ? ' asc-picker-cell-range-hover' : '') +
-                                        (cell.rangeHoverStart ? ' asc-picker-cell-range-hover-start' : '') +
-                                        (cell.rangeHoverEnd ? ' asc-picker-cell-range-hover-end' : '') +
-                                        (isSelectedForExtendingRange ? ' asc-picker-cell-edit-ready' : '') +
-                                        (isStartOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-left-one-among-two' : '') +
-                                        (isEndOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-right-one-among-two' : '');
+                                    let className = 'asc-picker-cell' + ' asc-picker-cell-in-view' +
+                                        (cell.disabled ? ' ' + 'asc-picker-cell-disabled' : '') +
+                                        (cell.rangeSelected ? ' ' + 'asc-picker-cell-range-selected' : '') +
+                                        (cell.rangeStart ? ' ' + 'asc-picker-cell-range-selected-start' : '') +
+                                        (cell.rangeEnd ? ' ' + 'asc-picker-cell-range-selected-end' : '') +
+                                        (cell.rangeHover ? ' ' + 'asc-picker-cell-range-hover' : '') +
+                                        (cell.rangeHoverStart ? ' ' + 'asc-picker-cell-range-hover-start' : '') +
+                                        (cell.rangeHoverEnd ? ' ' + 'asc-picker-cell-range-hover-end' : '') +
+                                        (isSelectedForExtendingRange ? ' ' + 'asc-picker-cell-edit-ready' : '') +
+                                        (isStartOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-left-one-among-two' : '') +
+                                        (isEndOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-right-one-among-two' : '');
                                     return <td key={cellIndex} className={className} onClick={() => onMonthClick([year, cell.month])} onMouseEnter={() => onDateHover(new Date(year, cell.month, 1))}>
-                                        <div className="asc-picker-cell-before" style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
-                                        <div className="asc-picker-cell-inner" style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.monthName}</div>
+                                        <div className={'asc-picker-cell-before'} style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
+                                        <div className={'asc-picker-cell-inner'} style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.monthName}</div>
                                     </td>
                                 })}
                             </tr>
@@ -454,10 +469,14 @@ const MonthPanel = ({ year, onMonthClick, onYearBtn, onPrevYearBtn, onNextYearBt
                 </table>
             </div>
         </div>
+
     );
+
+
 };
 
 const YearPanel = ({ year, onYearClick, onPrevDecadeBtn, onNextDecadeBtn, disable = () => false, ranges, currentRangeIndex, currentRangeDateType, hoverRangeForNonBenchmarkRanges, rangeHoverDate, onDateHover = () => { }, useInSingleView = false }) => {
+
     const startYear = Math.floor(year / 10) * 10;
     const endYear = Math.floor(year / 10) * 10 + 9;
     const getData = () => {
@@ -498,12 +517,12 @@ const YearPanel = ({ year, onYearClick, onPrevDecadeBtn, onNextDecadeBtn, disabl
 
 
     return (
-        <div className="asc-picker-year-panel">
+        <div className={'asc-picker-year-panel'}>
             <PanelHeader panel="year" year={startYear}
                 onPrevBtn={onPrevDecadeBtn}
                 onNextBtn={onNextDecadeBtn} />
-            <div className="asc-picker-body">
-                <table className="asc-picker-content">
+            <div className={'asc-picker-body'}>
+                <table className={'asc-picker-content'}>
                     <tbody >
                         {data.map((row, rowIndex) => {
                             return <tr key={rowIndex} >
@@ -511,7 +530,7 @@ const YearPanel = ({ year, onYearClick, onPrevDecadeBtn, onNextDecadeBtn, disabl
                                     const isFirstYear = cell.year === startYear;
                                     const isLastYear = cell.year === endYear;
 
-                                    let colorRangeSelected = cell.rangeSelected && cell.isInView ? '#fff' : '';
+                                    let colorRangeSelected = cell.rangeSelected && cell.isInView ? '#000' : '';
                                     if ((cell.rangeStart || cell.rangeEnd) && cell.isInView && cell.rangeSelected) {
                                         colorRangeSelected = getColorOfSelected(cell.fullDateStart, ranges);
                                     }
@@ -529,23 +548,23 @@ const YearPanel = ({ year, onYearClick, onPrevDecadeBtn, onNextDecadeBtn, disabl
 
 
                                     let className = 'asc-picker-cell' +
-                                        (cell.isInView ? ' asc-picker-cell-in-view' : '') +
-                                        (cell.disabled ? ' asc-picker-cell-disabled' : '') +
-                                        (cell.selected ? ' asc-picker-cell-selected' : '') +
-                                        (cell.rangeSelected ? ' asc-picker-cell-range-selected' : '') +
-                                        (cell.rangeStart ? ' asc-picker-cell-range-selected-start' : '') +
-                                        (cell.rangeEnd ? ' asc-picker-cell-range-selected-end' : '') +
-                                        (cell.rangeHover ? ' asc-picker-cell-range-hover' : '') +
-                                        (cell.rangeHoverStart ? ' asc-picker-cell-range-hover-start' : '') +
-                                        (cell.rangeHoverEnd ? ' asc-picker-cell-range-hover-end' : '') +
-                                        (isSelectedForExtendingRange ? ' asc-picker-cell-edit-ready' : '') +
-                                        (isStartOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-left-one-among-two' : '') +
-                                        (isEndOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-right-one-among-two' : '') +
-                                        (isFirstYear ? ' asc-picker-cell-first-inview-cell' : '') +
-                                        (isLastYear ? ' asc-picker-cell-last-inview-cell' : '');
+                                        (cell.isInView ? ' ' + 'asc-picker-cell-in-view' : '') +
+                                        (cell.disabled ? ' ' + 'asc-picker-cell-disabled' : '') +
+                                        (cell.selected ? ' ' + 'asc-picker-cell-selected' : '') +
+                                        (cell.rangeSelected ? ' ' + 'asc-picker-cell-range-selected' : '') +
+                                        (cell.rangeStart ? ' ' + 'asc-picker-cell-range-selected-start' : '') +
+                                        (cell.rangeEnd ? ' ' + 'asc-picker-cell-range-selected-end' : '') +
+                                        (cell.rangeHover ? ' ' + 'asc-picker-cell-range-hover' : '') +
+                                        (cell.rangeHoverStart ? ' ' + 'asc-picker-cell-range-hover-start' : '') +
+                                        (cell.rangeHoverEnd ? ' ' + 'asc-picker-cell-range-hover-end' : '') +
+                                        (isSelectedForExtendingRange ? ' ' + 'asc-picker-cell-edit-ready' : '') +
+                                        (isStartOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-left-one-among-two' : '') +
+                                        (isEndOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-right-one-among-two' : '') +
+                                        (isFirstYear ? ' ' + 'asc-picker-cell-first-inview-cell' : '') +
+                                        (isLastYear ? ' ' + 'asc-picker-cell-last-inview-cell' : '');
                                     return <td key={cellIndex} className={className} onClick={() => onYearClick([cell.year])} onMouseEnter={() => onDateHover(cell.fullDateStart)}>
-                                        <div className="asc-picker-cell-before" style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
-                                        <div className="asc-picker-cell-inner" style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.year}</div>
+                                        <div className={'asc-picker-cell-before'} style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
+                                        <div className={'asc-picker-cell-inner'} style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.year}</div>
                                     </td>
                                 })}
                             </tr>
@@ -554,10 +573,14 @@ const YearPanel = ({ year, onYearClick, onPrevDecadeBtn, onNextDecadeBtn, disabl
                 </table>
             </div>
         </div>
+
     );
+
+
 };
 
-const QuarterPanel = ({ year, onQuarterClick, onYearBtn, onPrevYearBtn, onNextYearBtn, disable = () => false, ranges, currentRangeIndex, currentRangeDateType, hoverRangeForNonBenchmarkRanges, rangeHoverDate, onDateHover = () => { } }) => {
+const QuarterPanel = ({ year, month, onQuarterClick, onYearBtn, onPrevYearBtn, onNextYearBtn, disable = () => false, ranges, currentRangeIndex, currentRangeDateType, hoverRangeForNonBenchmarkRanges, rangeHoverDate, onDateHover = () => { } }) => {
+
     const data = [1, 2, 3, 4].map(q => {
         const fdStart = new Date(year, 3 * (q - 1), 1);
         const fdEnd = new Date(year, 3 * (q - 1) + 2 + 1, 0);
@@ -577,13 +600,13 @@ const QuarterPanel = ({ year, onQuarterClick, onYearBtn, onPrevYearBtn, onNextYe
     });
 
     return (
-        <div className="asc-picker-quarter-panel">
+        <div className={'asc-picker-quarter-panel'}>
             <PanelHeader panel="quarter" year={year}
                 onYearBtn={onYearBtn}
                 onPrevBtn={onPrevYearBtn}
                 onNextBtn={onNextYearBtn} />
-            <div className="asc-picker-body">
-                <table className="asc-picker-content">
+            <div className={'asc-picker-body'}>
+                <table className={'asc-picker-content'}>
                     <tbody >
                         <tr>
                             {data.map((cell, cellIndex) => {
@@ -603,21 +626,21 @@ const QuarterPanel = ({ year, onQuarterClick, onYearBtn, onPrevYearBtn, onNextYe
                                     isEndOneWhenRangeHasOnlyTwo = cell.rangeEnd && range[0] && range[1] && giveQuartersCountInRange(range[0], range[1]) === 2;
                                 }
 
-                                let className = 'asc-picker-cell asc-picker-cell-in-view' +
-                                    (cell.disabled ? ' asc-picker-cell-disabled' : '') +
-                                    (cell.selected ? ' asc-picker-cell-selected' : '') +
-                                    (cell.rangeSelected ? ' asc-picker-cell-range-selected' : '') +
-                                    (cell.rangeStart ? ' asc-picker-cell-range-selected-start' : '') +
-                                    (cell.rangeEnd ? ' asc-picker-cell-range-selected-end' : '') +
-                                    (cell.rangeHover ? ' asc-picker-cell-range-hover' : '') +
-                                    (cell.rangeHoverStart ? ' asc-picker-cell-range-hover-start' : '') +
-                                    (cell.rangeHoverEnd ? ' asc-picker-cell-range-hover-end' : '') +
-                                    (isSelectedForExtendingRange ? ' asc-picker-cell-edit-ready' : '') +
-                                    (isStartOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-left-one-among-two' : '') +
-                                    (isEndOneWhenRangeHasOnlyTwo ? ' asc-picker-cell-right-one-among-two' : '');
+                                let className = 'asc-picker-cell' + ' ' + 'asc-picker-cell-in-view' +
+                                    (cell.disabled ? ' ' + 'asc-picker-cell-disabled' : '') +
+                                    (cell.selected ? ' ' + 'asc-picker-cell-selected' : '') +
+                                    (cell.rangeSelected ? ' ' + 'asc-picker-cell-range-selected' : '') +
+                                    (cell.rangeStart ? ' ' + 'asc-picker-cell-range-selected-start' : '') +
+                                    (cell.rangeEnd ? ' ' + 'asc-picker-cell-range-selected-end' : '') +
+                                    (cell.rangeHover ? ' ' + 'asc-picker-cell-range-hover' : '') +
+                                    (cell.rangeHoverStart ? ' ' + 'asc-picker-cell-range-hover-start' : '') +
+                                    (cell.rangeHoverEnd ? ' ' + 'asc-picker-cell-range-hover-end' : '') +
+                                    (isSelectedForExtendingRange ? ' ' + 'asc-picker-cell-edit-ready' : '') +
+                                    (isStartOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-left-one-among-two' : '') +
+                                    (isEndOneWhenRangeHasOnlyTwo ? ' ' + 'asc-picker-cell-right-one-among-two' : '');
                                 return <td key={cellIndex} className={className} onClick={() => onQuarterClick([year, cell.quarter[1]])} onMouseEnter={() => onDateHover(new Date(year, 3 * (cell.quarter[1] - 1), 1))}>
-                                    <div className="asc-picker-cell-before" style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
-                                    <div className="asc-picker-cell-inner" style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.quarter}</div>
+                                    <div className={'asc-picker-cell-before'} style={{ background: colorRangeSelected, borderColor: colorHoverBorder }}></div>
+                                    <div className={'asc-picker-cell-inner'} style={{ background: colorRangeStartOrEnd, color: fontColorRangeStartOrEnd }}>{cell.quarter}</div>
                                 </td>
                             })}
                         </tr>
@@ -631,20 +654,22 @@ const QuarterPanel = ({ year, onQuarterClick, onYearBtn, onPrevYearBtn, onNextYe
 
 };
 
+
 const PanelHeader = ({ panel, month, year, onPrevBtn, onNextBtn, onMonthBtn, onYearBtn }) => {
+
     const decade = panel === 'year' ? year + '-' + (year + 9) : '';
     return (
-        <div className="asc-picker-header">
-            <button tabIndex="-1" className="asc-picker-header-prev-btn" onClick={onPrevBtn}>
-                <span className="asc-picker-header-prev-icon"></span>
+        <div className={'asc-picker-header'}>
+            <button tabIndex="-1" className={'asc-picker-header-prev-btn'} onClick={onPrevBtn}>
+                <span className={'asc-picker-header-prev-icon'}></span>
             </button>
-            <div className="asc-picker-header-view">
-                {panel === 'date' && <button tabIndex="-1" className="asc-picker-header-month-btn" onClick={onMonthBtn}>{MONTHS[month]}</button>}
-                {(panel === 'date' || panel === 'month' || panel === 'quarter') && <button tabIndex="-1" className="asc-picker-header-year-btn" onClick={onYearBtn}>{year}</button>}
-                {(panel === 'year') && <span className="asc-picker-header-decade" >{decade}</span>}
+            <div className={'asc-picker-header-view'}>
+                {panel === 'date' && <button tabIndex="-1" className={'asc-picker-header-month-btn'} onClick={onMonthBtn}>{MONTHS[month]}</button>}
+                {(panel === 'date' || panel === 'month' || panel === 'quarter') && <button tabIndex="-1" className={'asc-picker-header-year-btn'} onClick={onYearBtn}>{year}</button>}
+                {(panel === 'year') && <span className={'asc-picker-header-decade'} >{decade}</span>}
             </div>
-            <button tabIndex="-1" className="asc-picker-header-next-btn" onClick={onNextBtn}>
-                <span className="asc-picker-header-next-icon"></span>
+            <button tabIndex="-1" className={'asc-picker-header-next-btn'} onClick={onNextBtn}>
+                <span className={'asc-picker-header-next-icon'}></span>
             </button>
         </div>
     );

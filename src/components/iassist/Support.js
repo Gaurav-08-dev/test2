@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from 'react';
+import React, { useState, useEffect, useRef, memo, useReducer } from 'react';
 import './Support.scss';
 import SpeedSelect from 'react-speedselect';
 import CreateChatRoom from './CreateChatRoom';
@@ -10,135 +10,157 @@ import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
-import DatePicker from '../ReactCalendar/DatePicker';
+// import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
 import Delete from './DeleteConfirmation/Delete';
+import MultiPeriodPickerPanel from '../MultiPeriodPicker/MultiPeriodPicker';
 
-// let webSocket;
+
+
 let pageNumber = 1;
 const pageSize = 10;
 let totalPage = 0;
 let Size = pageSize;
 const scrollPadding = 40;
 let tabData = 'open';
-let dates = 'Date';
+let dateRange = ['Date'];
 let defType = { 'name': 'All', 'id': 'All' };
 let defReporter = { 'first_name': 'All', 'id': 'All' };
-let reporter_id = 0;
-let type_id = 0;
-let chatId = '';
-let refresh = false;
-// let btnId = 'trigger-btn';//document.getElementById("iassist-panel-wrapper")?.getAttribute("data-buttonid") || 'btn';
-// let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
-export const statusValue = ['InQueue', 'InProgress', 'OnHold', 'Completed', 'Unassigned'];
+let reporter_detail = {
+    id: 0
+};
+let type_detail = {
+    id: 0
+};
+let chatId = '';
+let refreshUserListInsideChat = false;
+let isUnRead = false
+
+
+const actionType = {
+    topic_click: 'topicClick',
+    count_change: 'countChange',
+    show_chat: 'showChat',
+    unread_count: 'unreadCount',
+    individual_topic: 'individualTopic',
+    status_tab: 'statusTab',
+    show_feedback: 'showFeedback',
+    show_reopen_panel: 'showReopenPanel',
+    feedBack_id: 'feedbackId',
+    show_multiple_filters: 'showMultipleFilters',
+    is_open_calendar: 'isOpenCalendar',
+    ticket_type_label: 'ticketTypeLabel',
+    reporters_label: 'reporterLabel',
+    selected_date: 'selectedDate',
+    initial_load_status: 'initialLoadStatus',
+    get_topic_id: 'getTopicId',
+    delete_id: 'deleteId',
+    last_activity: 'lastActivity',
+    refresh_state: 'refreshState'
+
+}
+
+const reducer = (state, action) => {
+
+    switch (action.type) {
+
+        case 'topicClick': return { ...state, topicClick: action.payload }
+        case 'countChange': return { ...state, countChange: !state.countChange }
+        case 'showChat': return { ...state, showChat: action.payload }
+        case 'unreadCount': return { ...state, unreadCount: action.payload }
+        case 'individualTopic': return { ...state, individualTopic: action.payload }
+        case 'statusTab': return { ...state, statusTab: action.payload }
+        case 'showFeedback': return { ...state, showFeedback: action.payload }
+        case 'showReopenPanel': return { ...state, showReopenPanel: action.payload }
+        case 'feedbackId': return { ...state, feedbackId: action.payload }
+        case 'showMultipleFilters': return { ...state, showMultipleFilters: action.payload }
+        case 'isOpenCalendar': return { ...state, isOpenCalendar: !state.isOpenCalendar }
+        case 'ticketTypeLabel': return { ...state, ticketTypeLabel: action.payload }
+        case 'reporterLabel': return { ...state, reporterLabel: action.payload }
+        case 'selectedDate': return { ...state, selectedDate: action.payload }
+        case 'initialLoadStatus': return { ...state, initialLoadStatus: action.payload }
+        case 'getTopicId': return { ...state, getTopicId: action.payload }
+        case 'deleteId': return { ...state, deleteId: action.payload }
+        case 'lastActivity': return { ...state, lastActivity: action.payload }
+        case 'refreshState': return { ...state, refreshState: !state.refreshState }
+
+
+
+
+
+        default:
+            throw new Error();
+    }
+}
+
 
 const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
+
+
+    const initialState = {
+        topicClick: topicClick ? topicClick : false,
+        countChange: false,
+        showChat: false,
+        unreadCount: 0,
+        individualTopic: [],
+        statusTab: 'open',
+        showFeedback: false,
+        showReopenPanel: false,
+        feedbackId: '',
+        showMultipleFilters: false,
+        isOpenCalendar: false,
+        ticketTypeLabel: 'All',
+        reporterLabel: 'Select',
+        selectedDate: new Date(),
+        initialLoadStatus: true,
+        getTopicId: '',
+        deleteId: false,
+        lastActivity: false,
+        refreshState: false
+    }
+
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    const controller = new AbortController();
 
     const prevSearchValue = useRef();
     const allTopics = useRef([]);
     const unReadList = useRef([]);
     const activity = useRef([]);
     const unRead = useRef(false);
-    const btnId = useRef(localStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
+    const btnId = useRef(sessionStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
     const disableUnreadButton = useRef(false);
-
-    const [TopicClick, setTopicClick] = useState(topicClick ? topicClick : false);
-
-    // const [webSocket, setWebSocket] = useState(webSockets)
-
-    const [CountChange, setCountChange] = useState(false);
-
-    const [showChat, setShowChat] = useState(false);
-
-    const [unreadCount, setUnReadCount] = useState(0);
-
-    const [indivTopic, setIndivTopic] = useState([]);
-
     const bodyRef = useRef();
+    const searchString = useRef('');
+    const allUser = useRef([]);
+    const allAccount = useRef([]);
+    const ticketTypeList = useRef([]);
+    const reportersList = useRef([]);
 
-    const [searchString, setSearchString] = useState('');
 
     const [showLoader, setShowLoader] = useState(false);
-
-    const [statusTab, setStatusTab] = useState('open');
-
-    const [showFeedback, setShowFeedback] = useState(false);
-
-
-    const [showReopenPanel, setshowReopenPanell] = useState(false);
-
-    const controller = new AbortController();
-
-    const [feedBackId, setFeedBackId] = useState('');
-
-    const [showMultipleFilters, setShowMultipleFilters] = useState(false);
-
-    const [isOpenCalendar, setIsOpenCalendar] = useState(false);
-
-    const [type, setType] = useState([]);
-
-    const [reporters, setReporters] = useState([]);
-
-    const [typeLabel, setTypeLabel] = useState('All');
-
-    const [reporterLabel, setReportersLabel] = useState('Select');
-
-    const [date, setDate] = useState(new Date());
-
-    const allUser = useRef([]);
-
-    const allAccount = useRef([]);
-
-    const [initialLoad, setInitialLoad] = useState(true);
-
-    const [getTopicId, setGetTopicId] = useState('');
-
     const [confirmDelete, setConfirmDelete] = useState(false);
-
-    const [deleteId, setDeleteId] = useState('');
-
-    const [lastActivity, setLastActivity] = useState(false);
-
     const [disableButton, setDisableButton] = useState(false);
 
-    const [fetchButton, setFetchButton] = useState(false);
+    if (ticketTypeList.current.length > 0 && ticketTypeList.current[0].id !== 'All') {
 
-    const [refr, setRefr] = useState(false);
+        ticketTypeList.current.unshift(defType);
 
-    if (type.length > 0 && type[0].id !== 'All') {
-
-        type.unshift(defType);
 
     }
 
-    if (reporters.length > 0 && reporters[0].id !== 'All') {
+    if (reportersList.current.length > 0 && reportersList.current[0].id !== 'All') {
 
-        reporters.unshift(defReporter);
+        reportersList.current.unshift(defReporter);
 
     }
-
-    // if (webSocket === undefined || (webSocket.readyState !== WebSocket.OPEN && webSocket.readyState !== WebSocket.CONNECTING)) {
-
-    //     if (webSocket === undefined || webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING) {
-
-    //         const jwt_token = getTokenClient()
-
-    //         webSocket = new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token)
-
-    //     }
-
-    //     console.log('listen connection');
-
-    // }
 
     const getTopics = async (isDelete) => {
         setDisableButton(true)
 
         if (tabData) {
-
-            setStatusTab(tabData);
-
+            dispatch({ type: actionType.status_tab, payload: tabData })
         }
 
         if (isDelete === 'delete') {
@@ -183,8 +205,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                         } else if (key === 'pagination') {
 
-                            // totalCount = data.total_count;
-
                             totalPage = data.no_of_pages;
 
                         } else if (key === 'user_data') {
@@ -210,7 +230,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                     }
 
                     setDisableButton(false)
-                    setFetchButton(!fetchButton);
+
 
                     setShowLoader(false);
 
@@ -235,18 +255,18 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         let url;
 
-        let searchStringFlag = searchString ? `&topic_search=${searchString}` : searchQuery ? `&topic_search=${searchQuery}` : '';
+        let searchStringFlag = searchString.current ? `&topic_search=${searchString.current}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
         let unReadFlag = unRead.current ? `&unread=${unRead.current}` : ''
 
 
-        if (dates === 'Date') {
+        if (dateRange[0] === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&reporter=${reporter_id}${searchStringFlag}${unReadFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_id}&date=${dates}&reporter=${reporter_id}${searchStringFlag}${unReadFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}`;
 
         }
 
@@ -258,7 +278,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         disableUnreadButton.current = true;
 
-        setInitialLoad(false);
+        dispatch({ type: actionType.initial_load_status, payload: false })
 
         pageNumber = 1;
 
@@ -293,7 +313,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                         } else if (key === 'pagination') {
 
-                            // totalCount = data.total_count;
+
 
                             totalPage = data.no_of_pages;
 
@@ -321,7 +341,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                     setDisableButton(false)
 
-                    setFetchButton(!fetchButton);
+
 
                     setShowLoader(false);
 
@@ -364,25 +384,33 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     webSocket.onmessage = function (evt) {
 
-        var received_msg = JSON.parse(evt.data);
-        refresh = false;
+
+        let received_msg = JSON.parse(evt.data);
+        refreshUserListInsideChat = false;
+
         if (received_msg.type === 'refresh' && chatId === received_msg.topic_id) {
-            refresh = true;
-            setRefr(!refr);
+
+            refreshUserListInsideChat = true;
+            dispatch({ type: actionType.refresh_state })
             return;
-        } else if (received_msg.type === 'count') {
+
+        }
+        else if (received_msg.type === 'count') {
+
             let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
-            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
+            sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
             changeValue(isUnread);
-        } else if (received_msg.type === 'chat') {
-            // let user = getUser();
+
+        }
+        else if (received_msg.type === 'chat' && !received_msg.is_feedback && !received_msg.is_reopen) {
+
             if (chatId !== received_msg.topic_id) {
+
                 if (!document.getElementById('iassist-unread')) {
-                    // console.log('check');
                     changeValue(true);
                 }
 
-                const findUnread = unReadList.current.find(topic => topic.topic_id === received_msg.topic_id)
+                const findUnread = unReadList.current.find(topic => +topic.topic_id === +received_msg.topic_id)
 
                 if (!findUnread) unReadList.current = [...unReadList.current, { topic_id: received_msg.topic_id, unread_count: 1 }]
 
@@ -392,7 +420,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                         topic.unread_count += 1;
 
-                        setCountChange(!CountChange);
+                        dispatch({ type: actionType.count_change })
+
 
                         return;
 
@@ -400,9 +429,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                 })
 
-                let readList = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread')) || [];
+                let readList = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'unread')) || [];
                 readList.push(received_msg.topic_id);
-                localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(readList))
+                sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(readList))
             }
 
         }
@@ -421,7 +450,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     };
 
-    const fetchTypeData = async () => {
+    const fetchTicketTypeList = async () => {
 
         const jwt_token = getTokenClient();
 
@@ -434,7 +463,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                     let result = response;
 
-                    setType(result);
+                    ticketTypeList.current = result
 
                 }
 
@@ -465,12 +494,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                 if (response) {
 
                     let result = response;
-
-                    // if (result.message === 'Success') {
-
-                    setReporters(result);
-
-                    // }
+                    reportersList.current = result;
 
                 }
 
@@ -482,113 +506,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
             });
     }
 
-    useEffect(() => {
-
-        if (panelPosition && panelPosition !== 'Right') {
-            let containerWrapper = document.getElementById('iassist-panel');
-            if (panelPosition.toLowerCase() === 'left') {
-                containerWrapper.style.left = 0;
-            } else if (panelPosition.toLowerCase() === 'center') {
-                var screenWidth = window.innerWidth;
-                containerWrapper.style.left = (screenWidth/2) - (containerWrapper.offsetWidth/2) + "px";
-            }
-            
-        }
-
-        if (type.length === 0) {
-
-            fetchTypeData();
-
-        }
-
-        if (reporters.length === 0) {
-
-            getUsers();
-
-        }
-
-        // let supportContainer = document.getElementById('iassist-panel');
-
-        // if (supportContainer && height) {
-
-        //     supportContainer.style.height = height;
-
-        // }
-
-        const subheaderAvailable = document.getElementById('app-sub-header');
-
-        if (subheaderAvailable) {
-
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
-
-            conatinerWrapper[0].style.top = '65px';
-            conatinerWrapper[0].style.maxHeight = '92.5%';
-
-
-        }
-
-        // if (allTopics.current.length === 0) {
-
-        getTopics();
-
-        // }
-
-        const onScroll = async () => {
-
-            if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
-
-                let checkScroll = allTopics.current.length === pageNumber * 10;
-
-                if (checkScroll) {
-
-                    pageNumber += 1;
-
-                    await getTopics();
-
-                }
-
-            }
-
-        }
-
-        document.addEventListener("mouseup", (event) => {
-
-            let head = document.getElementById('option');
-
-            if (head && !(head.contains(event.target))) {
-                // setOptionClick(false);
-            }
-
-            let calendar = document.getElementById('calendar-wrapper');
-
-            if (calendar && !(calendar.contains(event.target))) {
-
-                setIsOpenCalendar(false);
-
-            }
-
-            let home = document.getElementById('iassist-panel');
-
-            if (home && !(home.contains(event.target))) {
-
-                closePanes();
-                clearData();
-
-            }
-
-        })
-
-        bodyRef.current.addEventListener('scroll', onScroll);
-
-        return () => {
-            clearData();
-            // webSocket.close();
-            setInitialLoad(true)
-        }
-
-    }, [])
-
-    const clearData = () => {
+    const clearData = (resetUnread = true) => {
 
         allTopics.current = [];
 
@@ -597,8 +515,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
         unReadList.current = [];
 
         pageNumber = 1;
-        unRead.current=false;
-        disableUnreadButton.current=false;
+
+        if (resetUnread) {
+            unRead.current = false;
+            disableUnreadButton.current = false;
+        }
 
     }
 
@@ -606,56 +527,40 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         let data = checkLastActivity(topic.id);
 
-        setLastActivity(data);
+        dispatch({ type: actionType.last_activity, payload: data })
 
         let checkIndex = unReadList.current.find((list) => {
             return list.topic_id === topic.id;
         });
 
-        if (checkIndex) setUnReadCount(checkIndex.unread_count)
+        if (checkIndex) dispatch({ type: actionType.unread_count, payload: checkIndex.unread_count })
 
-        setShowChat(true);
-
+        dispatch({ type: actionType.show_chat, payload: true })
         chatId = topic.id;
-
-        setIndivTopic(topic)
+        dispatch({ type: actionType.individual_topic, payload: topic })
 
         clearData();
 
     }
     const closePanes = () => {
-        // Size = pageSize;
-
 
         closePane();
 
-        setShowChat(false);
-
-        setTopicClick(false);
+        dispatch({ type: actionType.show_chat, payload: false })
+        dispatch({ type: actionType.topic_click, payload: false })
 
         clearData();
+        clearFilter()
 
     }
 
-    // const onInputChange = (e) => {
-
-    //     setSearchString(e.target.value)
-
-    //     searchTopic(e.target.value)
-
-    // }
-
     const closeFeedbackandReopenPane = () => {
 
-        setShowFeedback(false);
+        dispatch({ type: actionType.show_feedback, payload: false })
+        dispatch({ type: actionType.show_reopen_panel, payload: false })
+        dispatch({ type: actionType.feedBack_id, payload: '' })
+        dispatch({ type: actionType.get_topic_id, payload: '' })
 
-        setshowReopenPanell(false);
-
-
-
-        setFeedBackId('');
-
-        setGetTopicId('');
 
     }
 
@@ -666,9 +571,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         })
 
-
-
-
         return data && data.length > 0 && data[0].unread_count > 0 ? true : false;
 
     }
@@ -676,33 +578,33 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     //For filter drop down changes
     const ondropDownChange = (value, type) => {
 
-        if (type === 'reporter' && reporter_id !== value.id) {
+        if (type === 'reporter' && reporter_detail.id !== value.id) {
 
-            setReportersLabel(value.first_name);
+            dispatch({ type: actionType.reporters_label, payload: value })
 
             if (value.id === 'All') {
 
-                reporter_id = 0;
+                reporter_detail.id = 0;
 
             } else {
 
-                reporter_id = value.id;
+                reporter_detail = value;
 
             }
 
             getTopicsBasedOnFilter();
 
-        } else if (type === 'type' && ((type_id !== value.id && value.name !== 'All') || (value.name === 'All' && type_id !== 0))) {
+        } else if (type === 'ticketType' && ((type_detail?.id !== value.id && value.name !== 'All') || (value.name === 'All' && type_detail?.id !== 0))) {
 
-            setTypeLabel(value.name);
+            dispatch({ type: actionType.ticket_type_label, payload: value })
 
             if (value.name === 'All') {
 
-                type_id = 0;
+                type_detail.id = 0;
 
             } else {
 
-                type_id = value.id;
+                type_detail = value;
 
             }
 
@@ -712,52 +614,61 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     }
 
-    const handleDatePicker = (e) => {
+    // const handleDatePicker = (e) => {
 
-        if (dates !== e) {
+    //     if (dateRange !== e) {
 
-            setDate(new Date(e))
+    //         dispatch({ type: actionType.selected_date, payload: new Date(e) })
 
-            dates = e;
 
-            getTopicsBasedOnFilter();
+    //         dateRange = e;
 
-        }
+    //         getTopicsBasedOnFilter();
 
-        setIsOpenCalendar(false);
+    //     }
+    //     dispatch({
+    //         type: actionType.is_open_calendar
 
-    }
+    //     })
+
+
+
+    // }
 
     const openFilterList = () => {
 
-        if (showMultipleFilters) {
+        if (state.showMultipleFilters) {
 
             clearFilter();
 
         }
-        setShowMultipleFilters(!showMultipleFilters)
+
+        dispatch({ type: actionType.show_multiple_filters, payload: !state.showMultipleFilters })
+
 
     }
 
     const showUnread = () => {
 
+        isUnRead = !unRead.current;
         unRead.current = !unRead.current;
+
         getTopicsBasedOnFilter()
     }
+    
     const clearFilter = () => {
 
-        if (reporter_id !== 0 || type_id !== 0 || dates !== 'Date' || unRead?.current) {
+        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange !== 'Date' || unRead?.current || isUnRead) {
 
-            reporter_id = 0;
+            reporter_detail.id = 0;
 
-            type_id = 0;
+            type_detail.id = 0;
 
-            dates = 'Date';
+            dateRange = ['Date'];
             unRead.current = false;
-            setTypeLabel('All');
-
-            setReportersLabel('Select');
-
+            isUnRead = false;
+            dispatch({ type: actionType.ticket_type_label, payload: 'All' })
+            dispatch({ type: actionType.reporters_label, payload: 'Select' })
             getTopicsBasedOnFilter();
 
         }
@@ -818,18 +729,142 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     }
 
     const handleKeyDown = (e) => {
-        if ((e.keyCode === 13 || e === 'click') && (searchString !== '' || prevSearchValue.current)) {
-            prevSearchValue.current = searchString;
+        if ((e.keyCode === 13 || e === 'click') && (searchString.current !== '' || prevSearchValue.current)) {
+            prevSearchValue.current = searchString.current;
 
-            getTopicsBasedOnFilter(searchString);
-            // searchTopic(searchString)
+            getTopicsBasedOnFilter(searchString.current);
+        }
+    }
+
+    useEffect(() => {
+
+
+        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || isUnRead) {
+
+            dispatch({ type: actionType.show_multiple_filters, payload: true })
+            if (isUnRead) unRead.current = isUnRead;
+            if (type_detail.id !== 0) dispatch({ type: actionType.ticket_type_label, payload: type_detail })
+            if (reporter_detail.id !== 0) dispatch({ type: actionType.reporters_label, payload: reporter_detail })
+
+        }
+
+        if (panelPosition && panelPosition !== 'Right') {
+            let containerWrapper = document.getElementById('iassist-panel');
+            if (panelPosition.toLowerCase() === 'left') {
+                containerWrapper.style.left = 0;
+            } else if (panelPosition.toLowerCase() === 'center') {
+                let screenWidth = window.innerWidth;
+                containerWrapper.style.left = (screenWidth / 2) - (containerWrapper.offsetWidth / 2) + "px";
+            }
+
+        }
+
+        if (ticketTypeList.current.length === 0) {
+
+            fetchTicketTypeList();
+
+        }
+
+        if (reportersList.current.length === 0) {
+
+            getUsers();
+
+        }
+
+        const subheaderAvailable = document.getElementById('app-sub-header');
+
+        if (subheaderAvailable) {
+
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+
+            conatinerWrapper[0].style.top = '65px';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
+        }
+
+        getTopics();
+
+        const onScroll = async () => {
+
+            if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
+
+                let checkScroll = allTopics.current.length === pageNumber * 10;
+
+                if (checkScroll) {
+
+                    pageNumber += 1;
+
+                    await getTopics();
+
+                }
+
+            }
+
+        }
+
+        document.addEventListener("mouseup", (event) => {
+
+            let calendar = document.getElementById('calendar-wrapper');
+
+            if (calendar && !(calendar.contains(event.target))) {
+
+                dispatch({ type: actionType.is_open_calendar })
+
+            }
+
+            let home = document.getElementById('iassist-panel');
+
+            if (home && !(home.contains(event.target))) {
+
+                closePanes();
+                clearData();
+
+            }
+
+        })
+
+        if (bodyRef.current) bodyRef.current.addEventListener('scroll', onScroll);
+
+        return () => {
+            clearData();
+            dispatch({ type: actionType.initial_load_status, payload: true })
+        }
+
+    }, []) // eslint-disable-line
+
+
+    //get formated period
+    const getFormatedPeriod = (period) =>{
+        let newdate = period ? new Date(period) : new Date();
+        let month = newdate.getMonth() + 1;
+        let date = newdate.getDate();
+        let year = newdate.getFullYear();
+        return year + "-" + month + "-" + date;
+    }
+
+    const handleCalendar = (range) => {
+        let updatedValue = null;
+        if (range && range.largestRangeIndex === null) {
+            updatedValue = getFormatedPeriod(range.ranges[0][0]);
+
+            dispatch({ type: actionType.selected_date, payload: range.ranges[0][0] })
+
+            dateRange = [updatedValue];
+        } else if (range.largestRangeIndex !== null) {
+            updatedValue = getFormatedPeriod(range.ranges[0][1]);;
+            dateRange = [dateRange ,updatedValue];
+            dispatch({ type: actionType.selected_date, payload: range.ranges[0][1] })
+            getTopicsBasedOnFilter();
+            dispatch({
+                type: actionType.is_open_calendar
+
+            })
         }
     }
 
     return (
 
         <>
-            {!TopicClick && !showChat &&
+            {!state.topicClick && !state.showChat &&
                 <div id='iassist-panel' className='iassist-panel'>
 
                     <div className='iassist-panel-inner'>
@@ -848,15 +883,15 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                     <input type={'text'}
                                         title='Search'
-                                        onChange={(e) => { setSearchString(e.target.value.trim()) }}
+                                        onChange={(e) => { searchString.current = e.target.value.trim() }}
                                         placeholder='Search'
                                         onKeyDown={handleKeyDown}
                                     />
 
                                 </div>
 
-                                <div className={'filter-btn' + (showMultipleFilters ? ' filter-bg' : '')}>
-                                    <button className={'button' + (showMultipleFilters ? ' button-select' : '')}
+                                <div className={'filter-btn' + (state.showMultipleFilters ? ' filter-bg' : '')}>
+                                    <button className={'button' + (state.showMultipleFilters ? ' button-select' : '')}
                                         disabled={disableButton}
                                         title='filter-button' onClick={() => openFilterList()}></button>
                                 </div>
@@ -865,7 +900,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                     <button onClick={() => {
                                         clearData();
-                                        setTopicClick(true)
+                                        dispatch({ type: actionType.topic_click, payload: true })
                                     }}>
                                         <span className='add-new-ticket'></span>
                                         Ticket
@@ -876,24 +911,27 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                             </div>
                         </div>
 
-                        {showMultipleFilters &&
+                        {state.showMultipleFilters &&
                             <div className='sub-header-wrapper'>
 
                                 <div id='calendar' className={'calendar-wrapper'}>
                                     <div className={'calendar-date'}>
-                                        <label className={'label'} onClick={() => setIsOpenCalendar(true)}>{dates}</label>
-                                        <button title='Calendar' className={'button-calendar'} onClick={() => setIsOpenCalendar(true)}></button>
+                                        <label className={'label'} onClick={() =>
+                                            dispatch({ type: actionType.is_open_calendar })
+
+                                        }>{dateRange[0]}{dateRange.length > 1 && '  to  ' + dateRange[1]}</label>
+                                        <button title='Calendar' className={'button-calendar'} onClick={() =>
+                                            dispatch({ type: actionType.is_open_calendar })
+                                        }></button>
                                     </div>
 
-                                    {isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
+                                    {state.isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
 
-                                        <DatePicker picker='date'
-                                            onChange={(e) => handleDatePicker(e)}
-                                            placeholder={'Select Date'}
-                                            date={date}
-                                            allowClear={false}
-                                            showOkCancelBtns={true}
-                                            showInline={true} />
+                                            <MultiPeriodPickerPanel
+                                                    onChange={handleCalendar}
+                                                    singleRangeonly={true}
+                                                    periodColors={'#fff'}/>
+                                                    {/* //#06A535 */}
 
                                     </div>}
 
@@ -903,7 +941,15 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                 <div className='type no-bg'>
 
-                                    <SpeedSelect options={type} selectLabel={typeLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => ondropDownChange(value, 'type')} />
+                                    <SpeedSelect
+                                        options={ticketTypeList.current}
+                                        selectLabel={state.ticketTypeLabel?.name}
+                                        prominentLabel='Type'
+                                        maxHeight={100}
+                                        maxWidth={80}
+                                        uniqueKey='id'
+                                        displayKey='name'
+                                        onSelect={(value) => ondropDownChange(value, 'ticketType')} />
 
                                 </div>
 
@@ -911,13 +957,19 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                 <div className='reporter no-bg'>
 
-                                    <SpeedSelect options={reporters} selectLabel={reporterLabel} prominentLabel='Reporter' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='first_name' onSelect={(value) => ondropDownChange(value, 'reporter')} />
+                                    <SpeedSelect
+                                        options={reportersList.current}
+                                        selectLabel={state.reporterLabel?.first_name}
+                                        prominentLabel='Reporter'
+                                        maxHeight={100}
+                                        maxWidth={80}
+                                        uniqueKey='id'
+                                        displayKey='first_name'
+                                        onSelect={(value) => ondropDownChange(value, 'reporter')} />
 
                                 </div>
                                 <div className='divider'></div>
                                 <div className={unRead.current ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton.current} onClick={() => showUnread()}>Unread</button></div>
-                                {/* <div className='divider'></div> */}
-
                                 <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
 
                             </div>}
@@ -927,14 +979,13 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                 <div className={'tab-wrapper'}>
 
-                                    <button style={{ backgroundColor: statusTab === 'open' ? '#6C757D' : '' }}
+                                    <button style={{ backgroundColor: state.statusTab === 'open' ? '#6C757D' : '' }}
                                         disabled={disableButton}
                                         onClick={() => {
                                             if (tabData !== 'open') {
                                                 tabData = 'open';
-                                                setStatusTab('open');
-                                                allTopics.current = [];
-                                                clearData();
+                                                dispatch({ type: actionType.status_tab, payload: 'open' })
+                                                clearData(false);
                                                 getTopics();
 
                                             }
@@ -944,14 +995,13 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                     </button>
 
-                                    <button style={{ backgroundColor: statusTab === 'resolved' ? '#6C757D' : '' }}
+                                    <button style={{ backgroundColor: state.statusTab === 'resolved' ? '#6C757D' : '' }}
                                         disabled={disableButton}
                                         onClick={() => {
                                             if (tabData !== 'resolved') {
                                                 tabData = 'resolved';
-                                                setStatusTab('resolved');
-                                                allTopics.current = [];
-                                                clearData();
+                                                dispatch({ type: actionType.status_tab, payload: 'resolved' })
+                                                clearData(false);
                                                 getTopics();
                                             }
                                         }}>
@@ -964,7 +1014,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                             </div>
 
-                            <div className={'topic-list' + (showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+                            <div className={'topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
 
                                 {!confirmDelete && allTopics.current.length > 0 && allTopics.current.map((topic, index) => {
 
@@ -981,24 +1031,31 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                                 <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
-                                                <Detail topic={topic} type={type} allUser={allUser.current.length ? allUser.current : reporters} allAccount={allAccount.current} />
+                                                <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
 
                                             </div>}
 
-                                            {/* {(showFeedback || showReopenPanel) && <div className='header-meta-divider'></div>} */}
 
                                             {<div className='topic-meta'>
 
-                                                {(statusTab !== 'resolved') && showFeedback && feedBackId === topic.id && <FeedBack closePane={closeFeedbackandReopenPane} id={feedBackId} ticket={getTopicsBasedOnFilter} disabledButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here' />}
+                                                {(state.statusTab !== 'resolved') && state.showFeedback && state.feedbackId === topic.id &&
+                                                    <FeedBack
+                                                        closePane={closeFeedbackandReopenPane}
+                                                        id={state.feedbackId}
+                                                        ticket={getTopicsBasedOnFilter}
+                                                        disabledButton={setDisableButton}
+                                                        allTopic={allTopics.current}
+                                                        setLoader={setShowLoader}
+                                                        placeHolders='Type here' />}
 
 
-                                                {feedBackId !== topic.id && (statusTab === 'open') ?
+                                                {state.feedbackId !== topic.id && (state.statusTab === 'open') ?
                                                     <div className='topic-buttons'>
 
                                                         <button className='btn-resolve icon-btn' disabled={disableButton} onClick={() => {
                                                             setDisableButton(true);
-                                                            setShowFeedback(true);
-                                                            setFeedBackId(topic.id)
+                                                            dispatch({ type: actionType.show_feedback, payload: true })
+                                                            dispatch({ type: actionType.feedBack_id, payload: topic.id })
                                                         }}>
                                                             <i></i>
                                                             <span>Resolve</span>
@@ -1007,7 +1064,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                                                         {checkLastActivity(topic.id) && <button className='btn-delete icon-btn' disabled={disableButton} onClick={(e) => {
                                                             setConfirmDelete(true)
                                                             setDisableButton(true);
-                                                            setDeleteId(topic.id);
+                                                            dispatch({ type: actionType.delete_id, payload: topic.id })
                                                         }
                                                         }>
                                                             <i></i>
@@ -1016,14 +1073,23 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                                                     </div> : ''}
 
-                                                {(statusTab === 'resolved') && showReopenPanel && getTopicId.id === topic.id && <TicketReopen closePane={closeFeedbackandReopenPane} id={getTopicId.id} ticket={getTopicsBasedOnFilter} disableButton={setDisableButton} allTopic={allTopics.current} setLoader={setShowLoader} placeHolders='Type here' />}
-                                                {(statusTab === 'resolved') && (!showReopenPanel) && <div className='topic-buttons'>
+                                                {(state.statusTab === 'resolved') && state.showReopenPanel && state.getTopicId.id === topic.id &&
+                                                    <TicketReopen
+                                                        closePane={closeFeedbackandReopenPane}
+                                                        id={state.getTopicId.id}
+                                                        ticket={getTopicsBasedOnFilter}
+                                                        disableButton={setDisableButton}
+                                                        allTopic={allTopics.current}
+                                                        setLoader={setShowLoader}
+                                                        placeHolders='Type here'
 
-                                                    {getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
+                                                    />}
+                                                {(state.statusTab === 'resolved') && (!state.showReopenPanel) && <div className='topic-buttons'>
+
+                                                    {state.getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
                                                         setDisableButton(true);
-                                                        setGetTopicId(topic);
-                                                        setshowReopenPanell(true);
-
+                                                        dispatch({ type: actionType.get_topic_id, payload: topic })
+                                                        dispatch({ type: actionType.show_reopen_panel, payload: true })
                                                     }}>
                                                         <i></i>
                                                         <span>Re-Open</span>
@@ -1039,10 +1105,10 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                                 })}
 
                                 {confirmDelete && <Delete deleteTopic={deleteTopic}
-                                    topic={deleteId}
+                                    topic={state.deleteId}
                                     setConfirmDelete={setConfirmDelete}
                                     disable={setDisableButton} />}
-                                {allTopics.current.length === 0 && !initialLoad && !showLoader && <div className='no-record'>No Tickets Found </div>}
+                                {allTopics.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
                             </div>
                         </div>
 
@@ -1052,21 +1118,21 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
 
 
-            {TopicClick && !showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} />}
+            {state.topicClick && !state.showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} />}
 
-            {showChat && <ChatRoom closePane={closePanes}
+            {state.showChat && <ChatRoom closePane={closePanes}
                 chatIds={chatId}
-                unRead={unreadCount}
-                topicDetail={indivTopic}
-                allAccount={allAccount.current.length > 0 ? allAccount.current : reporters}
+                unRead={state.unreadCount}
+                topicDetail={state.individualTopic}
+                allAccount={allAccount.current.length > 0 ? allAccount.current : reportersList.current}
                 allUser={allUser.current}
-                type={type}
-                activity={lastActivity}
-                refresh={refresh}
-                refreshState={refr}
-                socketDetail={webSocket} 
+                type={ticketTypeList.current}
+                activity={state.lastActivity}
+                refresh={refreshUserListInsideChat}
+                refreshState={state.refr}
+                socketDetail={webSocket}
                 panelPosition={panelPosition}
-                />
+            />
             }
 
         </>

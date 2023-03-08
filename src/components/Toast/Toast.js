@@ -67,7 +67,7 @@ export default class Toast extends React.Component {
             }}
           >
             <div className="toast-icon"> </div>
-            <div>{toast.message}</div>
+            <div>{toast.message} </div>
           </motion.div>
         ))}
       </AnimatePresence>

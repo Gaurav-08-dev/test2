@@ -108,32 +108,32 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                     display: flex;
                     flex-direction: column;
                     gap: 10px;
-                }
-                .field-wrapper{
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 0;
-                    width: 100%;
-                    .left{
+                    .user-list-field-wrapper{
                         display: flex;
                         align-items: center;
-                        gap: 7px;
-                        text-transform: capitalize;
-                    }
-                    .user-button {
-                        button{
-                            padding: 0;
-                            background-color: transparent;
-                            font-weight: 500;
-                            transition: 300ms all;
-                            &.add {
-                                color: #00BB5A;
-                            }
-                            &.remove {
-                                color: #b1b2b3;
-                                &:hover{
-                                    color: #fff;
+                        justify-content: space-between;
+                        padding: 0;
+                        width: 100%;
+                        .left{
+                            display: flex;
+                            align-items: center;
+                            gap: 7px;
+                            text-transform: capitalize;
+                        }
+                        .user-button {
+                            button{
+                                padding: 0;
+                                background-color: transparent;
+                                font-weight: 500;
+                                transition: 300ms all;
+                                &.add {
+                                    color: #00BB5A;
+                                }
+                                &.remove {
+                                    color: #b1b2b3;
+                                    &:hover{
+                                        color: #fff;
+                                    }
                                 }
                             }
                         }

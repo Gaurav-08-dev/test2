@@ -6,7 +6,7 @@ import APIService from '../../../services/apiService';
 import alertService from '../../../services/alertService';
 
 
-const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, Topic, setLoader, placeHolders }) => {
+const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, topic, setLoader, placeHolders }) => {
 
     const [suggestion, setSuggestion] = useState('');
 
@@ -36,7 +36,7 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
         setChangeButtonStatus(!changeButtonStatus);
 
-    }, [id])
+    }, [id]) // eslint-disable-line
 
     const submitReOpen = () => {
 
@@ -68,9 +68,9 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                             setLoader(false);
 
-                            if (Topic) {
+                            if (topic) {
 
-                                Topic.status_id = 1;
+                                topic.status_id = 1;
 
                             }
 

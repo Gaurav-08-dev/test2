@@ -14,7 +14,7 @@ const SupportContainer = () => {
 
     const [OpenSupport, setOpenSupport] = useState(false);
     const AppId = useRef(window?.iAssistAppId);
-    // console.log(AppId.current)
+
     const tokenConstant = useRef('');
     const btnId = useRef('trigger-btn');
     const panelPosition = useRef('Right');
@@ -22,38 +22,39 @@ const SupportContainer = () => {
     // const [configData, setConfigData] = useState('');
 
     const getConfigDetails = async () => {
+
         if (staticToken) {
             const tokens = `Bearer ${staticToken}`;
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/?app_id=${AppId.current}`, null, false, 'GET', null, tokens)
-                    .then(response => {
+                .then(response => {
 
-                        if (response) {
-                            // setConfigData(response)
-                            tokenConstant.current = response.user_session_key;
-                            btnId.current = response.button_id;
-                            panelPosition.current = response.app_position;
-                            top.current = response.top_position;
-                            // console.log(response)
-                            // localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'appid', AppId.current);
-                            localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
-                            simplifyToken()
+                    if (response) {
+                        // setConfigData(response)
+                        tokenConstant.current = response.user_session_key;
+                        btnId.current = response.button_id;
+                        panelPosition.current = response.app_position;
+                        top.current = response.top_position;
+                        sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
+                        simplifyToken()
 
-                        }
+                    }
 
-                    })
-                    .catch(err => {
+                })
+                .catch(err => {
 
-                        alertService.showToast('error', err.msg);
+                    alertService.showToast('error', err.msg);
 
-                    });
+                });
         }
     }
 
     const simplifyToken = async () => {
+
         let token = localStorage.getItem(tokenConstant.current);
         const user = getUserDetailsFromToken(token);
         let userData = user?.identity || user;
         setUserData(userData);
+
         if (token) {
             const tokens = `Bearer ${token}`;
             let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
@@ -70,7 +71,9 @@ const SupportContainer = () => {
     }
 
     const connectSocket = () => {
-        if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
+
+        const tokenFromLocalStorage = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token');
+        if (tokenFromLocalStorage && tokenFromLocalStorage !== 'undefined') {
             if (webSocket === undefined || (webSocket.readyState !== WebSocket.OPEN && webSocket.readyState !== WebSocket.CONNECTING)) {
                 if (webSocket === undefined || webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING) {
                     const jwt_token = getTokenClient();
@@ -87,7 +90,7 @@ const SupportContainer = () => {
                 var received_msg = JSON.parse(evt.data);
                 if (received_msg.type === 'count') {
                     let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
-                    localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
+                    sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
                     changeValue(isUnread);
                 } if (received_msg.type === 'chat') {
                     changeValue(true);
@@ -123,76 +126,75 @@ const SupportContainer = () => {
     }
 
     const closePane = () => {
-
-        // if(document.getElementById('iassist-css'))document.getElementById('iassist-css').remove();
-        // if(document.getElementById('iassist-html'))document.getElementById('iassist-html').remove();
         setOpenSupport(false);
-        // if(document.getElementById('test-div'))document.getElementById('test-div').remove();
+    }
+    const supportButtonClick = (e) => {
 
+        const triggerButton = document.getElementById(btnId.current);
+
+        if (triggerButton?.contains(e.target) && webSocket) {
+            e.preventDefault();
+            setOpenSupport(true);
+        } else {
+            if (!webSocket && triggerButton?.contains(e.target)) {
+
+                getConfigDetails();
+
+                alertService.showToast('process', 'Loading...');
+            }
+        }
     }
 
     useEffect(() => {
-        const PrevAppId = localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        const configDetails = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        if (PrevAppId !== AppId.current || !configDetails) {
+        const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
+        const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
+
+        if (prevAppId !== AppId.current || !configDetails) {
             getConfigDetails();
         }
 
         const bodyElement = document.getElementsByTagName('body')[0];
-
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
 
-    }, [])
+    }, []) //eslint-disable-line 
 
     useEffect(() => {
-        const PrevAppId = localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        const configDetails = JSON.parse(localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
-        if (PrevAppId === AppId.current && configDetails) {
+        const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
+        const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
+
+        if (prevAppId === AppId.current && configDetails) {
+
             tokenConstant.current = configDetails.user_session_key;
             btnId.current = configDetails.button_id;
             panelPosition.current = configDetails.app_position;
             top.current = configDetails.top_position;
             simplifyToken();
+            
             if (!webSocket) {
                 let buttonElement = document.getElementById(btnId.current);
                 if (buttonElement && buttonElement.children.length > 0) buttonElement.children[0].disabled = true;
             }
             if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
-                if (localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
+                if (sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
                     simplifyToken();
                 }
 
                 setTimeout(() => {
                     connectSocket();
-
+                    
                 }, 200);
 
             }
         }
-        //    console.log(document.getElementById(btnId))
+
         document.addEventListener('click', supportButtonClick);
 
-    }, [btnId.current, tokenConstant.current])
-
-    const supportButtonClick = (e) => {
-        const triggeredButton = document.getElementById(btnId.current);
-        if (triggeredButton?.contains(e.target) && webSocket) {
-            e.preventDefault();
-            setOpenSupport(true);
-        } else {
-            if (!webSocket && triggeredButton?.contains(e.target)) {
-                
-                getConfigDetails();
-
-                alertService.showToast('process', 'Wait For Some Time');
-            }
-        }
-    }
+    }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
 
     return (
@@ -200,7 +202,7 @@ const SupportContainer = () => {
         <>
 
             {/* {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>} */}
-            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} panelPosition={panelPosition.current}/>}
+            {OpenSupport && <Support closePane={closePane} webSocket={webSocket} panelPosition={panelPosition.current} />}
         </>
 
     )

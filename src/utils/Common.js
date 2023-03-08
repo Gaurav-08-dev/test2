@@ -25,7 +25,7 @@ export const getToken = () => {
  */
 // return the token from the session storage
 export const getTokenClient = () => {
-  return localStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') || null;
+  return sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') || null;
   
   // New method - get token from sso site
   // window.SSO.getToken((token) => {
@@ -57,7 +57,7 @@ export const generateHashedPassword = (password) => {
  */
 //Get User Details
 export const getUser = () => {
-  const userStr = localStorage.getItem(Constants.SITE_PREFIX + 'user');
+  const userStr = sessionStorage.getItem(Constants.SITE_PREFIX + 'user');
   if (userStr) return JSON.parse(userStr);
   else return null;
   
@@ -79,7 +79,7 @@ export const getUserDetailsFromToken = (token) => {
 }
 
 export const setUserData = (user) => {
-  localStorage.setItem(Constants.SITE_PREFIX + 'user', JSON.stringify(user));
+  sessionStorage.setItem(Constants.SITE_PREFIX + 'user', JSON.stringify(user));
 }
 
 // Set the token and user from the session storage
@@ -92,7 +92,7 @@ export const setUserSession = (token, user, uniqueid = null) => {
 }
 
 export const setUserToken = (token) => {
-  localStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'token', token);
+  sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'token', token);
 }
 
 // Set the token and user from the session storage

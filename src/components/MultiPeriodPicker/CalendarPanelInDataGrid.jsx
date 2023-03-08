@@ -17,9 +17,10 @@ const DEFAULT_PERIOD_BGCOLORS = ['#1890ff', '#06A535', '#ff7373', '#ffa500'];
 const DEFAULT_PERIOD_COLORS = ['#fff', '#fff', '#fff', '#fff'];
 const PREDEFINED_DATES = ['LAST_7_DAYS', 'LAST_30_DAYS', 'THIS_MONTH', 'LAST_MONTH'];
 
-const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = DEFAULT_PERIOD_BGCOLORS, periodColors = DEFAULT_PERIOD_COLORS, benchmarkIndex, isPeriodComparisonEnabled, periodComparisonPreselect,
+const CalendarPanelInDataGrid = ({ periods, periodBGColors = DEFAULT_PERIOD_BGCOLORS, periodColors = DEFAULT_PERIOD_COLORS, benchmarkIndex, isPeriodComparisonEnabled, periodComparisonPreselect,
     onPeriodComaprisonChange, onPeriodComparisonPreselectChange, showBenchmarkInGrid, onShowBenchmarkInGridChange,
-    periodComparisonGroupByOptions, periodComparisonGroupBy, onPeriodComparisonGroupByChange, forceDisplayDate = null, dateForLastDaysCalculation = null, onChange, disableFn, isDynamicPeriod }) => {
+    periodComparisonGroupByOptions, periodComparisonGroupBy, onPeriodComparisonGroupByChange, forceDisplayDate = null, dateForLastDaysCalculation = null, onChange, disableFn }) => {
+
 
     const defaultRanges = [[null, null, periodBGColors[0], periodColors[0]], [null, null, periodBGColors[1], periodColors[1]]];
     let initialRanges = periods && periods.length ? periods.map((p, i) => [...p, periodBGColors[i], periodColors[i]]) : defaultRanges;
@@ -30,9 +31,12 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
     const [startMonth, setStartMonth] = useState(forceDisplayDate ? forceDisplayDate.getMonth() : ranges[0] && ranges[0][0] ? ranges[0][0].getMonth() : new Date().getMonth());
     const [picker, setPicker] = useState('date');
     const [panel, setPanel] = useState(picker);
+
     const [prevPanel, setPrevPanel] = useState('');
     const [rangeHoverDate, setRangeHoverDate] = useState(null);
-    const [showDynamicPeriods, setShowDynamicPeriods] = useState(isDynamicPeriod && isDynamicPeriod!==null ? isDynamicPeriod : false);
+
+    const [showDynamicPeriods, setShowDynamicPeriods] = useState(false);
+
 
     //Use 'benchmarkIndex'(props) to initialize 'benchmarkRangeIndex'(state), Only use it if there is some valid date at given 'benchmarkIndex'
     const defaultBmIndex = benchmarkIndex !== null && benchmarkIndex !== undefined && periods && periods.length && periods[benchmarkIndex] && periods[benchmarkIndex][0] && periods[benchmarkIndex][1] ? benchmarkIndex : 0
@@ -40,8 +44,11 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
     const [currentRangeIndex, setCurrentRangeIndex] = useState(0);
     const [currentRangeDateType, setCurrentRangeDateType] = useState(null);
 
+
+
     const endYear = startMonth < 11 ? startYear : startYear + 1;
     const endMonth = startMonth < 11 ? startMonth + 1 : 0;
+
     const isMounted = useRef(false);
 
     // effect for updatng the current month and year in view as soon as forceDisplayDate props is changed
@@ -94,7 +101,9 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
         setPicker(view);
     };
 
-    const notifyRangesChange = (ranges, bIndex, dynamicRange = null) => {
+
+    const notifyRangesChange = (ranges, bIndex) => {
+        console.log('Notifying Ranges', bIndex);
         let rs = [...ranges];
         // filter out 2nd index(last index) in each period which stores the color
         rs = rs.map(r => r.slice(0, 2));
@@ -108,33 +117,20 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
                 }
             }
         });
-        let changedData = {};
-        if (dynamicRange !== null) {
-            changedData = {
-                isDynamicPeriod: showDynamicPeriods,
-                ranges: rs,
-                benchmarkRangeIndex: bIndex,
-                largestRangeIndex: pos > -1 ? pos : null,
-                value: dynamicRange
-            }
-        } else {
-            changedData = {
-                isDynamicPeriod: showDynamicPeriods,
-                ranges: rs,
-                benchmarkRangeIndex: bIndex,
-                largestRangeIndex: pos > -1 ? pos : null
-            }
-        }
-        onChange(changedData);
+        onChange({
+            ranges: rs,
+            benchmarkRangeIndex: bIndex,
+            largestRangeIndex: pos > -1 ? pos : null
+        });
     };
 
-    // const getAvailablePeriodColor = (type = 'bg') => {
-    //     // return the first available color from periodBGColors list which is not in use
-    //     if (type === 'color') {
-    //         return periodColors.find(pc => ranges.every(r => r[3] !== pc));
-    //     }
-    //     return periodBGColors.find(pc => ranges.every(r => r[2] !== pc));
-    // };
+    const getAvailablePeriodColor = (type = 'bg') => {
+        // return the first available color from periodBGColors list which is not in use
+        if (type === 'color') {
+            return periodColors.find(pc => ranges.every(r => r[3] !== pc));
+        }
+        return periodBGColors.find(pc => ranges.every(r => r[2] !== pc));
+    };
 
     const giveProposedEndDate = (dStrt) => {
         if (picker === 'date') {
@@ -213,7 +209,6 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
 
             setRanges(updatedRanges);
             notifyRangesChange(updatedRanges, benchmarkRangeIndex);
-
         } else {
             const strtDate = ranges[currentRangeIndex][0];
             const endDate = ranges[currentRangeIndex][1];
@@ -288,6 +283,7 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
 
             setRanges(updatedRanges);
             notifyRangesChange(updatedRanges, benchmarkRangeIndex);
+
         }
     };
 
@@ -342,21 +338,21 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
         });
     };
 
-    const handlePrevMonthClick = () => {
+    const handlePrevMonthClick = (e) => {
         const prevStartMonth = startMonth === 0 ? 11 : startMonth - 1;
         const prevStartYear = startMonth === 0 ? startYear - 1 : startYear;
         setStartMonth(prevStartMonth);
         setStartYear(prevStartYear);
     };
-    const handleNextMonthClick = () => {
+    const handleNextMonthClick = (e) => {
         const nextStartMonth = (startMonth + 1) % 12;
         const nextStartYear = startMonth === 11 ? startYear + 1 : startYear;
         setStartMonth(nextStartMonth);
         setStartYear(nextStartYear);
     };
 
-    const handlePrevYearClick = () => setStartYear(startYear - 1);
-    const handleNextYearClick = () => setStartYear(startYear + 1);
+    const handlePrevYearClick = (e) => setStartYear(startYear - 1);
+    const handleNextYearClick = (e) => setStartYear(startYear + 1);
     const handlePrevDecadeClick = () => setStartYear(startYear - 10);
     const handleNextDecadeClick = () => setStartYear(startYear + 10);
 
@@ -369,34 +365,38 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
 
         const strt = ranges[currentRangeIndex][0];
         const end = ranges[currentRangeIndex][1];
-        // if (!strt && !end && hoverRangeForNonBenchmarkRanges > 0) {
-        //     const hoverRangeStrt = hoverDate;
-        //     const hoverRangeEnd = giveProposedEndDate(hoverRangeStrt);
-        // }
-        // if (strt && !end) {
-        //     const proposedStart = strt;
-        //     const proposedEnd = hoverDate;
-        // }
+        if (!strt && !end && hoverRangeForNonBenchmarkRanges > 0) {
+            const hoverRangeStrt = hoverDate;
+            const hoverRangeEnd = giveProposedEndDate(hoverRangeStrt);
+
+        }
+        if (strt && !end) {
+            const proposedStart = strt;
+            const proposedEnd = hoverDate;
+
+        }
         if (strt && end) {
             return;
+
         }
         setRangeHoverDate(hoverDate);
+
     };
 
-    // const isOverlapingWithAnyRange = ([sDate, eDate]) => {
-    //     let overlap = false;
-    //     for (let i = 0; i < ranges.length; i++) {
-    //         if (ranges[i][0] && ranges[i][1] &&
-    //             (isDateEqual(sDate, ranges[i][0]) || isDateEqual(eDate, ranges[i][1]) || !(isDateGreater(sDate, ranges[i][1]) || isDateSmaller(eDate, ranges[i][0])))
-    //         ) {
-    //             overlap = true;
-    //             break;
-    //         }
-    //     }
-    //     return overlap;
-    // };
-
+    const isOverlapingWithAnyRange = ([sDate, eDate]) => {
+        let overlap = false;
+        for (let i = 0; i < ranges.length; i++) {
+            if (ranges[i][0] && ranges[i][1] &&
+                (isDateEqual(sDate, ranges[i][0]) || isDateEqual(eDate, ranges[i][1]) || !(isDateGreater(sDate, ranges[i][1]) || isDateSmaller(eDate, ranges[i][0])))
+            ) {
+                overlap = true;
+                break;
+            }
+        }
+        return overlap;
+    };
     const isOverlapingWithOtherRanges = ([sDate, eDate], selfRangeIndex) => {
+        // console.log('-------------------', sDate, eDate, selfRangeIndex);
         let overlap = false;
         for (let i = 0; i < ranges.length; i++) {
             if (i !== selfRangeIndex && ranges[i][0] && ranges[i][1] &&
@@ -411,6 +411,7 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
 
     const handleDateInputChange = (event, rangeIndex, startOrEnd) => {
         const date = event.target.value;
+        console.log('date', date);
         if (date) {
             let updatedDate = new Date(date);
             updatedDate.setHours(0, 0, 0, 0);
@@ -419,7 +420,7 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
             const needToCheckRangeOverlap = startOrEnd === 'start' ? rangeCopy[1] !== null : rangeCopy[0] !== null;
             const strtDateForRangeOverlapCheck = startOrEnd === 'start' ? updatedDate : rangeCopy[0];
             const endDateForRangeOverlapCheck = startOrEnd === 'start' ? rangeCopy[1] : updatedDate;
-            
+            // if(needToCheckRangeOverlap){debugger}
             if (isDateAlreadyExistInSomeOtherRange(updatedDate, rangeIndex)
                 || (needToCheckRangeOverlap && isOverlapingWithOtherRanges([strtDateForRangeOverlapCheck, endDateForRangeOverlapCheck], rangeIndex))) {
                 rangeCopy[dateIndex] = null;
@@ -474,7 +475,6 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
         const y = date.getFullYear().toString();
         const yyyy = (y.length < 4) ? Array(4 - y.length).fill('0').join('') + y : y;
         return yyyy + '-' + (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
-        // return yyyy + '.' + (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '.' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
         // return date.toISOString().slice(0, 10);
     };
 
@@ -530,7 +530,7 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
         const [sd, ed] = giveDateRangeForPredefined(pd);
         const updatedRanges = [[sd, ed, periodBGColors[0], periodColors[0]], ranges[1]];
         setRanges(updatedRanges);
-        notifyRangesChange(updatedRanges, 0, pd);
+        notifyRangesChange(updatedRanges, 0);
     };
 
     const isPredefinedDateSelected = (pd) => {
@@ -541,11 +541,10 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
     // console.log('hover date', rangeHoverDate);
 
     const daysCount1 = periods[0] && periods[0][0] && periods[0][1] ? giveDaysCountInRange(periods[0][0], periods[0][1]) : null;
-    // const daysCount2 = periods[1] && periods[1][0] && periods[1][1] ? giveDaysCountInRange(periods[1][0], periods[1][1]) : null;
+    const daysCount2 = periods[1] && periods[1][0] && periods[1][1] ? giveDaysCountInRange(periods[1][0], periods[1][1]) : null;
 
     return (
-        <div id={`asc-picker-${uniqueAnalysisId}`} className={'asc-picker asc-picker-multi-range datagrid-calendar-panel'}>
-            {/* Widget - Date Picker */}
+        <div className={'asc-picker asc-picker-multi-range datagrid-calendar-panel'}>
             <div className="widget widget-picker">
                 <div className="widget-header">
                     <span>Dynamic</span>
@@ -745,44 +744,40 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
                             })}
                         </div>
                     }
-
-                    {!showDynamicPeriods &&
-                        <div className="range-input-wrapper">
-                            <div className="range-input" /*style={{ borderColor: ranges[0] ? ranges[0][2] : '' }}*/>
-                                <div className={'range-input-inner start' + (currentRangeIndex === 0 && currentRangeDateType === 'start' ? ' focused' : '')}>
-                                    <input id={'range-date-input-ref' + 0 + 'start'} type="date" className={currentRangeIndex === 0 && currentRangeDateType === 'start' ? ' range-input-focused' : ''}
-                                        disabled={!hoverRangeForNonBenchmarkRanges && 0 !== benchmarkRangeIndex}
-                                        onChange={(e) => handleDateInputChange(e, 0, 'start')}
-                                        onFocus={() => handleRangeInputFocus('start', 0)}
-                                    />
-                                </div>
-                                <span className="range-input-date-separator">-</span>
-                                <div className={'range-input-inner end' + (currentRangeIndex === 0 && currentRangeDateType === 'end' ? ' focused' : '')}>
-                                    <input id={'range-date-input-ref' + 0 + 'end'} type="date" className={currentRangeIndex === 0 && currentRangeDateType === 'end' ? 'range-input-focused' : ''}
-                                        disabled={!hoverRangeForNonBenchmarkRanges && 1 !== benchmarkRangeIndex}
-                                        onChange={(e) => handleDateInputChange(e, 0, 'end')}
-                                        onFocus={() => handleRangeInputFocus('end', 0)}
-                                    />
-                                </div>
+                    <div className="range-input-wrapper">
+                        <div className="range-input" /*style={{ borderColor: ranges[0] ? ranges[0][2] : '' }}*/>
+                            <div className={'range-input-inner start' + (currentRangeIndex === 0 && currentRangeDateType === 'start' ? ' focused' : '')}>
+                                <input id={'range-date-input-ref' + 0 + 'start'} type="date" className={currentRangeIndex === 0 && currentRangeDateType === 'start' ? ' range-input-focused' : ''}
+                                    disabled={!hoverRangeForNonBenchmarkRanges && 0 !== benchmarkRangeIndex}
+                                    onChange={(e) => handleDateInputChange(e, 0, 'start')}
+                                    onFocus={() => handleRangeInputFocus('start', 0)}
+                                />
                             </div>
-
-                            {daysCount1 && <span className="days">{daysCount1 + ' Days'}</span>}
+                            <span className="range-input-date-separator">-</span>
+                            <div className={'range-input-inner end' + (currentRangeIndex === 0 && currentRangeDateType === 'end' ? ' focused' : '')}>
+                                <input id={'range-date-input-ref' + 0 + 'end'} type="date" className={currentRangeIndex === 0 && currentRangeDateType === 'end' ? 'range-input-focused' : ''}
+                                    disabled={!hoverRangeForNonBenchmarkRanges && 1 !== benchmarkRangeIndex}
+                                    onChange={(e) => handleDateInputChange(e, 0, 'end')}
+                                    onFocus={() => handleRangeInputFocus('end', 0)}
+                                />
+                            </div>
                         </div>
-                    }
+
+                        {daysCount1 && <span className="days">{daysCount1 + ' Days'}</span>}
+                    </div>
+
                 </div>
+
             </div>
 
 
-            {/* Widget - Period Comparison  */}
             <div className="widget widget-compare">
                 <div className="widget-header">
-                    <div className="title">
-                        <h4>Compare With</h4>
-                        <div className="switch-toggle small">
-                            <div className="switch">
-                                <input type="checkbox" id="compare-enable" checked={isPeriodComparisonEnabled} onChange={(e) => onPeriodComaprisonChange(e.target.checked)} />
-                                <label htmlFor="compare-enable"></label>
-                            </div>
+                    <span className="title">COMPARE WITH</span>
+                    <div className="switch-toggle small">
+                        <div className="switch">
+                            <input type="checkbox" id="compare-enable" checked={isPeriodComparisonEnabled} onChange={(e) => onPeriodComaprisonChange(e.target.checked)} />
+                            <label htmlFor="compare-enable"></label>
                         </div>
                     </div>
                     {ranges[1] && ranges[1][0] && ranges[1][1] &&
@@ -795,34 +790,28 @@ const CalendarPanelInDataGrid = ({ uniqueAnalysisId, periods, periodBGColors = D
                     }
 
                     <div className="predefined-options">
-                        <RadioGroup name={`period-preselect-${uniqueAnalysisId}`} selectedValue={periodComparisonPreselect} onChange={(e)=>onPeriodComparisonPreselectChange(PERIOD_COMPARISON_PRESELECT_OPTIONS.find(pd=>pd.id===e.target.value))} >
+                        <RadioGroup name="period-preselect" selectedValue={periodComparisonPreselect} onChange={(e)=>onPeriodComparisonPreselectChange(PERIOD_COMPARISON_PRESELECT_OPTIONS.find(pd=>pd.id===e.target.value))} >
                             {PERIOD_COMPARISON_PRESELECT_OPTIONS.slice(1).map((pd) => {
                                 return (
-                                    <Radio key={pd.id} value={pd.id} label={pd.name} uniqueHtmlForKey={`${pd.id}-${uniqueAnalysisId}`} />
+                                    <Radio key={pd.id} value={pd.id} label={pd.name} uniqueHtmlForKey={pd.id} />
                                 );
                             })}
                         </RadioGroup>
                     </div>
-
-                    {/* display show benchmar data checkbox when period comparison is enabled */}
-                    {isPeriodComparisonEnabled &&
-                        <div className="showbenchmark">
-                            <div className="checkbox-wrapper">
-                                <input type="checkbox" checked={isPeriodComparisonEnabled ? showBenchmarkInGrid : false} onChange={onShowBenchmarkInGridChange} />
-                                <span className="chkbox-label">Show Benchmark Data</span>
-                            </div>
+                    <div className="showbenchmark">
+                        <div className="checkbox-wrapper">
+                            <input type="checkbox" checked={showBenchmarkInGrid} onChange={onShowBenchmarkInGridChange} />
+                            <span className="chkbox-label">Show Benchmark Data</span>
                         </div>
-                    }
+                    </div>
                 </div>
             </div>
-
-
             <div className="widget widget-groupby">
                 <div className="widget-header">GROUP BY</div>
                 <div className="widget-content">
                     {periodComparisonGroupByOptions.map(item => (
                         <div key={item.id} className="option" >
-                            <input type="checkbox" checked={periodComparisonGroupBy.id === item.id} onChange={() => onPeriodComparisonGroupByChange(item)} />
+                            <input type="checkbox" checked={periodComparisonGroupBy.id === item.id} onChange={(e) => onPeriodComparisonGroupByChange(item)} />
                             <span className="label">{item.display_title}</span>
                         </div>
                     ))}
