@@ -201,7 +201,7 @@ const SupportContainer = () => {
         // support-main-conatiner
         <>
 
-            {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>}
+            {/* {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>} */}
             {OpenSupport && <Support closePane={closePane} webSocket={webSocket} panelPosition={panelPosition.current} />}
         </>
 
