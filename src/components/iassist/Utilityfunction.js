@@ -1,6 +1,14 @@
 import Avatar from "../Avatar/Avatar";
 import React from 'react';
 
+
+const formatShiftDate = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+});
+
 export const getUserNameBasedOnId = (userList, id, type) => {
 
     if (userList.length > 0) {
@@ -90,7 +98,7 @@ const getDiffDay = (time) => {
 
     let dt2 = new Date(time);
 
-    // console.log('dt1 -- ',dt1 ,'dt2 -- ',dt2)
+
     let diff = (dt2.getTime() - (dt1.getTime())) / 1000;
 
     diff /= 60;
@@ -171,4 +179,36 @@ export const getTimeZone = (date, isDateFormat) => {
 
     return time;
 
+}
+
+export const formatDates=(inputDate, format)=> {
+
+
+    if (!inputDate || !format) return;
+    let month = (+inputDate.getMonth() + 1 < 10 ? ('0' + (+inputDate.getMonth() + 1)) : (+inputDate.getMonth() + 1));
+    let date = (+inputDate.getDate() < 10 ? ('0' + (inputDate.getDate())) : (inputDate.getDate()));
+
+    switch (format) {
+        case 'yyyy-mm-dd':
+            inputDate = inputDate.getFullYear() + '-' + month + '-' + date;
+            break;
+
+        case 'dd-mm-yyyy':
+            inputDate = date + '-' + month + '-' + inputDate.getFullYear();
+            break;
+
+        case 'www-mmm-dd-yyyy':
+            inputDate = formatShiftDate.format(inputDate)
+            break;
+        
+        case 'mmm-dd-yyyy':
+            inputDate =new Intl.DateTimeFormat('en-US',{dateStyle:'medium'}).format(inputDate)
+            break;
+
+        default:
+            inputDate = inputDate.getFullYear() + '-' + month + '-' + date;
+            break;
+    }
+
+    return inputDate;
 }

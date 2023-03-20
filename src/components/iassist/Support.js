@@ -10,17 +10,16 @@ import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import FeedBack from './feedback/Feedback';
 import TicketReopen from './feedback/TicketReopen';
-// import DatePicker from '../ReactCalendar/DatePicker';
 import Detail from './userlist/Detail';
 import Delete from './DeleteConfirmation/Delete';
 import MultiPeriodPickerPanel from '../MultiPeriodPicker/MultiPeriodPicker';
-
+import { formatDates } from "./Utilityfunction";
+import ClickOutsideListner from "./ClickOutsideListener";
 
 
 let pageNumber = 1;
 const pageSize = 10;
 let totalPage = 0;
-let Size = pageSize;
 const scrollPadding = 40;
 let tabData = 'open';
 let dateRange = ['Date'];
@@ -33,9 +32,13 @@ let reporter_detail = {
 let type_detail = {
     id: 0
 };
+
 let chatId = '';
 let refreshUserListInsideChat = false;
-let isUnRead = false
+let retainedStatus = {
+    read: true,
+    unread: true
+};
 
 
 const actionType = {
@@ -57,8 +60,8 @@ const actionType = {
     get_topic_id: 'getTopicId',
     delete_id: 'deleteId',
     last_activity: 'lastActivity',
-    refresh_state: 'refreshState'
-
+    refresh_state: 'refreshState',
+    read_unread_status: 'readUnreadStatus'
 }
 
 const reducer = (state, action) => {
@@ -84,10 +87,7 @@ const reducer = (state, action) => {
         case 'deleteId': return { ...state, deleteId: action.payload }
         case 'lastActivity': return { ...state, lastActivity: action.payload }
         case 'refreshState': return { ...state, refreshState: !state.refreshState }
-
-
-
-
+        case 'readUnreadStatus': return { ...state, readUnreadStatus: action.payload }
 
         default:
             throw new Error();
@@ -117,10 +117,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
         getTopicId: '',
         deleteId: false,
         lastActivity: false,
-        refreshState: false
+        refreshState: false,
+        readUnreadStatus: { read: true, unRead: true }
     }
 
     const [state, dispatch] = useReducer(reducer, initialState);
+
 
     const controller = new AbortController();
 
@@ -128,15 +130,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     const allTopics = useRef([]);
     const unReadList = useRef([]);
     const activity = useRef([]);
-    const unRead = useRef(false);
     const btnId = useRef(sessionStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
-    const disableUnreadButton = useRef(false);
+
     const bodyRef = useRef();
     const searchString = useRef('');
     const allUser = useRef([]);
     const allAccount = useRef([]);
     const ticketTypeList = useRef([]);
     const reportersList = useRef([]);
+
+    const unRead = useRef(true);
+    const readCheckBoxStatus = useRef(true)
 
 
     const [showLoader, setShowLoader] = useState(false);
@@ -156,117 +160,27 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     }
 
-    const getTopics = async (isDelete) => {
-        setDisableButton(true)
-
-        if (tabData) {
-            dispatch({ type: actionType.status_tab, payload: tabData })
-        }
-
-        if (isDelete === 'delete') {
-            allTopics.current = [];
-            unReadList.current = [];
-            allUser.current = [];
-            allAccount.current = [];
-            activity.current = [];
-        }
-
-
-        let jwt_token = getTokenClient();
-
-        setShowLoader(true);
-
-        let url = getUrl();
-
-        const token = `Bearer ${jwt_token}`;
-
-        APIService.apiRequest(url, null, false, 'GET', controller, token)
-            .then(response => {
-
-                if (response) {
-
-                    let result = response;
-
-                    for (let key in result) {
-
-                        let data = result[key];
-
-                        if (key === 'topic_data') {
-
-                            data?.forEach((topicValue) =>
-                                allTopics.current.push(topicValue)
-                            )
-
-                        } else if (key === 'unread_data') {
-
-                            data?.forEach((unread) => {
-                                unReadList.current.push(unread);
-                            })
-
-                        } else if (key === 'pagination') {
-
-                            totalPage = data.no_of_pages;
-
-                        } else if (key === 'user_data') {
-
-                            data?.forEach((user) => {
-                                allUser.current.push(user);
-                            })
-
-                        } else if (key === 'account_data') {
-
-                            data?.forEach((account) => {
-                                allAccount.current.push(account);
-                            })
-
-                        } else if (key === 'activity') {
-
-                            data?.forEach((act) => {
-                                activity.current.push(act);
-                            })
-
-                        }
-
-                    }
-
-                    setDisableButton(false)
-
-
-                    setShowLoader(false);
-
-                }
-
-            })
-            .catch(err => {
-
-                setDisableButton(false)
-
-                setShowLoader(false);
-
-                alertService.showToast('error', err.msg);
-
-            });
-
-    }
-
     const getUrl = (searchQuery) => {
 
-        let tab = tabData === 'open' ? false : true;
+        let tab = !(tabData === 'open');
 
         let url;
 
         let searchStringFlag = searchString.current ? `&topic_search=${searchString.current}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
-        let unReadFlag = unRead.current ? `&unread=${unRead.current}` : ''
+
+
+        let unReadFlag = unRead.current ? '&unread=true' : '&unread=false'
+        let readFlag = readCheckBoxStatus.current ? '&read=true' : '&read=false'
 
 
         if (dateRange[0] === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${Size}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}`;
 
         }
 
@@ -274,17 +188,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     }
 
-    const getTopicsBasedOnFilter = async (searchQuery) => {
+    const getTopicsBasedOnFilter = async (searchQuery, isDelete) => {
 
-        disableUnreadButton.current = true;
-
-        dispatch({ type: actionType.initial_load_status, payload: false })
-
-        pageNumber = 1;
 
         setShowLoader(true);
 
         setDisableButton(true)
+        dispatch({ type: actionType.initial_load_status, payload: false })
+
+        if (tabData) {
+            dispatch({ type: actionType.status_tab, payload: tabData })
+        }
 
         let url = getUrl(searchQuery);
 
@@ -337,7 +251,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                     }
 
-                    disableUnreadButton.current = false;
+
 
                     setDisableButton(false)
 
@@ -345,15 +259,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                     setShowLoader(false);
 
+
                 }
 
             })
             .catch(err => {
                 setDisableButton(false)
 
-                disableUnreadButton.current = false;
+
 
                 setShowLoader(false);
+
 
                 alertService.showToast('error', err.msg);
 
@@ -518,7 +434,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         if (resetUnread) {
             unRead.current = false;
-            disableUnreadButton.current = false;
+            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, unRead: false } })
         }
 
     }
@@ -614,61 +530,35 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     }
 
-    // const handleDatePicker = (e) => {
 
-    //     if (dateRange !== e) {
-
-    //         dispatch({ type: actionType.selected_date, payload: new Date(e) })
+    const openFilterList = (e) => {
 
 
-    //         dateRange = e;
-
-    //         getTopicsBasedOnFilter();
-
-    //     }
-    //     dispatch({
-    //         type: actionType.is_open_calendar
-
-    //     })
-
-
-
-    // }
-
-    const openFilterList = () => {
-
-        if (state.showMultipleFilters) {
-
-            clearFilter();
-
-        }
+        e.stopPropagation()
 
         dispatch({ type: actionType.show_multiple_filters, payload: !state.showMultipleFilters })
 
-
     }
 
-    const showUnread = () => {
 
-        isUnRead = !unRead.current;
-        unRead.current = !unRead.current;
 
-        getTopicsBasedOnFilter()
-    }
-    
     const clearFilter = () => {
 
-        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange !== 'Date' || unRead?.current || isUnRead) {
+        unRead.current = true;
+        readCheckBoxStatus.current = true;
+        dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
+        retainedStatus = { ...retainedStatus, read: true, unread: true };
+
+        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date') {
 
             reporter_detail.id = 0;
-
             type_detail.id = 0;
-
             dateRange = ['Date'];
-            unRead.current = false;
-            isUnRead = false;
-            dispatch({ type: actionType.ticket_type_label, payload: 'All' })
-            dispatch({ type: actionType.reporters_label, payload: 'Select' })
+
+
+
+            dispatch({ type: actionType.ticket_type_label, payload: 'All' });
+            dispatch({ type: actionType.reporters_label, payload: 'Select' });
             getTopicsBasedOnFilter();
 
         }
@@ -676,6 +566,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     }
 
     const deleteTopic = async (e, data) => {
+
+        setShowLoader(true);
 
         e.stopPropagation();
 
@@ -690,23 +582,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                     let result = response;
 
-                    if (allTopics.current.length > 10) {
-
-                        let index = allTopics.current.findIndex((topic) => {
-                            return topic.id === data;
-                        })
-
-                        allTopics.current.splice(index, 1);
-
-                    } else {
-
-                        getTopics('delete');
-
-                    }
+                    allTopics.current = allTopics.current.filter(topic => topic.id !== data);
+                    unReadList.current = unReadList.current.filter(topic => topic.topic_id !== data)
+                    activity.current = activity.current.filter(topic => topic.id !== data)
 
                     alertService.showToast('success', result.message);
 
                     setConfirmDelete(false);
+                    setShowLoader(false);
 
                 }
 
@@ -739,10 +622,13 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
     useEffect(() => {
 
 
-        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || isUnRead) {
+        unRead.current = retainedStatus.unread;
+        readCheckBoxStatus.current = retainedStatus.read;
 
-            dispatch({ type: actionType.show_multiple_filters, payload: true })
-            if (isUnRead) unRead.current = isUnRead;
+        dispatch({ type: actionType.read_unread_status, payload: { read: retainedStatus.read, unRead: retainedStatus.unread } })
+
+        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || retainedStatus.read || retainedStatus.unread) {
+
             if (type_detail.id !== 0) dispatch({ type: actionType.ticket_type_label, payload: type_detail })
             if (reporter_detail.id !== 0) dispatch({ type: actionType.reporters_label, payload: reporter_detail })
 
@@ -781,7 +667,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
             conatinerWrapper[0].style.maxHeight = '92.5%';
         }
 
-        getTopics();
+        getTopicsBasedOnFilter();
 
         const onScroll = async () => {
 
@@ -793,7 +679,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                     pageNumber += 1;
 
-                    await getTopics();
+                    await getTopicsBasedOnFilter();
 
                 }
 
@@ -815,6 +701,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
             if (home && !(home.contains(event.target))) {
 
+
                 closePanes();
                 clearData();
 
@@ -827,13 +714,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
         return () => {
             clearData();
             dispatch({ type: actionType.initial_load_status, payload: true })
+            dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
+
         }
 
     }, []) // eslint-disable-line
 
-
     //get formated period
-    const getFormatedPeriod = (period) =>{
+    const getFormatedPeriod = (period) => {
         let newdate = period ? new Date(period) : new Date();
         let month = newdate.getMonth() + 1;
         let date = newdate.getDate();
@@ -843,22 +731,40 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
     const handleCalendar = (range) => {
         let updatedValue = null;
-        if (range && range.largestRangeIndex === null) {
-            updatedValue = getFormatedPeriod(range.ranges[0][0]);
 
-            dispatch({ type: actionType.selected_date, payload: range.ranges[0][0] })
-
-            dateRange = [updatedValue];
-        } else if (range.largestRangeIndex !== null) {
-            updatedValue = getFormatedPeriod(range.ranges[0][1]);;
-            dateRange = [dateRange ,updatedValue];
+        if (range.largestRangeIndex !== null) {
+            let firstValue = getFormatedPeriod(range.ranges[0][0]);
+            updatedValue = getFormatedPeriod(range.ranges[0][1]);
+            dateRange = [firstValue, updatedValue];
             dispatch({ type: actionType.selected_date, payload: range.ranges[0][1] })
             getTopicsBasedOnFilter();
-            dispatch({
-                type: actionType.is_open_calendar
-
-            })
+            // dispatch({
+            //     type: actionType.is_open_calendar
+            // })
         }
+    }
+
+
+    const onCheckboxClick = (e, type) => {
+
+
+        if (type === 'read') {
+            readCheckBoxStatus.current = e.target.checked;
+            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, read: e.target.checked } })
+
+            retainedStatus = { ...retainedStatus, read: e.target.checked }
+
+        }
+
+        if (type === 'unread') {
+            unRead.current = e.target.checked;
+            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, unRead: e.target.checked } })
+
+            retainedStatus = { ...retainedStatus, unread: e.target.checked }
+
+        }
+
+        getTopicsBasedOnFilter();
     }
 
     return (
@@ -893,7 +799,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                                 <div className={'filter-btn' + (state.showMultipleFilters ? ' filter-bg' : '')}>
                                     <button className={'button' + (state.showMultipleFilters ? ' button-select' : '')}
                                         disabled={disableButton}
-                                        title='filter-button' onClick={() => openFilterList()}></button>
+                                        title='filter-button' onClick={(e) => openFilterList(e)}></button>
                                 </div>
 
                                 <div className='btn-new-topic-wrapper'>
@@ -911,68 +817,103 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                             </div>
                         </div>
 
-                        {state.showMultipleFilters &&
-                            <div className='sub-header-wrapper'>
+                        <ClickOutsideListner onOutsideClick={() => dispatch({ type: actionType.show_multiple_filters, payload: false })}>
+                            {state.showMultipleFilters &&
+                                <div className='sub-header-wrapper'>
 
-                                <div id='calendar' className={'calendar-wrapper'}>
-                                    <div className={'calendar-date'}>
-                                        <label className={'label'} onClick={() =>
-                                            dispatch({ type: actionType.is_open_calendar })
+                                    <div className='sub-header-upper-section'>
+                                        <span className="sub-header-text">Filter</span>
 
-                                        }>{dateRange[0]}{dateRange.length > 1 && '  to  ' + dateRange[1]}</label>
-                                        <button title='Calendar' className={'button-calendar'} onClick={() =>
-                                            dispatch({ type: actionType.is_open_calendar })
-                                        }></button>
+                                        <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
                                     </div>
 
-                                    {state.isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
+                                    <div className='divider'></div>
 
-                                            <MultiPeriodPickerPanel
+                                    <div className='sub-header-row' id="date-row">
+                                        <span className="sub-header-text">Date</span>
+                                        <div id='calendar' className={'calendar-wrapper'}>
+                                            <div className={'calendar-date'}>
+                                                <label className={'label'} onClick={() =>
+                                                    dispatch({ type: actionType.is_open_calendar })
+
+                                                }>
+                                                    {dateRange[0] !== 'Date' && formatDates(new Date(dateRange[0]), 'mmm-dd-yyyy')}{dateRange.length > 1 && '  -  ' + formatDates(new Date(dateRange[1]), 'mmm-dd-yyyy')}
+                                                </label>
+
+                                                <button title='Calendar' className={'button-calendar'} onClick={() =>
+                                                    dispatch({ type: actionType.is_open_calendar })
+                                                }></button>
+                                            </div>
+
+                                            {state.isOpenCalendar && <div id='calendar-wrapper' className='period-picker'>
+
+                                                <MultiPeriodPickerPanel
                                                     onChange={handleCalendar}
                                                     singleRangeonly={true}
-                                                    periodColors={'#fff'}/>
-                                                    {/* //#06A535 */}
+                                                    periodColors={'#fff'} />
+                                                {/* //#06A535 */}
 
-                                    </div>}
+                                            </div>}
 
-                                </div>
+                                        </div>
 
-                                <div className='divider'></div>
+                                    </div>
 
-                                <div className='type no-bg'>
 
-                                    <SpeedSelect
-                                        options={ticketTypeList.current}
-                                        selectLabel={state.ticketTypeLabel?.name}
-                                        prominentLabel='Type'
-                                        maxHeight={100}
-                                        maxWidth={80}
-                                        uniqueKey='id'
-                                        displayKey='name'
-                                        onSelect={(value) => ondropDownChange(value, 'ticketType')} />
+                                    <div className='sub-header-row' id="type-row">
+                                        <span className="sub-header-text">Type</span>
+                                        <div className='type no-bg'>
 
-                                </div>
+                                            <SpeedSelect
+                                                options={ticketTypeList.current}
+                                                selectLabel={state.ticketTypeLabel?.name}
+                                                // prominentLabel='Type'
+                                                maxHeight={100}
+                                                maxWidth={80}
+                                                uniqueKey='id'
+                                                displayKey='name'
+                                                onSelect={(value) => ondropDownChange(value, 'ticketType')}
+                                            />
 
-                                <div className='divider'></div>
+                                        </div>
+                                    </div>
 
-                                <div className='reporter no-bg'>
+                                    <div className='sub-header-row' id="reporter-row">
+                                        <span className="sub-header-text">Reporter</span>
+                                        <div className='reporter no-bg'>
 
-                                    <SpeedSelect
-                                        options={reportersList.current}
-                                        selectLabel={state.reporterLabel?.first_name}
-                                        prominentLabel='Reporter'
-                                        maxHeight={100}
-                                        maxWidth={80}
-                                        uniqueKey='id'
-                                        displayKey='first_name'
-                                        onSelect={(value) => ondropDownChange(value, 'reporter')} />
+                                            <SpeedSelect
+                                                options={reportersList.current}
+                                                selectLabel={state.reporterLabel?.first_name}
+                                                // prominentLabel='Reporter'
+                                                maxHeight={100}
+                                                maxWidth={80}
+                                                uniqueKey='id'
+                                                displayKey='first_name'
+                                                onSelect={(value) => ondropDownChange(value, 'reporter')}
+                                            />
 
-                                </div>
-                                <div className='divider'></div>
-                                <div className={unRead.current ? 'unread-button-wrapper' : 'unselected'}><button className='clear' disabled={disableUnreadButton.current} onClick={() => showUnread()}>Unread</button></div>
-                                <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
+                                        </div>
+                                    </div>
 
-                            </div>}
+                                    <div className='sub-header-row' id="status-row">
+                                        <span className="sub-header-text">Status</span>
+
+                                        <div className='checkbox-wrapper'>
+
+                                            <input checked={state.readUnreadStatus.read} id="select-read" type="checkbox" onChange={(e) => onCheckboxClick(e, 'read')}></input>
+                                            <label htmlFor='select-read' className='read-label'>Read</label>
+                                        </div>
+
+                                        <div className='checkbox-wrapper'>
+                                            <input checked={state.readUnreadStatus.unRead} id="select-unread" type="checkbox" onChange={(e) => onCheckboxClick(e, 'unread')}></input>
+                                            <label htmlFor='select-unread' className='unread-label'>Unread</label>
+                                        </div>
+
+                                    </div>
+
+                                </div>}
+                        </ClickOutsideListner>
 
                         <div className='iassist-panel-body'>
                             <div className='filter-wrapper'>
@@ -986,7 +927,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                                                 tabData = 'open';
                                                 dispatch({ type: actionType.status_tab, payload: 'open' })
                                                 clearData(false);
-                                                getTopics();
+                                                getTopicsBasedOnFilter();
 
                                             }
                                         }}>
@@ -1002,7 +943,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                                                 tabData = 'resolved';
                                                 dispatch({ type: actionType.status_tab, payload: 'resolved' })
                                                 clearData(false);
-                                                getTopics();
+                                                getTopicsBasedOnFilter();
                                             }
                                         }}>
 
@@ -1107,8 +1048,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                                 {confirmDelete && <Delete deleteTopic={deleteTopic}
                                     topic={state.deleteId}
                                     setConfirmDelete={setConfirmDelete}
-                                    disable={setDisableButton} />}
+                                    disable={setDisableButton} />
+                                }
+
+
                                 {allTopics.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
+
                             </div>
                         </div>
 
@@ -1129,7 +1074,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                 type={ticketTypeList.current}
                 activity={state.lastActivity}
                 refresh={refreshUserListInsideChat}
-                refreshState={state.refr}
+                refreshState={state.refreshState}
                 socketDetail={webSocket}
                 panelPosition={panelPosition}
             />

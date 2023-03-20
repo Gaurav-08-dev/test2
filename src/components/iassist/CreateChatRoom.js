@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChatRoom from './newRoom';
 import './CreateChatRoom.scss';
-
 import * as Constants from '../Constants';
 import SpeedSelect from 'react-speedselect';
 import { debounce, getToken, getTokenClient, getUser } from '../../utils/Common';
@@ -15,77 +14,47 @@ import VideoRecord from './VideoRecord/VideoRecord';
 
 let suggestIndex = -1;
 let chatId;
-
 const descriptionMaxChar = 150;
-
 const nameMaxChar = 45;
+
 
 const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
-    const priority = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
-
-
-    const [topic, setTopic] = useState('');
-
-    const [tags, setTags] = useState('');
-
-    const [chatRoom, setChatRoom] = useState(false);
-
-    const [priorities, setPriorities] = useState(0);
-
-    const [category, setCategory] = useState(0);
-
-    const [topicDescriptions, setTopicDescriptions] = useState('');
-
-    const [allCategories, setAllCategories] = useState([]);
-
-    const [catLabel, setCatLabel] = useState('');
-
-    const [priorityLabel, setPriorityLabel] = useState('select');
-
-    const [tagList, setTagList] = useState([]);
-
-    const [indivTopic, setIndivTopic] = useState([]);
-
-    const [navigateSupport, setNavigateSupport] = useState(false);
-
-    const [tagRemove, setTagRemove] = useState(false);
-
-    const [tagId, setTagId] = useState([]);
-
-    const [tagSuggestion, setTagSuggestion] = useState([]);
-
-    const [showSuggestion, setShowSuggestion] = useState(false);
-
-    const [showLoading, setShowLoading] = useState(false);
+    const priorityTypeList = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
 
     const tagRef = useRef();
-
     const titleRef = useRef();
-
-    const [row, setRow] = useState(2);
-
-    const [userData, setUserData] = useState([]);
-
-    const [accountData, setAccountData] = useState([]);
-
-    const [showVideo, setShowVideo] = useState(false);
-
-    const [video, setVideo] = useState([]);
-
-    const [videoUrl, setVideoUrl] = useState([]);
-
-    const [disableCreate, setDisableCreate] = useState(false);
-
-    const [disableCancel, setDisableCancel] = useState(false);
 
     const controller = new AbortController();
 
+
+    const [currentTag, setCurrentTag] = useState('');
+    const [topic, setTopic] = useState('');
+    const [chatRoom, setChatRoom] = useState(false);
+    const [priorities, setPriorities] = useState(0);
+    const [ticketType, setTicketType] = useState(0);
+    const [ticketTypeList, setTicketTypeList] = useState([]);
+    const [topicDescriptions, setTopicDescriptions] = useState('');
+    const [tagList, setTagList] = useState([]);
+    const [currentCreatedTicketData, setCurrentCreatedTicketData] = useState([]);
+    const [navigateSupport, setNavigateSupport] = useState(false);
+    const [tagRemove, setTagRemove] = useState(false);
+    const [tagId, setTagId] = useState([]);
+    const [tagSuggestion, setTagSuggestion] = useState([]);
+    const [showSuggestion, setShowSuggestion] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
+    const [totalRowsForTextarea, setTotalRowsForTextarea] = useState(2);
+    const [userData, setUserData] = useState([]);
+    const [accountData, setAccountData] = useState([]);
+    const [showVideo, setShowVideo] = useState(false);
+    const [videoData, setVideoData] = useState([]);
+    const [videoUrl, setVideoUrl] = useState([]);
+    const [disableCreate, setDisableCreate] = useState(false);
+    const [disableCancel, setDisableCancel] = useState(false);
     const [displayMessage, setDisplayMessage] = useState([]);
-
     const [deleteSavedItem, setDeleteSavedItem] = useState(false);
-
     const [openPopUp, setOpenPopUp] = useState(false);
+
 
     const fetchTypeData = async () => {
 
@@ -100,7 +69,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                     let result = response;
 
-                    setAllCategories(result);
+                    setTicketTypeList(result);
 
                 }
 
@@ -112,13 +81,11 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
             });
     };
 
-    
+
 
     const categorySelect = (value) => {
 
-        setCategory(value.id);
-
-        setCatLabel(value.name);
+        setTicketType(value);
 
         requiredFieldValidation(false, 'Type');
 
@@ -139,7 +106,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                     if (result && result.data) {
 
-                        setTagSuggestion(result.data.filter(item=>item.name.length > 1));
+                        setTagSuggestion(result.data.filter(item => item.name.length > 1));
 
                     } else {
 
@@ -167,7 +134,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
             if (e.target?.value?.length <= 20) {
 
-                setTags(e.target.value);
+                setCurrentTag(e.target.value);
 
                 if (e.target.value.trim()) {
                     setShowSuggestion(true);
@@ -183,10 +150,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 setTopic(e.target.value);
 
-            } else {
-
-                setTopic(topic);
-
             }
         } else if (type === 'description') {
 
@@ -194,13 +157,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 setTopicDescriptions(e.target.value);
 
-                setRow(topicDescriptions.length >= 68 ? 4 : 2)
-
-            } else {
-
-                setTopicDescriptions(topicDescriptions);
+                setTotalRowsForTextarea(topicDescriptions.length >= 68 ? 4 : 2)
 
             }
+
         }
 
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
@@ -217,10 +177,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     //         setTagList([...tagList, wordsLeft])
     //         setTagId([...tagList, wordsLeft])
-    //         setTags('')
+    //         setCurrentTag('')
 
     //         // setTagList([...tagList,...wordsLeft])
-    //         // setTags('')
+    //         // setCurrentTag('')
     //         // setTagId([...tagList,...wordsLeft])
 
     //     }
@@ -229,9 +189,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     const selectPriority = (value) => {
 
-        setPriorities(value.id);
-
-        setPriorityLabel(value.value);
+        setPriorities(value);
 
         requiredFieldValidation(false, 'Priority');
 
@@ -251,12 +209,12 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
             err = [...err, 'Description']
 
         }
-        if (category === 0) {
+        if (ticketType.id === 0) {
 
             err = [...err, 'Type'];
 
         }
-        if (priorities === 0) {
+        if (priorities.id === 0) {
 
             err = [...err, 'Priority'];
 
@@ -286,7 +244,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     const discardChanges = () => {
 
-        if (topic || topicDescriptions || priorities !== 0 || tagId.length > 0 || video.length > 0 || category !== 0) {
+        if (topic || topicDescriptions || priorities.id !== 0 || tagId.length > 0 || videoData.length > 0 || ticketType.id !== 0) {
             setOpenPopUp(true)
         } else {
             setNavigateSupport(true);
@@ -300,7 +258,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         let data = {
             tags: tagId,
-            file_data: video
+            file_data: videoData
         }
 
         const formData = new FormData();
@@ -332,7 +290,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         let organisation = user.organization_id;
 
-        let url = Constants.API_IASSIST_BASE_URL + `topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities}&ticket_type_id=${category}&client_id=${client}`
+        let url = Constants.API_IASSIST_BASE_URL + `topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}`
 
         if (token && validation) {
 
@@ -359,7 +317,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 chatId = result.data.id;
 
-                setIndivTopic(result.data);
+                setCurrentCreatedTicketData(result.data);
 
                 setUserData(result.user ? result.user : []);
 
@@ -393,18 +351,18 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
     }
 
-    const bringSelectedTagInView=(item)=>{
+    const bringSelectedTagInView = (item) => {
         document.getElementById(`li-${item}`).scrollIntoView()
-        setTags(item)
+        setCurrentTag(item)
         setTagRemove(!tagRemove);
     }
-    
+
     function onKeyDownEvent(e) {
 
         e.persist();
 
         if (e.key === 'Enter' && e.target.value.length <= 1) return;
-        
+
         if (e.key === 'Enter') {
             // setShowSuggestion(false)
 
@@ -428,24 +386,24 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 selectTag(e, tagSuggestion[index]);
 
-            } else if (tagList.includes(tags)) {
+            } else if (tagList.includes(currentTag)) {
 
 
-                setTags('');
+                setCurrentTag('');
 
                 alertService.showToast('warn', 'Tag is Already Added');
 
                 return;
 
-            }  else if (tags.trim()) {
+            } else if (currentTag.trim()) {
 
 
-                setTagList([...tagList, tags]);
+                setTagList([...tagList, currentTag]);
 
-                setTagId([...tagId, tags])
+                setTagId([...tagId, currentTag])
 
 
-                setTags('');
+                setCurrentTag('');
 
                 suggestIndex = -1;
 
@@ -463,7 +421,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
             }
 
             bringSelectedTagInView(tagSuggestion[suggestIndex].name)
-            
+
 
         } else if (e.key === 'ArrowUp' && (tagSuggestion.length > 0)) {
 
@@ -498,19 +456,12 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
     const selectTag = (e, value) => {
 
         e.preventDefault();
-        if(tagList.includes(value.name)){alertService.showToast('warn', 'Tag is Already Added'); return;}
-
-        // const currentTagList = tagList;
-        // currentTagList.pop();
-        // setTagList(currentTagList)
+        if (tagList.includes(value.name)) { alertService.showToast('warn', 'Tag is Already Added'); return; }
         setTagList([...tagList, value.name]);
-
-        // const currentTagId = tagId;
-        // currentTagId.pop();
 
         setTagId([...tagId, value.name]);
 
-        setTags('');
+        setCurrentTag('');
 
         setTagSuggestion([])
         setShowSuggestion(false);
@@ -529,7 +480,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 setVideoUrl([...videoUrl, { video: videoBlobUrl, id: `video_id_${id}` }])
 
-                setVideo([...video, blob]);
+                setVideoData([...videoData, blob]);
 
             } else {
 
@@ -537,7 +488,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                 setVideoUrl([...videoUrl, { image: videoBlobUrl, id: `screenshot_id_${id}` }])
 
-                setVideo([...video, blob]);
+                setVideoData([...videoData, blob]);
 
             }
 
@@ -568,7 +519,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         }
 
-        if (allCategories.length === 0) {
+        if (ticketTypeList.length === 0) {
 
             fetchTypeData();
 
@@ -660,10 +611,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                                             <input
                                                 className='field-control'
                                                 ref={tagRef}
-                                                value={tags}
+                                                value={currentTag}
                                                 onChange={(e) => handleInputChange(e, 'tag')}
                                                 onKeyUp={onKeyDownEvent}
-                                                // onBlur={handleFocusOut}
+                                            // onBlur={handleFocusOut}
                                             />
                                         </div>
 
@@ -681,7 +632,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                                 <div className='field-w-label'>
                                     <label>Description</label>
                                     <div className='field textarea'>
-                                        <textarea value={topicDescriptions} rows={row} onChange={(e) => handleInputChange(e, 'description')}></textarea>
+                                        <textarea
+                                            value={topicDescriptions}
+                                            rows={totalRowsForTextarea}
+                                            onChange={(e) => handleInputChange(e, 'description')}></textarea>
                                         <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
                                     </div>
                                 </div>
@@ -690,11 +644,27 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                                 <div className='filter-dropdown'>
                                     <div className='type no-bg'>
-                                        <SpeedSelect options={allCategories} selectLabel={catLabel} prominentLabel='Type' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='name' onSelect={(value) => categorySelect(value, 'Category')} />
+                                        <SpeedSelect
+                                            options={ticketTypeList}
+                                            selectLabel={ticketType.name}
+                                            prominentLabel='Type'
+                                            maxHeight={100}
+                                            maxWidth={80}
+                                            uniqueKey='id'
+                                            displayKey='name'
+                                            onSelect={(value) => categorySelect(value, 'Category')} />
                                     </div>
 
                                     <div className='priority no-bg'>
-                                        <SpeedSelect options={priority} selectLabel={priorityLabel} prominentLabel='Priority' maxHeight={100} maxWidth={80} uniqueKey='id' displayKey='value' onSelect={(value) => selectPriority(value, 'priority')} />
+                                        <SpeedSelect
+                                            options={priorityTypeList}
+                                            selectLabel={priorities.value}
+                                            prominentLabel='Priority'
+                                            maxHeight={100}
+                                            maxWidth={80}
+                                            uniqueKey='id'
+                                            displayKey='value'
+                                            onSelect={(value) => selectPriority(value)} />
                                     </div>
                                 </div>
 
@@ -734,7 +704,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
                                                     <button onClick={() => {
                                                         videoUrl.splice(index, 1)
-                                                        video.splice(index, 1);
+                                                        videoData.splice(index, 1);
                                                         setDeleteSavedItem(!deleteSavedItem);
                                                     }}></button>
 
@@ -774,14 +744,31 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
             }
             {!showVideo && chatRoom &&
-                <ChatRoom closePane={closePanes} chatIds={chatId} unRead={0} topicDetail={indivTopic} type={allCategories} allUser={userData} allAccount={[accountData]} activity={true} socketDetail={socketDetail} panelPosition={panelPosition} />
+                <ChatRoom
+                    closePane={closePanes}
+                    chatIds={chatId}
+                    unRead={0}
+                    topicDetail={currentCreatedTicketData}
+                    type={ticketTypeList}
+                    allUser={userData}
+                    allAccount={[accountData]}
+                    activity={true}
+                    socketDetail={socketDetail}
+                    panelPosition={panelPosition} />
             }
 
-            {showVideo && !chatRoom && <VideoRecord save={saveAndClose} close={setShowVideo} message={displayMessage} />}
+            {showVideo && !chatRoom &&
+                <VideoRecord
+                    save={saveAndClose}
+                    close={setShowVideo}
+                    message={displayMessage} />}
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} />)
+    ) : (<Support
+        closePane={closePane}
+        webSocket={socketDetail}
+        panelPosition={panelPosition} />)
 }
 
 export default CreateChatRoom;

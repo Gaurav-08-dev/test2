@@ -23,7 +23,7 @@ const Delete = ({ deleteTopic, setConfirmDelete, topic, disable }) => {
 
         setChangeButtonStatus(!changeButtonStatus);
 
-    }, [topic.id])
+    }, [topic.id]) // eslint-disable-line
 
     return (
         <div className='del-wrapper'>

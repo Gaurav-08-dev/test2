@@ -1,3 +1,4 @@
+$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
 @keyframes blink-animation {
     to {
         visibility: hidden;
@@ -185,12 +186,12 @@
     }
     .asc-picker-header-prev-icon {
         transform: rotate(180deg);
-        mask: url(../../images/icon-tab-arrow.svg) no-repeat center center;
+        mask: url($image-prefix + 'icon-arrow-left.svg') no-repeat center center;
         mask-size: 16px;
         
     }
     .asc-picker-header-next-icon {
-        mask: url(../../images/icon-tab-arrow.svg) no-repeat center center;
+        mask: url($image-prefix + 'icon-arrow-left.svg') no-repeat center center;
         mask-size: 16px;
     }
 
