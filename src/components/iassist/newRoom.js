@@ -38,13 +38,10 @@ let singleScroll = false;
 
 // let panelPosition = 'right';//document.getElementById("iassist-panel-wrapper").getAttribute("data-panelposition");
 
-// const actionType={};
-// const reducer=(state,action)=>{
-// }
+
 
 const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition }) => {
 
-    // const initialState={}
     const bodyRef = useRef();
     const currentSelectId = useRef('');
     const topScroll = useRef();
@@ -60,7 +57,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     const getMessageHeight = useRef();
     const [editedMessage, setEditedMessage] = useState('');
     const Size = useRef(pageSize);
-    const fetchedClientUsers=useRef([])
+    const fetchedClientUsers=useRef([]);
 
 
     const [messageList, setMessageList] = useState([]);
@@ -111,7 +108,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     const [showFeedback, setShowFeedback] = useState(false);
 
     const [showReopen, setShowReopen] = useState(false);
-
+  
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const [currentUserId, setCurrentUserId] = useState('');
@@ -246,7 +243,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     setUserData(json);
 
                     fetchedClientUsers.current=json.client_participants;
-                    // setClientUser(json.client_participants);
+
 
                     setMessageUserDetails(json?.all_users);
 
@@ -673,12 +670,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         } else if (received_msg.parent_note_id !== 0) {
 
-            // const currentParentChatIndex=messageList.findIndex(item=> item.id === received_msg.parent_note_id);
-
-            // if(currentParentChatIndex > -1){
-            //     const currentReplies=messageList[currentParentChatIndex].replies;
-            //     messageList[currentParentChatIndex].replies=[...currentReplies,received_msg]
-            // }
             messageList.forEach((ms) => {
 
                 if (ms.id === received_msg.parent_note_id) {
@@ -867,7 +858,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         }
 
     }
-
+    
     const close = () => {
 
         ws.close();
@@ -1536,6 +1527,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     }, [videoUrl.length]) // eslint-disable-line 
 
     const debouncedResults = useMemo(() => {
+
         return debounce(handleInputChange, 500);
     }, []);
 
@@ -1621,7 +1613,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 <div className='iassist-panel-inner'>
                     <div className='iassist-panel-header'>
 
-                        <div className='header-back' onClick={() => {
+                        <div className='header-back' onClick={(e) => {
+                            e.stopPropagation();
                             if (ws === undefined || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                                 setNavigateHome(true);
                             } else {
@@ -1919,7 +1912,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                                             html={editedMessage}
                                                                                             disable={false} //indicate that the editor has to be in edit mode
                                                                                             onChange={(val) => {
-                                                                                                // console.log(val);
                                                                                                 setEditedMessage(val)
                                                                                             }}
                                                                                             innerRef={editEditorRef} //ref attached to the editor
