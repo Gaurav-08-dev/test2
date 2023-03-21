@@ -26,7 +26,6 @@ const SupportContainer = () => {
 
         if (AppId.current) {
             const tokens = `Bearer ${AppId.current}`;
-            console.log(Constants.API_IASSIST_BASE_URL)
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/`, null, false, 'GET', null, tokens)
                 .then(response => {
 
@@ -158,7 +157,7 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -206,7 +205,6 @@ const SupportContainer = () => {
     return (
         // support-main-conatiner
         <>
-
             {/* {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>} */}
             {openSupport && <Support closePane={closePane} webSocket={webSocket} panelPosition={panelPosition.current} />}
         </>

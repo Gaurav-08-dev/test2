@@ -219,15 +219,25 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                         if (key === 'topic_data') {
 
-                            allTopics.current = data;
+                            if (pageNumber > 1)
+                                data?.forEach((topicValue) =>
+                                    allTopics.current.push(topicValue)
+                                )
+
+                            if (pageNumber === 1)
+                                allTopics.current = data;
 
                         } else if (key === 'unread_data') {
 
-                            unReadList.current = data;
+                            if (pageNumber === 1)
+                                unReadList.current = data;
+
+                            if (pageNumber > 1)
+                                data?.forEach((topicValue) =>
+                                    unReadList.current.push(topicValue)
+                                )
 
                         } else if (key === 'pagination') {
-
-
 
                             totalPage = data.no_of_pages;
 
@@ -237,15 +247,36 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
                         } else if (key === 'user_data') {
 
-                            allUser.current = data;
+                            if (pageNumber === 1)
+                                allUser.current = data;
+
+                            if (pageNumber > 1)
+                                data?.forEach((topicValue) =>
+                                    allUser.current.push(topicValue)
+                                )
+
+
+
 
                         } else if (key === 'account_data') {
 
-                            allAccount.current = data;
+                            if (pageNumber === 1)
+                                allAccount.current = data;
+
+                            if (pageNumber > 1)
+                                data?.forEach((topicValue) =>
+                                    allAccount.current.push(topicValue)
+                                )
 
                         } else if (key === 'activity') {
 
-                            activity.current = data;
+                            if (pageNumber === 1)
+                                activity.current = data;
+
+                            if (pageNumber > 1)
+                                data?.forEach((topicValue) =>
+                                    activity.current.push(topicValue)
+                                )
 
                         }
 
@@ -673,12 +704,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
             if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
 
+
                 let checkScroll = allTopics.current.length === pageNumber * 10;
 
+
                 if (checkScroll) {
-
                     pageNumber += 1;
-
                     await getTopicsBasedOnFilter();
 
                 }
@@ -686,7 +717,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
             }
 
         }
-
         document.addEventListener("mouseup", (event) => {
 
             let calendar = document.getElementById('calendar-wrapper');
