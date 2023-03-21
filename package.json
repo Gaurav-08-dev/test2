@@ -27,7 +27,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:widget": "NODE_ENV=development parcel build src/index.js --no-source-maps -d docs --public-url .",
-    "build:widget1": "NODE_ENV=production parcel build src/index.js --no-source-maps -d docs1 --public-url ."
+    "build:widget1": "NODE_ENV=production parcel build src/index.js --no-source-maps -d docs --public-url ."
   },
   "eslintConfig": {
     "extends": [
