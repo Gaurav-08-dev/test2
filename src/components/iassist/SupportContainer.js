@@ -12,7 +12,9 @@ const SupportContainer = () => {
 
     const [openSupport, setOpenSupport] = useState(false);
 
-    const AppId = useRef(window?.iAssistAppId || 'were-wrww-rssf-2dsw');
+    const [platformId, setPlatformId] = useState('');
+
+    const AppId = useRef(window?.iAssistAppId);
 
     const tokenConstant = useRef('');
     const btnId = useRef('trigger-btn');
@@ -35,6 +37,9 @@ const SupportContainer = () => {
                         btnId.current = response.application_parameters.button_id;
                         panelPosition.current = response.application_parameters.app_position;
                         top.current = response.application_parameters.top_position;
+                        setPlatformId(response?.id);
+
+                        sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'platform', response?.application_parameters?.platform);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
                         simplifyToken()
 
@@ -162,7 +167,7 @@ const SupportContainer = () => {
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
 
-        return(()=>{
+        return (() => {
             setOpenSupport(false)
         })
 
@@ -179,7 +184,7 @@ const SupportContainer = () => {
             panelPosition.current = configDetails.app_position;
             top.current = configDetails.top_position;
             simplifyToken();
-            
+
             if (!webSocket) {
                 let buttonElement = document.getElementById(btnId.current);
                 if (buttonElement && buttonElement.children.length > 0) buttonElement.children[0].disabled = true;
@@ -191,7 +196,7 @@ const SupportContainer = () => {
 
                 setTimeout(() => {
                     connectSocket();
-                    
+
                 }, 200);
 
             }
@@ -206,7 +211,12 @@ const SupportContainer = () => {
         // support-main-conatiner
         <>
             {/* {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>} */}
-            {openSupport && <Support closePane={closePane} webSocket={webSocket} panelPosition={panelPosition.current} />}
+            {openSupport && <Support
+                closePane={closePane}
+                webSocket={webSocket}
+                panelPosition={panelPosition.current}
+                platformId={platformId}
+            />}
         </>
 
     )

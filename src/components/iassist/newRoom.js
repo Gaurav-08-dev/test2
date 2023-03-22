@@ -40,7 +40,7 @@ let singleScroll = false;
 
 
 
-const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition }) => {
+const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition, platformId }) => {
 
     const bodyRef = useRef();
     const currentSelectId = useRef('');
@@ -229,7 +229,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         let token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/user_details/?topic_id=${chatIds}`, null, false, 'GET', controller, token)
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/topic/user_details/?topic_id=${chatIds}`, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1220,7 +1222,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `add_remove_client/?flag=${add}`, data, false, 'POST', controller, token)
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/add_remove_client/?flag=${add}`, data, false, 'POST', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1276,7 +1280,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'topic/?topic_id=' + data.id, null, false, 'DELETE', controller, token)
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_id=${data.id}`, null, false, 'DELETE', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1410,7 +1416,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         try {
 
-            let response = await fetch(Constants.API_IASSIST_BASE_URL + `uploadfile/?topic_id=${chatIds}&broadcast=false&file_upload=true`, {
+            const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+            let response = await fetch(Constants.API_IASSIST_BASE_URL + `${platform}/uploadfile/?topic_id=${chatIds}&broadcast=false&file_upload=true`, {
                 method: 'POST',
                 headers: {
                     'Authorization': token
@@ -2142,7 +2150,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} />)
+    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} platformId={platformId} />)
 
 }
 

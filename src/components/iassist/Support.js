@@ -95,7 +95,7 @@ const reducer = (state, action) => {
 }
 
 
-const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
+const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }) => {
 
 
     const initialState = {
@@ -151,7 +151,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         ticketTypeList.current.unshift(defType);
 
-
     }
 
     if (reportersList.current.length > 0 && reportersList.current[0].id !== 'All') {
@@ -169,18 +168,18 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
         let searchStringFlag = searchString.current ? `&topic_search=${searchString.current}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
 
-
+        let platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
         let unReadFlag = unRead.current ? '&unread=true' : '&unread=false'
         let readFlag = readCheckBoxStatus.current ? '&read=true' : '&read=false'
 
 
         if (dateRange[0] === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}`;
+            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
 
         }
 
@@ -606,7 +605,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
         const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'topic/?topic_id=' + data, null, false, 'DELETE', controller, token)
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_id=${data}`, null, false, 'DELETE', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1093,7 +1094,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
 
 
 
-            {state.topicClick && !state.showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} />}
+            {state.topicClick && !state.showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} platformId={platformId} />}
 
             {state.showChat && <ChatRoom closePane={closePanes}
                 chatIds={chatId}
@@ -1107,6 +1108,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition }) => {
                 refreshState={state.refreshState}
                 socketDetail={webSocket}
                 panelPosition={panelPosition}
+                platformId={platformId}
             />
             }
 
