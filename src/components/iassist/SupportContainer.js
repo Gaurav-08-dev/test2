@@ -12,7 +12,7 @@ const SupportContainer = () => {
 
     const [openSupport, setOpenSupport] = useState(false);
 
-    const AppId = useRef(window?.iAssistAppId);
+    const AppId = useRef(window?.iAssistAppId || 'were-wrww-rssf-2dsw');
 
     const tokenConstant = useRef('');
     const btnId = useRef('trigger-btn');
