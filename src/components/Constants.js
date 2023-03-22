@@ -5,20 +5,9 @@ export const SITE_TITLE = 'Sight byData';
 export const SITE_PREFIX = 'iassist_main_';
 export const SITE_PREFIX_CLIENT = 'iassist_client_';
 export const API_BASE_URL = process.env.REACT_APP_API_URL; //Prod
-export const API_WEBSOCKET_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_WEBSOCKET_URL : "wss://support-dev-api.bydata.com/sight/";
+export const API_WEBSOCKET_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_WEBSOCKET_URL : "wss://support-dev-api.bydata.com/";
 // "wss://support-dev-api.bydata.com/sight/";
-export const API_IASSIST_BASE_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_IASSIST_API_URL : "https://support-dev-api.bydata.com/sight/";
-// export let API_WEBSOCKET_URL; //= process.env.REACT_APP_WEBSOCKET_URL;
-// // "wss://support-dev-api.bydata.com/sight/";
-// export let API_IASSIST_BASE_URL;// = process.env.REACT_APP_IASSIST_API_URL;
-
-// if (process.env.NODE_ENV === 'development') {
-//   API_WEBSOCKET_URL = "wss://support-dev-api.bydata.com/sight/";
-//   API_IASSIST_BASE_URL = "https://support-dev-api.bydata.com/sight/";
-// } else if (process.env.NODE_ENV === 'production') {
-//     API_WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
-//     API_IASSIST_BASE_URL = process.env.REACT_APP_IASSIST_API_URL;
-// }
+export const API_IASSIST_BASE_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_IASSIST_API_URL : "https://support-dev-api.bydata.com/";
 // "https://support-dev-api.bydata.com/sight/";
 // export const LOADING_ICON = 'images/icon-loading.gif';
 export const months = ["January", "Febraury", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

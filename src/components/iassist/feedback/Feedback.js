@@ -58,8 +58,10 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
             const token = `Bearer ${jwt_token}`;
 
+            const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+
             if (token) {
-                APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `feedback/`, data, false, 'POST', null, token)
+                APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/feedback/`, data, false, 'POST', null, token)
                     .then(response => {
 
                         if (response) {

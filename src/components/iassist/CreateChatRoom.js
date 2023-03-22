@@ -18,7 +18,7 @@ const descriptionMaxChar = 150;
 const nameMaxChar = 45;
 
 
-const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
+const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) => {
 
     const priorityTypeList = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
 
@@ -97,7 +97,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/tags/?search=${text}`, null, false, 'GET', controller, token)
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/topic/tags/?search=${text}`, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
@@ -290,7 +292,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
 
         let organisation = user.organization_id;
 
-        let url = Constants.API_IASSIST_BASE_URL + `topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}`
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+
+        let url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}&app_id=${platformId}`
 
         if (token && validation) {
 
@@ -754,7 +758,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
                     allAccount={[accountData]}
                     activity={true}
                     socketDetail={socketDetail}
-                    panelPosition={panelPosition} />
+                    panelPosition={panelPosition}
+                    platformId={platformId} />
             }
 
             {showVideo && !chatRoom &&
@@ -768,7 +773,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition }) => {
     ) : (<Support
         closePane={closePane}
         webSocket={socketDetail}
-        panelPosition={panelPosition} />)
+        panelPosition={panelPosition}
+        platformId={platformId} />)
 }
 
 export default CreateChatRoom;

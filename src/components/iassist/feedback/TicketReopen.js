@@ -61,7 +61,9 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
             if (token) {
 
-                APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `reopen_reason/`, data, false, 'POST', null, token)
+                const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+
+                APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/reopen_reason/`, data, false, 'POST', null, token)
                     .then(response => {
 
                         if (response) {

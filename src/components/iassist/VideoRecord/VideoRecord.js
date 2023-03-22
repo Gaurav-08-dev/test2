@@ -120,7 +120,9 @@ const VideoRecord = ({ save, close, message }) => {
 
         selectMedia = message === "Record" ? false : true;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `file_id/?capture_or_record=${selectMedia}`, null, false, 'GET', null, token)
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/file_id/?capture_or_record=${selectMedia}`, null, false, 'GET', null, token)
             .then(response => {
 
                 if (response) {
