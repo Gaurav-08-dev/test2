@@ -25,9 +25,9 @@ let tabData = 'open';
 let dateRange = ['Date'];
 let defType = { 'name': 'All', 'id': 'All' };
 let defReporter = { 'first_name': 'All', 'id': 'All' };
-
+ 
 let reporter_detail = {
-    id: 0
+    id: 0 
 };
 let type_detail = {
     id: 0
@@ -35,6 +35,7 @@ let type_detail = {
 
 let chatId = '';
 let refreshUserListInsideChat = false;
+
 let retainedStatus = {
     read: true,
     unread: true
@@ -569,8 +570,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         dispatch({ type: actionType.show_multiple_filters, payload: !state.showMultipleFilters })
 
     }
-
-
 
     const clearFilter = () => {
 
