@@ -1,23 +1,24 @@
 import React from "react";
+import { useEffect } from "react";
 import './App.css';
 import SupportContainer from './components/iassist/SupportContainer';
 import Toast from "./components/Toast/Toast";
-// import { ErrorBoundary } from "react-error-boundary";
-// import ErrorFallback from "./components/ErrorFallback";
+import { GlobalDebug } from "./utils/RemoveConsole";
+
 
 
 function App() {
 
+  useEffect(()=>{
+    (process.env.NODE_ENV === "production" ||
+    process.env.REACT_APP_CUSTOM_NODE_ENV === "STAGING") &&
+    GlobalDebug(false);
+  },[])
   return (
-    // <ErrorBoundary
-    //   FallbackComponent={ErrorFallback}
-    //   // onReset={() => window.location.href = "/"}
-    // >
     <>
       <Toast />
       <SupportContainer />
     </>
-    // </ErrorBoundary>
   );
 }
 

@@ -3,11 +3,13 @@ import './Delete.scss';
 
 let buttonDisable = false;
 
-const Delete = ({ deleteTopic, setConfirmDelete, topic, disable }) => {
+const Delete = ({ deleteTopic, setConfirmDelete, topic, disable, isScrollWhenDelete }) => {
 
     const [changeButtonStatus, setChangeButtonStatus] = useState(false);
 
     const deleteButtonClick = (e) => {
+
+        if(isScrollWhenDelete) isScrollWhenDelete();
 
         buttonDisable = true;
 
@@ -33,6 +35,7 @@ const Delete = ({ deleteTopic, setConfirmDelete, topic, disable }) => {
             <button className='confirm-btn' disabled={buttonDisable} onClick={(e) => deleteButtonClick(e)}>Confirm</button>
 
             <button onClick={() => {
+                if(isScrollWhenDelete) isScrollWhenDelete();
                 setConfirmDelete(false);
                 disable(false);
 
