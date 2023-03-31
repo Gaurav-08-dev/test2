@@ -20,14 +20,15 @@ import ClickOutsideListner from "./ClickOutsideListener";
 let pageNumber = 1;
 const pageSize = 10;
 let totalPage = 0;
-const scrollPadding = 40;
+const scrollPadding = 10;
 let tabData = 'open';
 let dateRange = ['Date'];
-let defType = { 'name': 'All', 'id': 'All' };
-let defReporter = { 'first_name': 'All', 'id': 'All' };
+const defType = { 'name': 'All', 'id': 'All' };
+const defReporter = { 'first_name': 'All', 'id': 'All' };
+let isDeleteClick = false;
  
 let reporter_detail = {
-    id: 0 
+    id: 0
 };
 let type_detail = {
     id: 0
@@ -166,12 +167,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         let url;
 
-        let searchStringFlag = searchString.current ? `&topic_search=${searchString.current}` : searchQuery ? `&topic_search=${searchQuery}` : '';
+        const searchStringFlag = searchString.current ? `&topic_search=${searchString.current}` : searchQuery ? `&topic_search=${searchQuery}` : '';
 
 
-        let platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
-        let unReadFlag = unRead.current ? '&unread=true' : '&unread=false'
-        let readFlag = readCheckBoxStatus.current ? '&read=true' : '&read=false'
+        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+        const unReadFlag = unRead.current ? '&unread=true' : '&unread=false'
+        const readFlag = readCheckBoxStatus.current ? '&read=true' : '&read=false'
 
 
         if (dateRange[0] === 'Date') {
@@ -192,8 +193,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
 
         setShowLoader(true);
-
         setDisableButton(true)
+
         dispatch({ type: actionType.initial_load_status, payload: false })
 
         if (tabData) {
@@ -211,7 +212,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                 if (response) {
 
-                    let result = response;
+                    const result = response;
 
                     for (let key in result) {
 
@@ -254,10 +255,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                 data?.forEach((topicValue) =>
                                     allUser.current.push(topicValue)
                                 )
-
-
-
-
                         } else if (key === 'account_data') {
 
                             if (pageNumber === 1)
@@ -284,12 +281,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
 
 
-                    setDisableButton(false)
-
-
-
+                    setDisableButton(false);
                     setShowLoader(false);
-
 
                 }
 
@@ -332,7 +325,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     webSocket.onmessage = function (evt) {
 
 
-        let received_msg = JSON.parse(evt.data);
+        const received_msg = JSON.parse(evt.data);
         refreshUserListInsideChat = false;
 
         if (received_msg.type === 'refresh' && chatId === received_msg.topic_id) {
@@ -408,7 +401,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                 if (response) {
 
-                    let result = response;
+                    const result = response;
 
                     ticketTypeList.current = result
 
@@ -427,9 +420,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     const getUsers = async () => {
 
-        let user = getUser();
+        const user = getUser();
 
-        let id = user.organization_id;
+        const id = user.organization_id;
 
         const jwt_token = getTokenClient();
 
@@ -440,7 +433,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                 if (response) {
 
-                    let result = response;
+                    const result = response;
                     reportersList.current = result;
 
                 }
@@ -470,13 +463,13 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     }
 
-    const openChat = (event, topic) => {
+    const openChat = (topic) => {
 
-        let data = checkLastActivity(topic.id);
+        const activityStatus = checkLastActivity(topic.id);
 
-        dispatch({ type: actionType.last_activity, payload: data })
+        dispatch({ type: actionType.last_activity, payload: activityStatus })
 
-        let checkIndex = unReadList.current.find((list) => {
+        const checkIndex = unReadList.current.find((list) => {
             return list.topic_id === topic.id;
         });
 
@@ -497,7 +490,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         dispatch({ type: actionType.topic_click, payload: false })
 
         clearData();
-        clearFilter()
+        clearFilter(false);
 
     }
 
@@ -513,12 +506,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     const showUnreadNotification = (id) => {
 
-        let data = unReadList.current.filter(read => {
+        const unreadFlag = unReadList.current.filter(read => {
             return read.topic_id === id
 
         })
 
-        return data && data.length > 0 && data[0].unread_count > 0 ? true : false;
+        return unreadFlag && unreadFlag.length > 0 && unreadFlag[0].unread_count > 0 ? true : false;
 
     }
 
@@ -571,7 +564,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     }
 
-    const clearFilter = () => {
+    const clearFilter = (isClose = true) => {
 
         unRead.current = true;
         readCheckBoxStatus.current = true;
@@ -584,18 +577,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
             type_detail.id = 0;
             dateRange = ['Date'];
 
-
-
             dispatch({ type: actionType.ticket_type_label, payload: 'All' });
             dispatch({ type: actionType.reporters_label, payload: 'Select' });
-            getTopicsBasedOnFilter();
-
+            
         }
+       if (isClose) getTopicsBasedOnFilter();
 
     }
 
     const deleteTopic = async (e, data) => {
 
+        isDeleteClick = false;
         setShowLoader(true);
 
         e.stopPropagation();
@@ -611,7 +603,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                 if (response) {
 
-                    let result = response;
+                    const result = response;
 
                     allTopics.current = allTopics.current.filter(topic => topic.id !== data);
                     unReadList.current = unReadList.current.filter(topic => topic.topic_id !== data)
@@ -619,6 +611,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                     alertService.showToast('success', result.message);
 
+                    isDeleteClick = false;
                     setConfirmDelete(false);
                     setShowLoader(false);
 
@@ -636,22 +629,21 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     }
     const checkLastActivity = (id) => {
 
-        let data = activity.current.filter((val) => val.id === id);
+        const data = activity.current.filter((val) => val.id === id);
 
         return data.length > 0 && data[0].activity_status === 0 ? true : false;
 
     }
 
     const handleKeyDown = (e) => {
+
         if ((e.keyCode === 13 || e === 'click') && (searchString.current !== '' || prevSearchValue.current)) {
             prevSearchValue.current = searchString.current;
-
             getTopicsBasedOnFilter(searchString.current);
         }
     }
 
     useEffect(() => {
-
 
         unRead.current = retainedStatus.unread;
         readCheckBoxStatus.current = retainedStatus.read;
@@ -666,6 +658,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         }
 
         if (panelPosition && panelPosition !== 'Right') {
+
             let containerWrapper = document.getElementById('iassist-panel');
             if (panelPosition.toLowerCase() === 'left') {
                 containerWrapper.style.left = 0;
@@ -702,13 +695,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         const onScroll = async () => {
 
-            if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + scrollPadding >= bodyRef.current.scrollHeight && (totalPage > pageNumber)) {
+
+            if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + 2 >= bodyRef.current.scrollHeight && !isDeleteClick) {
 
 
-                let checkScroll = allTopics.current.length === pageNumber * 10;
-
-
-                if (checkScroll) {
+                if (totalPage > pageNumber) {
                     pageNumber += 1;
                     await getTopicsBasedOnFilter();
 
@@ -719,7 +710,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         }
         document.addEventListener("mouseup", (event) => {
 
-            let calendar = document.getElementById('calendar-wrapper');
+            const calendar = document.getElementById('calendar-wrapper');
 
             if (calendar && !(calendar.contains(event.target))) {
 
@@ -727,7 +718,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
             }
 
-            let home = document.getElementById('iassist-panel');
+            const home = document.getElementById('iassist-panel');
 
             if (home && !(home.contains(event.target))) {
 
@@ -745,6 +736,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
             clearData();
             dispatch({ type: actionType.initial_load_status, payload: true })
             dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
+
 
         }
 
@@ -768,9 +760,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
             dateRange = [firstValue, updatedValue];
             dispatch({ type: actionType.selected_date, payload: range.ranges[0][1] })
             getTopicsBasedOnFilter();
-            // dispatch({
-            //     type: actionType.is_open_calendar
-            // })
+
         }
     }
 
@@ -794,7 +784,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         }
 
+        pageNumber=1;
         getTopicsBasedOnFilter();
+    }
+
+    const disableScrollWhenDelete = () => {
+        isDeleteClick = false;
     }
 
     return (
@@ -881,7 +876,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                                     onChange={handleCalendar}
                                                     singleRangeonly={true}
                                                     periodColors={'#fff'} />
-                                                {/* //#06A535 */}
 
                                             </div>}
 
@@ -992,7 +986,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                     return (
                                         <div className='topic' key={topic.id}>
 
-                                            {<div className='topic-header' onClick={(e) => openChat(e, topic)}>
+                                            {<div className='topic-header' onClick={() => openChat(topic)}>
 
                                                 <div className='topic-header-inner'>
                                                     <h4 className='topic-name'>{topic.name}</h4>
@@ -1033,6 +1027,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                                         </button>
 
                                                         {checkLastActivity(topic.id) && <button className='btn-delete icon-btn' disabled={disableButton} onClick={(e) => {
+                                                            isDeleteClick = true;
                                                             setConfirmDelete(true)
                                                             setDisableButton(true);
                                                             dispatch({ type: actionType.delete_id, payload: topic.id })
@@ -1078,7 +1073,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                 {confirmDelete && <Delete deleteTopic={deleteTopic}
                                     topic={state.deleteId}
                                     setConfirmDelete={setConfirmDelete}
-                                    disable={setDisableButton} />
+                                    disable={setDisableButton} 
+                                    isScrollWhenDelete={disableScrollWhenDelete}
+                                    />
                                 }
 
 

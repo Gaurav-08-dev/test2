@@ -11,13 +11,11 @@ let webSocket;
 const SupportContainer = () => {
 
     const [openSupport, setOpenSupport] = useState(false);
-
     const [platformId, setPlatformId] = useState('');
-
+    
     const AppId = useRef(window?.iAssistAppId);
-
     const tokenConstant = useRef('');
-    const btnId = useRef('trigger-btn');
+    const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
     // const [configData, setConfigData] = useState('');
@@ -55,20 +53,20 @@ const SupportContainer = () => {
 
     const simplifyToken = async () => {
 
-        let token = localStorage.getItem(tokenConstant.current);
+        const token = localStorage.getItem(tokenConstant.current);
         const user = getUserDetailsFromToken(token);
-        let userData = user?.identity || user;
+        const userData = user?.identity || user;
         setUserData(userData);
 
         if (token) {
             const tokens = `Bearer ${token}`;
-            let res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
+            const res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': tokens
                 }
             })
-            let result = await res.json();
+            const result = await res.json();
             setUserToken(result.token)
             connectSocket();
         }
@@ -92,7 +90,7 @@ const SupportContainer = () => {
                 console.log('listen connection');
             }
             webSocket.onmessage = function (evt) {
-                var received_msg = JSON.parse(evt.data);
+                let received_msg = JSON.parse(evt.data);
                 if (received_msg.type === 'count') {
                     let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
                     sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
@@ -208,9 +206,8 @@ const SupportContainer = () => {
 
 
     return (
-        // support-main-conatiner
         <>
-            {/* {btnId.current === 'trigger-btn' && <div id="trigger-btn"> <button>one</button></div>} */}
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
             
             {openSupport && <Support
                 closePane={closePane}

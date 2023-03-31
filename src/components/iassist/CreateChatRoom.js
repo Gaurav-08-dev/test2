@@ -31,8 +31,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
     const [currentTag, setCurrentTag] = useState('');
     const [topic, setTopic] = useState('');
     const [chatRoom, setChatRoom] = useState(false);
-    const [priorities, setPriorities] = useState(0);
-    const [ticketType, setTicketType] = useState(0);
+    const [priorities, setPriorities] = useState({id: 0});
+    const [ticketType, setTicketType] = useState({id: 0});
     const [ticketTypeList, setTicketTypeList] = useState([]);
     const [topicDescriptions, setTopicDescriptions] = useState('');
     const [tagList, setTagList] = useState([]);
@@ -67,7 +67,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                 if (response) {
 
-                    let result = response;
+                    const result = response;
 
                     setTicketTypeList(result);
 
@@ -104,7 +104,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                 if (response) {
 
-                    let result = response;
+                    const result = response;
 
                     if (result && result.data) {
 
@@ -256,7 +256,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
     const createRoom = async () => {
 
         setDisableCreate(true);
-        let user = getUser();
+        const user = getUser();
 
         let data = {
             tags: tagId,
@@ -282,19 +282,19 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
             }
         });
 
-        let validation = requiredFieldValidation(true);
+        const validation = requiredFieldValidation(true);
 
         const jwt_token = getTokenClient();
 
         const token = `Bearer ${jwt_token}`;
 
-        let client = user.last_fetched_client;
+        const client = user.last_fetched_client;
 
-        let organisation = user.organization_id;
+        const organisation = user.organization_id;
 
         const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
 
-        let url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}&app_id=${platformId}`
+        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}&app_id=${platformId}`
 
         if (token && validation) {
 
@@ -302,7 +302,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
             setShowLoading(true);
 
-            let res = await fetch(url, {
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Authorization': token
@@ -310,7 +310,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                 body: formData
             })
 
-            let result = await res.json();
+            const result = await res.json();
 
             setDisableCreate(false);
             setDisableCancel(false);
@@ -447,7 +447,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         e.preventDefault();
 
-        let findIndex = tagList.indexOf(tag);
+        const findIndex = tagList.indexOf(tag);
 
         tagList.splice(findIndex, 1);
 
@@ -532,7 +532,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
         document.addEventListener("mouseup", (event) => {
 
 
-            let suggestion = document.getElementById('suggestion');
+            const suggestion = document.getElementById('suggestion');
 
 
             if (suggestion && !(suggestion.contains(event.target))) {
@@ -543,7 +543,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                 suggestIndex = -1;
 
             }
-            let container = document.getElementById('iassist-panel');
+            const container = document.getElementById('iassist-panel');
 
             if ((container && !(container.contains(event.target)))) {
 
@@ -662,7 +662,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                     <div className='priority no-bg'>
                                         <SpeedSelect
                                             options={priorityTypeList}
-                                            selectLabel={priorities.value}
+                                            selectLabel={priorities?.value}
                                             prominentLabel='Priority'
                                             maxHeight={100}
                                             maxWidth={80}

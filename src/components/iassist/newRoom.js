@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, memo, useReducer } from 'react';
+import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import debounce from "lodash.debounce";
 import './newRoom.scss';
 import * as Constants from '../Constants';
@@ -85,7 +85,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const [searchString, setSearchString] = useState('');
 
-    // const [clientUser, setClientUser] = useState([]);
 
     const [showSearch, setShowSearch] = useState(false);
 
@@ -176,7 +175,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 if (response) {
 
-                    let json = response;
+                    const json = response;
 
                     for (let key in json) {
 
@@ -227,7 +226,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         const jwt_token = getTokenClient();
 
-        let token = `Bearer ${jwt_token}`;
+        const token = `Bearer ${jwt_token}`;
 
         const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
 
@@ -240,7 +239,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     let supportUsers = []
 
-                    let json = response;
+                    const json = response;
 
                     setUserData(json);
 
@@ -291,18 +290,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         }
 
-        // else if (type === 'search') {
-
-        // setSearchString(event.target.value);
-
-        //     if (event !== '') {
-        //         getChatSearch(event, event.target.value)
-        //     } else {
-        //         setShowSearch(false);
-        //         fetchData();
-        //     }
-
-        // }
     }
 
     const handleKeyDown = (e) => {
@@ -327,8 +314,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         setSearchScroll(false);
 
-        // if (type === 'reply') {
-
         msg = {
             "message": {
                 "file": saveDataUrl,
@@ -338,23 +323,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             "parent_note_id": type === 'reply' ? messageId : 0
         }
 
-        // } 
-        // else {
-
-        //     msg = {
-        //         "message": {
-        //             "file": saveDataUrl,
-        //             "message": message
-        //         },
-        //         "is_file": saveDataUrl.length > 0 ? 1 : 0,
-        //         "parent_note_id": 0
-        //     }
-
-        // }
-
         let validateText = message.replaceAll("&nbsp;", "");
 
-        let text = validateText.trim();
+        const text = validateText.trim();
 
         if ((text !== '' && !emptyStringValidation(message)) || (replyMessage !== '' && type === 'reply' && !emptyStringValidation(replyMessage)) || saveDataUrl.length > 0) {
             // Web Socket is connected, send data using send()
@@ -409,17 +380,17 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const validateEditChat = (msg, setAccessValue) => {
 
-        let dates = getTimeZone(msg.created_at, true);
+        const messageCreatedAtDate = getTimeZone(msg.created_at, true);
 
-        let msg_send_date = new Date(dates);
+        const msg_send_date = new Date(messageCreatedAtDate);
 
-        let current_date = new Date();
+        const current_date = new Date();
 
-        let subMin = Math.abs(msg_send_date.getMinutes() - current_date.getMinutes());
+        const subMin = Math.abs(msg_send_date.getMinutes() - current_date.getMinutes());
 
-        let subHr = Math.abs(msg_send_date.getHours() - current_date.getHours());
+        const subHr = Math.abs(msg_send_date.getHours() - current_date.getHours());
 
-        let dateDiff = Math.abs(msg_send_date.getDate() - current_date.getDate());
+        const dateDiff = Math.abs(msg_send_date.getDate() - current_date.getDate());
 
         let isData = false;
 
@@ -551,9 +522,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let head = document.getElementById('menu');
+            const head = document.getElementById('menu');
 
-            // let reply = document.getElementById('rply-menu');
 
             if ((head && !(head.contains(event.target)))) {
 
@@ -561,7 +531,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let record = document.getElementById('record')
+            const record = document.getElementById('record')
 
             if (record && !(record.contains(event.target))) {
 
@@ -571,7 +541,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let media = document.getElementById('media-player');
+            const media = document.getElementById('media-player');
 
             if (media && !(media.contains(event.target))) {
 
@@ -579,7 +549,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let list = document.getElementById('user-list');
+            const list = document.getElementById('user-list');
 
             if (list && !(list.contains(event.target))) {
 
@@ -587,13 +557,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             }
 
-            let chatContainer = document.getElementById('iassist-panel');
-
-            // if (chatContainer && height) {
-
-            //     chatContainer.style.height = height;
-
-            // }
+            const chatContainer = document.getElementById('iassist-panel');
 
             if (chatContainer && !(chatContainer.contains(event.target))) {
 
@@ -629,7 +593,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }, []) // eslint-disable-line 
 
-    const onOffline = (event) => {
+    const onOffline = () => {
 
         if (ws !== undefined) {
 
@@ -641,7 +605,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    const onOnline = (event) => {
+    const onOnline = () => {
 
         const jwt_token = getTokenClient();
 
@@ -652,7 +616,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     }
     ws.onmessage = function (evt) {
 
-        var received_msg = JSON.parse(evt.data);
+        const received_msg = JSON.parse(evt.data);
 
         if (received_msg.parent_note_id === 0 || 'chat_data' in received_msg) {
 
@@ -680,7 +644,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 }
             })
 
-            let contentWrapper = document.getElementById(`content${chatId}`);
+            const contentWrapper = document.getElementById(`content${chatId}`);
 
             topScroll.current = contentWrapper?.scrollHeight
 
@@ -723,7 +687,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     useEffect(() => {
 
-        let contentWrapper = document.getElementById(`content${chatId}`)
+        const contentWrapper = document.getElementById(`content${chatId}`)
 
         if (contentWrapper) {
 
@@ -784,7 +748,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (!hideReply) {
 
-            let contentWrapper = document.getElementById(`content${id}`)
+            const contentWrapper = document.getElementById(`content${id}`)
 
             getMessageHeight.current = contentWrapper.scrollHeight;
 
@@ -890,7 +854,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 if (response) {
 
-                    let json = response;
+                    const json = response;
 
                     for (let key in json) {
 
@@ -957,29 +921,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    // const getUserNameBasedOnId = (id) => {
-
-    //     if (messageUserDetails?.length > 0) {
-
-    //         let userName;
-
-    //         for (let i = 0; i < messageUserDetails.length; i++) {
-
-    //             if (messageUserDetails[i].id === id) {
-
-    //                 userName = messageUserDetails[i].first_name;
-
-    //                 break;
-
-    //             }
-
-    //         }
-
-    //         return userName;
-
-    //     }
-
-    // }
+  
 
     const searchClick = async (item) => {
 
@@ -1016,15 +958,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                             if (key === 'chat_id_count') {
 
-                                // if (data < 10) {
-
                                 Size.current = data < 10 ? pageSize : data;
-
-                                // } else {
-
-                                //     Size.current = data;
-
-                                // }
 
                                 scrollHeight = 15;
 
@@ -1055,73 +989,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     }
 
-    // const getUserNameImage = (id, isReply) => {
 
-    //     let user;
+    const editMessageClick = ( msg) => {
 
-    //     if (messageUserDetails?.length > 0) {
-
-    //         for (let i = 0; i < messageUserDetails.length; i++) {
-
-    //             if (messageUserDetails[i].id === id) {
-
-    //                 user = messageUserDetails[i];
-
-    //                 break;
-
-    //             }
-
-    //         }
-
-    //         if (user) {
-
-    //             return <div style={isReply ? { marginTop: '-15px' } : {}}>
-    //             <Avatar imgSrc={user.cover_img_url}
-    //                 firstName={user.first_name}
-    //                 lastName={user.last_name}
-    //                 alt={`${user.first_name}'s pic`}
-    //                 height={30}
-    //                 width={30}
-    //                 fontSize={9} />
-    //             </div>
-
-    //         }
-
-    //     }
-
-    // }
-
-    // const getTimeZone = (date, isDateFormat) => { 
-
-    //     date = date.replace('T', " ").concat(' GMT');
-
-    //     let d = new Date(date);
-
-    //     let dateOptions = { year: 'numeric', month: 'long' };
-
-    //     let timeOptions = { hour12: true, hour: '2-digit', minute: '2-digit',second:'2-digit' };
-
-    //     let a = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
-    //     let time;
-
-    //     if (!isDateFormat) {
-
-    //         time = getDiffDay(a);
-
-    //     } else {
-
-
-    //         time = `${d.getDate()} ${d.toLocaleDateString('en-us', dateOptions)} ${d.toLocaleTimeString('en-us', timeOptions)}`;
-
-    //     }
-
-    //     return time;
-
-    // }
-
-    const editMessageClick = (e, msg) => {
-
-        // let token = getToken();
 
         let userDetail = getUser();
 
@@ -1165,7 +1035,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                 if (response) {
 
-                    let json = response;
+                    const json = response;
 
 
                     messageList.forEach((msg, index) => {
@@ -1248,9 +1118,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     if (disableAddOrRemove) disableAddOrRemove(false);
 
-                    // if (add)
-                    // collabId = [...collabId, json.data[0].user_id]
-
                 }
 
             })
@@ -1324,37 +1191,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     }
 
 
-    // const fetchIndivTopic = async () => {
-
-    //     const status_flag = topic?.status_id === 3 ? true: false;
-
-    //     const jwt_token = getTokenClient();
-
-    //     const token = `Bearer ${jwt_token}`;
-
-    //     APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `topic/?page_size=10&page_number=1&status_flag=${status_flag}&ticket_id=${topic.id}&sort_order=descending`, null, false, 'GET', controller, token)
-    //         .then(response => {
-
-    //             if (response) {
-
-    //                 let result = response;
-
-    //                 setTopic(result.topic_data[0]);
-
-    //             }
-
-    //         })
-    //         .catch(err => {
-
-    //             setShowLoader(false);
-
-    //         });
-
-    // }
+    
 
     const checkVideo = (file) => {
 
-        let data = file?.file.substring(file.file.length - 4, file.file.length);
+        const data = file?.file.substring(file.file.length - 4, file.file.length);
 
         if (data === 'webm' || data === '.mov') {
 
@@ -1370,9 +1211,9 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
     const checkImage = (file) => {
 
-        let data1 = file?.file.substring(file.file.length - 3, file.file.length);
+        const data1 = file?.file.substring(file.file.length - 3, file.file.length);
 
-        let data2 = file?.file.substring(file.file.length - 4, file.file.length);
+        const data2 = file?.file.substring(file.file.length - 4, file.file.length);
 
 
         if (data1 === 'png' || data2 === 'jpeg') {
@@ -1418,7 +1259,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
             const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
 
-            let response = await fetch(Constants.API_IASSIST_BASE_URL + `${platform}/uploadfile/?topic_id=${chatIds}&broadcast=false&file_upload=true`, {
+            const response = await fetch(Constants.API_IASSIST_BASE_URL + `${platform}/uploadfile/?topic_id=${chatIds}&broadcast=false&file_upload=true`, {
                 method: 'POST',
                 headers: {
                     'Authorization': token
@@ -1426,7 +1267,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 body: formData
             })
 
-            let result = await response.json();
+            const result = await response.json();
 
             let file = result?.file_url[0]?.file;
 
@@ -1581,8 +1422,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
             }
         },
     };
-
-    const loadFile = (e, msgDetail) => {
+    // e, msgDetail
+    const loadFile = () => {
 
         let getLastId = messageList[messageList.length - 1]?.id;
 
@@ -1748,7 +1589,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                                                         <li onClick={(e) => reply(e, messages)}>Reply</li>
                                                         {
-                                                            editAccess && <li onClick={(e) => editMessageClick(e, messages)}>Edit</li>}
+                                                            editAccess && <li onClick={() => editMessageClick(messages)}>Edit</li>}
 
                                                     </ul>
 
@@ -1849,7 +1690,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                             <video src={files.file} onClick={() => {
 
                                                                                 videoClick(files.file)
-                                                                            }} onLoad={(e) => loadFile(e, messages)}>
+                                                                            }} 
+                                                                            // e, messages
+                                                                            onLoad={(e) => loadFile()}
+                                                                            >
                                                                             </video>
 
                                                                             {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
@@ -1862,7 +1706,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                             playerType = 'image';
                                                                             setOpenPopupPlayer(true)
                                                                             setPlayerUrl(files.file)
-                                                                        }} onLoad={(e) => loadFile(e, messages)}></img>
+                                                                        }} 
+                                                                        // e, messages
+                                                                        onLoad={(e) => loadFile()}
+
+                                                                        ></img>
 
                                                                             <div className='media-id'>{files?.name}</div>
 
@@ -1893,7 +1741,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                                                             {showMainMenu && currentSelectId.current === msg.id &&
                                                                                 <ul id='menu' className='panes'>
 
-                                                                                    {editAccess && <li onClick={(e) => editMessageClick(e, msg)}>Edit</li>}
+                                                                                    {editAccess && <li onClick={() => editMessageClick( msg)}>Edit</li>}
 
                                                                                 </ul>
                                                                             }
