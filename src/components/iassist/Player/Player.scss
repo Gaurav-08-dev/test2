@@ -1,59 +1,60 @@
+#iassist-panel-wrapper {
+    .modal, .overlay {
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        position: fixed;
+    }
 
-.modal, .overlay {
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    position: fixed;
-}
+    .overlay {
+        background: rgba(49,49,49,0.8);
+    }
 
-.overlay {
-    background: rgba(49,49,49,0.8);
-}
-
-.modal {
-    .modal-content {
-        position: absolute;
-        top: 25%;
-        left: 50%;
-        line-height: 1.4;
-        // background: #ffffff;
-        padding: 14px 28px;
-        border-radius: 10px;
-        max-width: 500px;
-        min-width: 400px;
-        // border: 1px solid;
-        object-fit:contain;
-        z-index:100;
-        .player-wrapper {
-            position: fixed;
-            top: 10%;
-            left: 10%;
-            bottom: 90%;
-            right: 90%;
-            background: #000;
-            width: 80%;
-            height: 80%;
-            z-index: 1111111;
-            border: 5px solid #fff;
-            .close-btn {
-                display: flex;
-                width: 100%;
-                align-items: flex-end;
-                justify-content: flex-end;
-                float: right;
-                button {
-                    background: red;
-                    color: #fff;
+    .modal {
+        .modal-content {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            line-height: 1.4;
+            // background: #ffffff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            max-width: 500px;
+            min-width: 400px;
+            // border: 1px solid;
+            object-fit:contain;
+            z-index:100;
+            .player-wrapper {
+                position: fixed;
+                top: 10%;
+                left: 10%;
+                bottom: 90%;
+                right: 90%;
+                background: #000;
+                width: 80%;
+                height: 80%;
+                z-index: 1111111;
+                border: 5px solid #fff;
+                .close-btn {
+                    display: flex;
+                    width: 100%;
+                    align-items: flex-end;
+                    justify-content: flex-end;
+                    float: right;
+                    button {
+                        background: red;
+                        color: #fff;
+                    }
                 }
-            }
-            img, video {
-                width: 100%;
-                height: 95%;
-                object-fit: contain;
+                img, video {
+                    width: 100%;
+                    height: 95%;
+                    object-fit: contain;
+                }
             }
         }
     }
