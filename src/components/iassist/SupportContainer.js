@@ -141,7 +141,6 @@ const SupportContainer = () => {
         } else {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
-
                 getConfigDetails();
 
                 alertService.showToast('process', 'Loading...');
@@ -160,7 +159,7 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -172,6 +171,7 @@ const SupportContainer = () => {
     }, []) //eslint-disable-line 
 
     useEffect(() => {
+
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
@@ -188,6 +188,7 @@ const SupportContainer = () => {
                 if (buttonElement && buttonElement.children.length > 0) buttonElement.children[0].disabled = true;
             }
             if (webSocket && (webSocket.readyState === WebSocket.CLOSED || webSocket.readyState === WebSocket.CLOSING)) {
+
                 if (sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') && sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') !== 'undefined') {
                     simplifyToken();
                 }

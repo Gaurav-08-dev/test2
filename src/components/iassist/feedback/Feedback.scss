@@ -1,93 +1,95 @@
-.main-wrappers {
-  padding: 15px 10px 10px;
-  border-top: 1px solid rgba(255,255,255,0.14);
-  margin-top: 15px;
-  z-index: 100000;
-  border-radius: 2px;
+#iassist-panel-wrapper {
+  .main-wrappers {
+    padding: 15px 10px 10px;
+    border-top: 1px solid rgba(255,255,255,0.14);
+    margin-top: 15px;
+    z-index: 100000;
+    border-radius: 2px;
 
-  .content-wrapper {
-    padding-bottom: 10px;
-    .description {
-      color: #9b9b9b;
-      line-height: 17px;
-      margin-bottom: 10px;
-      span {
-        font-weight: 600;
+    .content-wrapper {
+      padding-bottom: 10px;
+      .description {
+        color: #9b9b9b;
+        line-height: 17px;
+        margin-bottom: 10px;
+        span {
+          font-weight: 600;
+          color: #fff;
+        }
+      }
+
+      .feedback {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        span {
+          border: 1px solid #b1b2b3;
+          color: #b1b2b3;
+          padding: 0 5px;
+          display: block;
+          border-radius: 2px;
+          line-height: 14px;
+          font-size: 10px;
+          cursor: pointer;
+          transition: 300ms all;
+          &:hover{
+            background-color: #fff;
+            border-color: transparent !important;
+            color: #333;
+          }
+        }
+      }
+
+      .textarea {
+        resize: none !important;
+        height: 80px;
+        width: 410px;
+        background: #000000;
+        border: none;
         color: #fff;
+        padding: 10px;
+        display: block;
+        font-family: 'Poppins';
       }
     }
 
-    .feedback {
+    .feedback-btn-wrapper  {
+      width: 100%;
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      span {
-        border: 1px solid #b1b2b3;
-        color: #b1b2b3;
-        padding: 0 5px;
-        display: block;
-        border-radius: 2px;
-        line-height: 14px;
+      align-items: center;
+      justify-content: flex-end;
+
+      button {
+        margin: 0 10px 0 0;
+        //padding: 0 10px;
+        border: none;
         font-size: 10px;
+        height: 15px;
+        border-radius: 2px;
         cursor: pointer;
-        transition: 300ms all;
-        &:hover{
-          background-color: #fff;
-          border-color: transparent !important;
-          color: #333;
+
+        &:last-child {
+          margin-right: 0;
         }
       }
     }
-
-    .textarea {
-      resize: none !important;
-      height: 80px;
-      width: 410px;
-      background: #000000;
-      border: none;
-      color: #fff;
-      padding: 10px;
-      display: block;
-      font-family: 'Poppins';
-    }
   }
 
-  .feedback-btn-wrapper  {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+  .chat-wrapper {
+    background: #000000;
+    border: none;
 
-    button {
-      margin: 0 10px 0 0;
-      //padding: 0 10px;
-      border: none;
-      font-size: 10px;
-      height: 15px;
-      border-radius: 2px;
-      cursor: pointer;
+    .content-wrapper {
 
-      &:last-child {
-        margin-right: 0;
+      textarea {
+        padding: 0 !important;
       }
+
     }
   }
-}
 
-.chat-wrapper {
-  background: #000000;
-  border: none;
-
-  .content-wrapper {
-
-    textarea {
-      padding: 0 !important;
-    }
-
+  .feedback-wrapper, .reopen-wrapper {
+    padding: 10px;
+    margin: 0;
   }
-}
-
-.feedback-wrapper, .reopen-wrapper {
-  padding: 10px;
-  margin: 0;
 }

@@ -1,25 +1,27 @@
-.detail-wrapper {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding-top: 5px;
-    .user{
+#iassist-panel-wrapper {
+    .detail-wrapper {
         display: flex;
+        gap: 10px;
         align-items: center;
-    }
-    .user-name {
-        margin-left: 5px;
-        text-transform: capitalize;
-    }
-    .divider{
-        width: 1px;
-        height: 12px;
-        background-color: #646464;
-    }
-    .user-type {
-        text-transform: capitalize;
-    }
-    .user-ticket {
-        text-transform: uppercase;
+        padding-top: 5px;
+        .user{
+            display: flex;
+            align-items: center;
+        }
+        .user-name {
+            margin-left: 5px;
+            text-transform: capitalize;
+        }
+        .divider{
+            width: 1px;
+            height: 12px;
+            background-color: #646464;
+        }
+        .user-type {
+            text-transform: capitalize;
+        }
+        .user-ticket {
+            text-transform: uppercase;
+        }
     }
 }
