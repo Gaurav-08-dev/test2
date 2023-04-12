@@ -158,7 +158,7 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -214,7 +214,7 @@ const SupportContainer = () => {
 
     return (
         <>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
+            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>github</button></div>}
             
             {openSupport && <Support
                 closePane={closePane}
