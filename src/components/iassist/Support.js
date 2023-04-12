@@ -1005,6 +1005,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                                                 <div className='iassist-topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
+{console.log(allUser.current,reportersList.current)}
                                                 <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
 
                                             </div>}
