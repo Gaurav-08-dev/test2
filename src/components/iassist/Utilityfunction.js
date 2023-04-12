@@ -39,6 +39,8 @@ export const getUserNameBasedOnId = (userList, id, type) => {
 export const getUserNameImage = (userList, id, isReply ,type) => {
 
     let user;
+    console.log(userList)
+
 
     if (userList?.length > 0) {
 
@@ -54,14 +56,10 @@ export const getUserNameImage = (userList, id, isReply ,type) => {
 
         }
 
-
-
-        console.log(user)
         if (user) {
 
             if(type==='detail'){
 
-                console.log("here")
                 return <Avatar imgSrc={user.cover_img_url}
                     firstName={user.first_name?user.first_name:'test'}
                     lastName={user.last_name?user.last_name:'test'}
