@@ -1503,8 +1503,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                                         return <span key={user.id + index.toString()} style={{ zIndex: fetchedClientUsers.current.length - index }}>
                                             {
                                                 <Avatar imgSrc={user.cover_img_url}
-                                                    firstName={user.first_name?user.first_name:'test'}
-                                                    lastName={user.last_name?user.last_name:'test'}
+                                                    firstName={user.first_name}
+                                                    lastName={user.last_name}
                                                     alt={`${user.first_name}'s pic`}
                                                     height={20}
                                                     width={20}

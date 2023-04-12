@@ -73,7 +73,7 @@ const Detail = ({ topic, allUser, type, allAccount }) => {
         //     return item.id===id
         // }))
 
-        let data = type?.filter((types) => {
+        let data = type?.forEach((types) => {
 
             if (types.id === id) {
 
