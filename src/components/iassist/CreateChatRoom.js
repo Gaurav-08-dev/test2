@@ -5,7 +5,7 @@ import * as Constants from '../Constants';
 import SpeedSelect from 'react-speedselect';
 import { debounce, getToken, getTokenClient, getUser } from '../../utils/Common';
 import alertService from "../../services/alertService";
-import Support from './Support';
+// import Support from './Support';
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
@@ -18,15 +18,12 @@ const descriptionMaxChar = 150;
 const nameMaxChar = 45;
 
 
-const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) => {
+const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, closeCreateTicket, getTopicsBasedOnFilter }) => {
 
     const priorityTypeList = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
-
     const tagRef = useRef();
     const titleRef = useRef();
-
     const controller = new AbortController();
-
 
     const [currentTag, setCurrentTag] = useState('');
     const [topic, setTopic] = useState('');
@@ -37,7 +34,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
     const [topicDescriptions, setTopicDescriptions] = useState('');
     const [tagList, setTagList] = useState([]);
     const [currentCreatedTicketData, setCurrentCreatedTicketData] = useState([]);
-    const [navigateSupport, setNavigateSupport] = useState(false);
+    // const [navigateSupport, setNavigateSupport] = useState(false);
     const [tagRemove, setTagRemove] = useState(false);
     const [tagId, setTagId] = useState([]);
     const [tagSuggestion, setTagSuggestion] = useState([]);
@@ -80,8 +77,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
             });
     };
-
-
 
     const categorySelect = (value) => {
 
@@ -249,7 +244,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
         if (topic || topicDescriptions || priorities.id !== 0 || tagId.length > 0 || videoData.length > 0 || ticketType.id !== 0) {
             setOpenPopUp(true)
         } else {
-            setNavigateSupport(true);
+            // setNavigateSupport(true);;
+            closeCreateTicket();
+            getTopicsBasedOnFilter();
         }
     }
 
@@ -288,13 +285,15 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         const token = `Bearer ${jwt_token}`;
 
-        const client = user.last_fetched_client;
+
+        // ! test if api is working without sending client_id
+        // const client = user.last_fetched_client;
 
         const organisation = user.organization_id;
 
         const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
-
-        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}&app_id=${platformId}`
+        // &client_id=${client}
+        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&app_id=${platformId}`
 
         if (token && validation) {
 
@@ -569,7 +568,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
     }, [videoUrl.length])
 
-    return !navigateSupport ? (
+    return (
 
         <>
 
@@ -578,7 +577,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                     <div className='iassist-panel-inner'>
                         <div className='iassist-panel-header'>
                             <div className='title-with-breadcrumb'>
-                                <h4 className='header-title' onClick={() => discardChanges()}>iAssist</h4>
+                                <h4 className='iassist-header-title' onClick={() => discardChanges()}>iAssist</h4>
                                 <div className="breadcrumb">
                                     <ul>
                                         <li>New Ticket</li>
@@ -586,14 +585,14 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                 </div>
                             </div>
 
-                            <div className='header-right'>
-                                <button onClick={() => closePane()} className='header-close'></button>
+                            <div className='iassist-header-right'>
+                                <button onClick={() => closePane()} className='iassist-header-close'></button>
                             </div>
 
                         </div>
                         {showLoading && <LoadingScreen />}
                         <div className='iassist-panel-body'>
-                            <div className='create-ticket-wrapper'>
+                            <div className='iassist-create-ticket-wrapper'>
                                 <div className='field-w-label'>
                                     <label>Topic</label>
                                     <div className='field' onClick={() => titleRef.current.focus()}>
@@ -644,8 +643,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                     </div>
                                 </div>
 
-
-
                                 <div className='filter-dropdown'>
                                     <div className='type no-bg'>
                                         <SpeedSelect
@@ -672,13 +669,13 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                     </div>
                                 </div>
 
-                                <div className='record-wrapper'>
+                                <div className='iassist-record-wrapper'>
 
-                                    <div className='record-header'>
+                                    <div className='iassist-record-header'>
 
                                         <div className='text'>Capture current tab</div>
 
-                                        <div className='record-button'>
+                                        <div className='iassist-record-button'>
 
                                             <button onClick={() => {
                                                 setDisplayMessage('Record');
@@ -694,7 +691,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                                     </div>
 
-                                    {videoUrl.length > 0 && <div className='video-content-wrapper'>
+                                    {videoUrl.length > 0 && <div className='iassist-video-content-wrapper'>
                                         {videoUrl.map((vid, index) => {
                                             return <div key={vid.id} className='vid-content'>
 
@@ -726,18 +723,22 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                             </div>
                         </div>
-                        <div className='submit-wrapper'>
+                        <div className='iassist-submit-wrapper'>
                             <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
 
                             <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => discardChanges()}><i></i><span>Cancel</span></button>
 
                         </div>
                     </div>
-                    {openPopUp && <div className='iassist-panel-popup-wrapper'>
+                    {openPopUp && 
+                    <div className='iassist-panel-popup-wrapper'>
 
                         <div className='details'> Are you sure you want to discard changes? </div>
                         <div className='iassist-panel-btn'>
-                            <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
+                            <button className='btn-with-icon btn-small btn-approve' onClick={() => {
+                                closeCreateTicket();
+                                getTopicsBasedOnFilter();
+                                }}><i></i><span>Confirm</span></button>
 
                             <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
                         </div>
@@ -759,7 +760,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                     activity={true}
                     socketDetail={socketDetail}
                     panelPosition={panelPosition}
-                    platformId={platformId} />
+                    platformId={platformId}
+                    closeChatScreen={closeCreateTicket} 
+                    getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                    />
             }
 
             {showVideo && !chatRoom &&
@@ -770,11 +774,12 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         </>
 
-    ) : (<Support
-        closePane={closePane}
-        webSocket={socketDetail}
-        panelPosition={panelPosition}
-        platformId={platformId} />)
+    ) 
+    // //: (<Support
+    //     closePane={closePane}
+    //     webSocket={socketDetail}
+    //     panelPosition={panelPosition}
+    //     platformId={platformId} />)
 }
 
 export default CreateChatRoom;

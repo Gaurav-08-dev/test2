@@ -5,14 +5,12 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
-
 let webSocket;
 
 const SupportContainer = () => {
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
-    
     const AppId = useRef(window?.iAssistAppId);
     const tokenConstant = useRef('');
     const btnId = useRef('btn-support-wrapper');
@@ -133,6 +131,7 @@ const SupportContainer = () => {
     }
     const supportButtonClick = (e) => {
 
+        console.log("Support buttonclick")
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
@@ -159,7 +158,7 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -201,9 +200,16 @@ const SupportContainer = () => {
             }
         }
 
-        document.addEventListener('click', supportButtonClick);
 
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
+
+    useEffect(()=>{
+        document.addEventListener('click', supportButtonClick);
+
+        return ()=>{
+            document.removeEventListener('click',supportButtonClick);
+        }
+    },[]) // eslint-disable-line 
 
 
     return (

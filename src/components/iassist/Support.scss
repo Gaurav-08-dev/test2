@@ -4,8 +4,8 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 
   .iassist-panel {
     .iassist-panel-header {
-      .header-right {
-        .filter-btn {
+      .iassist-header-right {
+        .iassist-filter-btn {
           position: relative;
           padding: 0 15px;
           .button {
@@ -30,7 +30,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
             background: #fff;
           }
         }
-        .btn-new-topic-wrapper {
+        .iassist-btn-new-topic-wrapper {
           margin-right: 10px;
           &:before {
             display: none;
@@ -89,14 +89,14 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           }
         }
 
-        .header-close{
+        .iassist-header-close{
           &:hover{
             background-color: #fff
           };
         }
       }
     }
-    .sub-header-wrapper {
+    .iassist-sub-header-wrapper {
       width: 237px;
       height: 144px;
       background-color: #fff;
@@ -110,7 +110,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       right: 108px;
       top: 28px;
 
-      .sub-header-upper-section {
+      .iassist-sub-header-upper-section {
         display: flex;
         justify-content: space-between;
 
@@ -127,7 +127,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         height: 2px;
         background: #eeeeee;
       }
-      .sub-header-text {
+      .iassist-sub-header-text {
         color: #646464;
       }
       #date-row {
@@ -142,10 +142,10 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       #status-row {
         gap: 18px;
       }
-      .sub-header-row {
+      .iassist-sub-header-row {
         display: flex;
 
-        .calendar-wrapper {
+        .iassist-calendar-wrapper {
           align-items: center;
           &::before {
             display: none;
@@ -205,7 +205,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
             width: 180px;
           }
 
-          .calendar-date {
+          .iassist-calendar-date {
             display: flex;
             align-items: center;
             gap: 6px;
@@ -224,7 +224,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                 right;
             }
 
-            .button-calendar {
+            .iassist-button-calendar {
               width: 12px;
               height: 12px;
               border: none;
@@ -358,7 +358,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       }
     }
 
-    .filter-wrapper {
+    .iassist-filter-wrapper {
       display: flex;
       padding-bottom: 15px;
       .tab-wrapper {
@@ -483,7 +483,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       }
     }
 
-    .topic-list {
+    .iassist-topic-list {
       overflow: auto;
       height: 100%;
       .no-record {
@@ -494,7 +494,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         font-size: 12px;
         color: red;
       }
-      .topic {
+      .iassist-topic {
         position: relative;
         background: #1a1f26;
         font-size: 11px;
@@ -502,11 +502,11 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         flex-direction: column;
         border-radius: 2px;
 
-        + .topic {
+        + .iassist-topic {
           margin-top: 10px;
         }
 
-        .topic-header {
+        .iassist-topic-header {
           padding: 10px 10px 0;
           position: relative;
           cursor: pointer;
@@ -548,7 +548,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
               top: 9px;
             }
           }
-          .topic-description {
+          .iassist-topic-description {
             padding-top: 2px;
             color: #b1b2b3;
           }
@@ -580,7 +580,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           background-color: #646464;
           width: 100%;
         }
-        .topic-meta {
+        .iassist-topic-meta {
           .topic-buttons {
             display: flex;
             align-items: center;

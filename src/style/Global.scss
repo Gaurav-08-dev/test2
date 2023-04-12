@@ -705,7 +705,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             position: absolute;
           }
 
-          .header-title {
+          .iassist-header-title {
             margin: 0;
             cursor: pointer;
             line-height: 18px;
@@ -777,10 +777,10 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             }
           }
 
-          .header-right {
+          .iassist-header-right {
             display: flex;
             align-items: center;
-            .search {
+            .iassist-search {
               position: relative;
               width: 200px;
               display: flex;
@@ -789,7 +789,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
               border-radius: 2px;
               margin: 0;
       
-              .btn {
+              .iassist-search-btn {
                 content: "";
                 mask: url($image-prefix + "icon-search.svg") no-repeat center center;
                 -webkit-mask: url($image-prefix + "icon-search.svg") no-repeat center center;
@@ -934,7 +934,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
                 }
               }
             }
-            .header-close {
+            .iassist-header-close {
               display: block;
               width: 11px;
               height: 11px;
@@ -1037,6 +1037,7 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
             border-radius: 2px;
             color: #fff;
             line-height: 20px;
+            min-height: 0px !important; 
 
             ::-webkit-input-placeholder {
               /* Chrome/Opera/Safari */

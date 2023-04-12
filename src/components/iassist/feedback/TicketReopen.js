@@ -146,7 +146,7 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
     return (
         <div className={"main-wrappers" + (className ? className : '')}>
 
-            <div className='content-wrapper'>
+            <div className='iassist-content-wrapper'>
 
                 <div className='description'>
 

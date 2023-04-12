@@ -40,7 +40,7 @@ let singleScroll = false;
 
 
 
-const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition, platformId }) => {
+const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition, platformId, closeChatScreen, getTopicsBasedOnFilter }) => {
 
     const bodyRef = useRef();
     const currentSelectId = useRef('');
@@ -672,7 +672,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         if (clickBackButton) {
 
-
+            closeChatScreen();
+            getTopicsBasedOnFilter();
             setNavigateHome(true);
 
         }
@@ -1112,6 +1113,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                         if (userData?.id === id) {
 
                             setNavigateHome(true);
+                            closeChatScreen();
+                            getTopicsBasedOnFilter();
                         }
 
                     }
@@ -1159,6 +1162,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                     alertService.showToast('success', result.message);
 
                     setNavigateHome(true);
+                    closeChatScreen();
+                    getTopicsBasedOnFilter();
                     setConfirmDelete(false)
 
                 }
@@ -1454,7 +1459,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         return false;
     }
 
-    return !navigateHome ? (
+    return (
 
         <>
 
@@ -1462,10 +1467,12 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                 <div className='iassist-panel-inner'>
                     <div className='iassist-panel-header'>
 
-                        <div className='header-back' onClick={(e) => {
+                        <div className='iassist-header-back' onClick={(e) => {
                             e.stopPropagation();
                             if (ws === undefined || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                                 setNavigateHome(true);
+                                closeChatScreen();
+                                getTopicsBasedOnFilter();
                             } else {
                                 ws.close();
                                 clickBackButton = true;
@@ -1474,10 +1481,10 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                         }}>Back</div>
 
 
-                        <div className='header-right'>
+                        <div className='iassist-header-right'>
 
-                            <div className='search'>
-                                <button onClick={getChatSearch} className='btn' title='search'></button>
+                            <div className='iassist-search'>
+                                <button onClick={getChatSearch} className='iassist-search-btn' title='search'></button>
 
                                 <input type={'text'} title='Search'
                                     placeholder='Search'
@@ -1533,7 +1540,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                             </div>}
 
-                            <button className='header-close' onClick={() => close()}></button>
+                            <button className='iassist-header-close' onClick={() => close()}></button>
 
                         </div>
 
@@ -1542,7 +1549,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     {openPopupPlayer && <Player id='media-player' url={playerUrl} type={playerType} close={setOpenPopupPlayer} />}
 
-                    <div className='title-widget'>
+                    <div className='iassist-title-widget'>
 
                         <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic.current && topic.current.name}
 
@@ -1570,11 +1577,11 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                         id='user-list' topic={topic.current}
                     />}
                     <div className='iassist-panel-body'>
-                        <div className='msg-area'>
+                        <div className='iassist-msg-area'>
                             {
                                 !confirmDelete && !showUserDataFetching && showSearch && !messageList.length && <span className='no-message-notification'>No Message Available</span>
                             }
-                            <div id='chat-list-wrapper' className={'chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
+                            <div id='chat-list-wrapper' className={'iassist-chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
 
 
@@ -1929,7 +1936,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                             </div>
                         </div>
 
-                        {!showSearch && !confirmDelete && <div className='message' id='message'>
+                        {!showSearch && !confirmDelete && <div className='iassist-message' id='message'>
                             {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' />}
 
                             {/* Reopen Msg */}
@@ -1998,7 +2005,8 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
         </>
 
-    ) : (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} platformId={platformId} />)
+    ) 
+    //: (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} platformId={platformId} />)
 
 }
 

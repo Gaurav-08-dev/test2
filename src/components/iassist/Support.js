@@ -20,13 +20,13 @@ import ClickOutsideListner from "./ClickOutsideListener";
 let pageNumber = 1;
 const pageSize = 10;
 let totalPage = 0;
-const scrollPadding = 10;
+// const scrollPadding = 10;
 let tabData = 'open';
 let dateRange = ['Date'];
 const defType = { 'name': 'All', 'id': 'All' };
 const defReporter = { 'first_name': 'All', 'id': 'All' };
 let isDeleteClick = false;
- 
+
 let reporter_detail = {
     id: 0
 };
@@ -479,7 +479,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         chatId = topic.id;
         dispatch({ type: actionType.individual_topic, payload: topic })
 
-        clearData();
+        // clearData();
 
     }
     const closePanes = () => {
@@ -566,22 +566,23 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     const clearFilter = (isClose = true) => {
 
-        unRead.current = true;
-        readCheckBoxStatus.current = true;
-        dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
+        
+        
+        
         retainedStatus = { ...retainedStatus, read: true, unread: true };
 
-        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date') {
-
+        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || !unRead.current || !readCheckBoxStatus.current) {
+            unRead.current = true;
+            readCheckBoxStatus.current = true;
             reporter_detail.id = 0;
             type_detail.id = 0;
             dateRange = ['Date'];
-
+            dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
             dispatch({ type: actionType.ticket_type_label, payload: 'All' });
             dispatch({ type: actionType.reporters_label, payload: 'Select' });
-            
+
+            if (isClose) getTopicsBasedOnFilter();
         }
-       if (isClose) getTopicsBasedOnFilter();
 
     }
 
@@ -643,6 +644,22 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         }
     }
 
+    const onScroll = async () => {
+
+
+        if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + 2 >= bodyRef.current.scrollHeight && !isDeleteClick) {
+
+
+            if (totalPage > pageNumber) {
+                pageNumber += 1;
+                await getTopicsBasedOnFilter();
+
+            }
+
+        }
+
+    }
+
     useEffect(() => {
 
         unRead.current = retainedStatus.unread;
@@ -693,21 +710,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         getTopicsBasedOnFilter();
 
-        const onScroll = async () => {
-
-
-            if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + 2 >= bodyRef.current.scrollHeight && !isDeleteClick) {
-
-
-                if (totalPage > pageNumber) {
-                    pageNumber += 1;
-                    await getTopicsBasedOnFilter();
-
-                }
-
-            }
-
-        }
+        
         document.addEventListener("mouseup", (event) => {
 
             const calendar = document.getElementById('calendar-wrapper');
@@ -730,17 +733,21 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         })
 
-        if (bodyRef.current) bodyRef.current.addEventListener('scroll', onScroll);
 
         return () => {
-            clearData();
+            // clearData();
             dispatch({ type: actionType.initial_load_status, payload: true })
             dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
-
 
         }
 
     }, []) // eslint-disable-line
+
+    useEffect(() => {
+
+        if (bodyRef.current) {bodyRef.current.addEventListener('scroll', onScroll)};
+
+    }, [state.showChat, state.topicClick])
 
     //get formated period
     const getFormatedPeriod = (period) => {
@@ -784,8 +791,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         }
 
-        pageNumber=1;
+        pageNumber = 1;
         getTopicsBasedOnFilter();
+    }
+
+
+    const closeChatRoom = () => {
+        dispatch({ type: actionType.show_chat, payload: false });
+        dispatch({ type: actionType.topic_click, payload: false })
     }
 
     const disableScrollWhenDelete = () => {
@@ -797,20 +810,16 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         <>
             {!state.topicClick && !state.showChat &&
                 <div id='iassist-panel' className='iassist-panel'>
-
                     <div className='iassist-panel-inner'>
-
                         <div className='iassist-panel-header'>
-
                             {showLoader && <LoadingScreen />}
+                            <h4 className='iassist-header-title'>iAssist</h4>
 
-                            <h4 className='header-title'>iAssist</h4>
+                            <div className='iassist-header-right'>
 
-                            <div className='header-right'>
+                                <div className='iassist-search'>
 
-                                <div className='search'>
-
-                                    <button className='btn' onClick={() => handleKeyDown('click')} title='search'></button>
+                                    <button className='iassist-search-btn' onClick={() => handleKeyDown('click')} title='search'></button>
 
                                     <input type={'text'}
                                         title='Search'
@@ -821,16 +830,16 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                                 </div>
 
-                                <div className={'filter-btn' + (state.showMultipleFilters ? ' filter-bg' : '')}>
+                                <div className={'iassist-filter-btn' + (state.showMultipleFilters ? ' filter-bg' : '')}>
                                     <button className={'button' + (state.showMultipleFilters ? ' button-select' : '')}
                                         disabled={disableButton}
                                         title='filter-button' onClick={(e) => openFilterList(e)}></button>
                                 </div>
 
-                                <div className='btn-new-topic-wrapper'>
+                                <div className='iassist-btn-new-topic-wrapper'>
 
                                     <button onClick={() => {
-                                        clearData();
+                                        // clearData();
                                         dispatch({ type: actionType.topic_click, payload: true })
                                     }}>
                                         <span className='add-new-ticket'></span>
@@ -838,26 +847,26 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                     </button>
 
                                 </div>
-                                <button className='header-close' onClick={() => closePanes()}></button>
+                                <button className='iassist-header-close' onClick={() => closePanes()}></button>
                             </div>
                         </div>
 
                         <ClickOutsideListner onOutsideClick={() => dispatch({ type: actionType.show_multiple_filters, payload: false })}>
                             {state.showMultipleFilters &&
-                                <div className='sub-header-wrapper'>
+                                <div className='iassist-sub-header-wrapper'>
 
-                                    <div className='sub-header-upper-section'>
-                                        <span className="sub-header-text">Filter</span>
+                                    <div className='iassist-sub-header-upper-section'>
+                                        <span className="iassist-sub-header-text">Filter</span>
 
                                         <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
                                     </div>
 
                                     <div className='divider'></div>
 
-                                    <div className='sub-header-row' id="date-row">
-                                        <span className="sub-header-text">Date</span>
-                                        <div id='calendar' className={'calendar-wrapper'}>
-                                            <div className={'calendar-date'}>
+                                    <div className='iassist-sub-header-row' id="date-row">
+                                        <span className="iassist-sub-header-text">Date</span>
+                                        <div id='calendar' className={'iassist-calendar-wrapper'}>
+                                            <div className={'iassist-calendar-date'}>
                                                 <label className={'label'} onClick={() =>
                                                     dispatch({ type: actionType.is_open_calendar })
 
@@ -865,7 +874,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                                     {dateRange[0] !== 'Date' && formatDates(new Date(dateRange[0]), 'mmm-dd-yyyy')}{dateRange.length > 1 && '  -  ' + formatDates(new Date(dateRange[1]), 'mmm-dd-yyyy')}
                                                 </label>
 
-                                                <button title='Calendar' className={'button-calendar'} onClick={() =>
+                                                <button title='Calendar' className={'iassist-button-calendar'} onClick={() =>
                                                     dispatch({ type: actionType.is_open_calendar })
                                                 }></button>
                                             </div>
@@ -884,8 +893,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                     </div>
 
 
-                                    <div className='sub-header-row' id="type-row">
-                                        <span className="sub-header-text">Type</span>
+                                    <div className='iassist-sub-header-row' id="type-row">
+                                        <span className="iassist-sub-header-text">Type</span>
                                         <div className='type no-bg'>
 
                                             <SpeedSelect
@@ -902,8 +911,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                         </div>
                                     </div>
 
-                                    <div className='sub-header-row' id="reporter-row">
-                                        <span className="sub-header-text">Reporter</span>
+                                    <div className='iassist-sub-header-row' id="reporter-row">
+                                        <span className="iassist-sub-header-text">Reporter</span>
                                         <div className='reporter no-bg'>
 
                                             <SpeedSelect
@@ -920,8 +929,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                         </div>
                                     </div>
 
-                                    <div className='sub-header-row' id="status-row">
-                                        <span className="sub-header-text">Status</span>
+                                    <div className='iassist-sub-header-row' id="status-row">
+                                        <span className="iassist-sub-header-text">Status</span>
 
                                         <div className='checkbox-wrapper'>
 
@@ -940,7 +949,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                         </ClickOutsideListner>
 
                         <div className='iassist-panel-body'>
-                            <div className='filter-wrapper'>
+                            <div className='iassist-filter-wrapper'>
 
                                 <div className={'tab-wrapper'}>
 
@@ -979,14 +988,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                             </div>
 
-                            <div className={'topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+                            <div className={'iassist-topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
 
                                 {!confirmDelete && allTopics.current.length > 0 && allTopics.current.map((topic, index) => {
 
                                     return (
-                                        <div className='topic' key={topic.id}>
+                                        <div className='iassist-topic' key={topic.id}>
 
-                                            {<div className='topic-header' onClick={() => openChat(topic)}>
+                                            {<div className='iassist-topic-header' onClick={() => openChat(topic)}>
 
                                                 <div className='topic-header-inner'>
                                                     <h4 className='topic-name'>{topic.name}</h4>
@@ -994,14 +1003,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                                     {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
                                                 </div>
 
-                                                <div className='topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
+                                                <div className='iassist-topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
                                                 <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
 
                                             </div>}
 
 
-                                            {<div className='topic-meta'>
+                                            {<div className='iassist-topic-meta'>
 
                                                 {(state.statusTab !== 'resolved') && state.showFeedback && state.feedbackId === topic.id &&
                                                     <FeedBack
@@ -1073,9 +1082,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                 {confirmDelete && <Delete deleteTopic={deleteTopic}
                                     topic={state.deleteId}
                                     setConfirmDelete={setConfirmDelete}
-                                    disable={setDisableButton} 
+                                    disable={setDisableButton}
                                     isScrollWhenDelete={disableScrollWhenDelete}
-                                    />
+                                />
                                 }
 
 
@@ -1090,7 +1099,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
 
 
-            {state.topicClick && !state.showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} platformId={platformId} />}
+            {state.topicClick && !state.showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} platformId={platformId} closeCreateTicket={closeChatRoom} getTopicsBasedOnFilter={getTopicsBasedOnFilter} />}
 
             {state.showChat && <ChatRoom closePane={closePanes}
                 chatIds={chatId}
@@ -1105,6 +1114,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                 socketDetail={webSocket}
                 panelPosition={panelPosition}
                 platformId={platformId}
+                closeChatScreen={closeChatRoom}
+                getTopicsBasedOnFilter={getTopicsBasedOnFilter}
             />
             }
 
