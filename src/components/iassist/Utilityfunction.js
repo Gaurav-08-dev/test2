@@ -56,6 +56,7 @@ export const getUserNameImage = (userList, id, isReply ,type) => {
 
 
 
+        console.log(user)
         if (user) {
 
             if(type==='detail'){
