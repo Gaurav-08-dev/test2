@@ -39,7 +39,6 @@ export const getUserNameBasedOnId = (userList, id, type) => {
 export const getUserNameImage = (userList, id, isReply ,type) => {
 
     let user;
-    console.log(userList)
 
 
     if (userList?.length > 0) {

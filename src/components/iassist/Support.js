@@ -566,9 +566,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     const clearFilter = (isClose = true) => {
 
-        
-        
-        
+
+
+
         retainedStatus = { ...retainedStatus, read: true, unread: true };
 
         if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || !unRead.current || !readCheckBoxStatus.current) {
@@ -710,7 +710,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         getTopicsBasedOnFilter();
 
-        
+
         document.addEventListener("mouseup", (event) => {
 
             const calendar = document.getElementById('calendar-wrapper');
@@ -745,7 +745,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     useEffect(() => {
 
-        if (bodyRef.current) {bodyRef.current.addEventListener('scroll', onScroll)};
+        if (bodyRef.current) { bodyRef.current.addEventListener('scroll', onScroll) };
 
     }, [state.showChat, state.topicClick])
 
@@ -1005,7 +1005,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                                                 <div className='iassist-topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
-{console.log(allUser.current,reportersList.current)}
                                                 <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
 
                                             </div>}

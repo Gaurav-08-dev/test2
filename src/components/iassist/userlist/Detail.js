@@ -7,6 +7,7 @@ import { getUserNameBasedOnId, getUserNameImage } from '../Utilityfunction';
 const Detail = ({ topic, allUser, type, allAccount }) => {
 
 
+    console.log(allUser)
     // const getUserNameBasedOnId = (id) => {
 
     //     if (allUser.length > 0) {
