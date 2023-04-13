@@ -3,9 +3,9 @@ import './loading.scss';
 
 const LoadingScreen = () => {
 
-  return (<div id="iassist-loader">
+  return (<div id="loader">
 
-    <div className="iassist-line-progress"></div>
+    <div className="line-progress"></div>
 
   </div>
 
