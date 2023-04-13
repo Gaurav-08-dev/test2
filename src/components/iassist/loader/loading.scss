@@ -16,11 +16,11 @@
       height: 100%;
       width: 50%;
       left: -100%;
-      animation: iassistprogress 1s linear infinite;
+      animation: progress 1s linear infinite;
     }
   }
 
-  @keyframes iassistprogress {
+  @keyframes progress {
     from { left: -100%; }
     to { left: 100%; }
   }
