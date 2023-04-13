@@ -4,7 +4,7 @@ import './newRoom.scss';
 import * as Constants from '../Constants';
 import { getTokenClient, getUser } from '../../utils/Common';
 import alertService from '../../services/alertService';
-import Support from './Support';
+// import Support from './Support';
 import Avatar from '../Avatar/Avatar';
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
@@ -40,7 +40,23 @@ let singleScroll = false;
 
 
 
-const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount, type, activity, refresh, refreshState, socketDetail, panelPosition, platformId, closeChatScreen, getTopicsBasedOnFilter }) => {
+const ChatRoom = ({ 
+    closePane, 
+    chatIds, 
+    unRead, 
+    topicDetail, 
+    allUser, 
+    allAccount, 
+    type, 
+    activity, 
+    refresh, 
+    refreshState,
+    // socketDetail, 
+    panelPosition, 
+    // platformId, 
+    closeChatScreen, 
+    // getTopicsBasedOnFilter 
+}) => {
 
     const bodyRef = useRef();
     const currentSelectId = useRef('');
@@ -58,7 +74,6 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
     const [editedMessage, setEditedMessage] = useState('');
     const Size = useRef(pageSize);
     const fetchedClientUsers=useRef([]);
-
 
     const [messageList, setMessageList] = useState([]);
 
@@ -673,7 +688,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
         if (clickBackButton) {
 
             closeChatScreen();
-            getTopicsBasedOnFilter();
+            // getTopicsBasedOnFilter();
             setNavigateHome(true);
 
         }
@@ -1114,7 +1129,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                             setNavigateHome(true);
                             closeChatScreen();
-                            getTopicsBasedOnFilter();
+                            // getTopicsBasedOnFilter();
                         }
 
                     }
@@ -1163,7 +1178,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
 
                     setNavigateHome(true);
                     closeChatScreen();
-                    getTopicsBasedOnFilter();
+                    // getTopicsBasedOnFilter();
                     setConfirmDelete(false)
 
                 }
@@ -1472,7 +1487,7 @@ const ChatRoom = ({ closePane, chatIds, unRead, topicDetail, allUser, allAccount
                             if (ws === undefined || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                                 setNavigateHome(true);
                                 closeChatScreen();
-                                getTopicsBasedOnFilter();
+                                // getTopicsBasedOnFilter();
                             } else {
                                 ws.close();
                                 clickBackButton = true;

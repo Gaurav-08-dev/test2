@@ -131,7 +131,7 @@ const SupportContainer = () => {
     }
     const supportButtonClick = (e) => {
 
-        console.log("Support buttonclick")
+        // console.log("Support buttonclick")
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
@@ -139,9 +139,7 @@ const SupportContainer = () => {
             setOpenSupport(true);
         } else {
             if (!webSocket && triggerButton?.contains(e.target)) {
-
                 getConfigDetails();
-
                 alertService.showToast('process', 'Loading...');
             }
         }
@@ -214,7 +212,7 @@ const SupportContainer = () => {
 
     return (
         <>
-            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>github</button></div>}
+            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
             
             {openSupport && <Support
                 closePane={closePane}

@@ -36,7 +36,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
         setChangeButtonStatus(!changeButtonStatus);
 
-    }, [id])
+    }, [id]) //eslint-disable-line
 
     const submitFeedback = () => {
 
@@ -145,7 +145,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
     return (
         <div className={"main-wrappers" + (className ? className : '')}>
 
-            <div className='content-wrapper'>
+            <div className='iassist-content-wrapper'>
 
                 <div className='description'>
 

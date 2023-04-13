@@ -3,9 +3,8 @@ import ChatRoom from './newRoom';
 import './CreateChatRoom.scss';
 import * as Constants from '../Constants';
 import SpeedSelect from 'react-speedselect';
-import { debounce, getToken, getTokenClient, getUser } from '../../utils/Common';
+import { debounce, getTokenClient, getUser } from '../../utils/Common';
 import alertService from "../../services/alertService";
-// import Support from './Support';
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
@@ -18,7 +17,9 @@ const descriptionMaxChar = 150;
 const nameMaxChar = 45;
 
 
-const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, closeCreateTicket, getTopicsBasedOnFilter }) => {
+const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, closeCreateTicket, 
+    getTopicsBasedOnFilter, 
+    ticketTypeList }) => {
 
     const priorityTypeList = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
     const tagRef = useRef();
@@ -30,11 +31,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [chatRoom, setChatRoom] = useState(false);
     const [priorities, setPriorities] = useState({id: 0});
     const [ticketType, setTicketType] = useState({id: 0});
-    const [ticketTypeList, setTicketTypeList] = useState([]);
     const [topicDescriptions, setTopicDescriptions] = useState('');
     const [tagList, setTagList] = useState([]);
     const [currentCreatedTicketData, setCurrentCreatedTicketData] = useState([]);
-    // const [navigateSupport, setNavigateSupport] = useState(false);
     const [tagRemove, setTagRemove] = useState(false);
     const [tagId, setTagId] = useState([]);
     const [tagSuggestion, setTagSuggestion] = useState([]);
@@ -53,30 +52,11 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [openPopUp, setOpenPopUp] = useState(false);
 
 
-    const fetchTypeData = async () => {
+    if (ticketTypeList.length > 0 && ticketTypeList[0].id === 'All') {
 
-        const jwt_token = getToken();
+        ticketTypeList.shift();
 
-        const token = `Bearer ${jwt_token}`;
-
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'ticket_type/', null, false, 'GET', controller, token)
-            .then(response => {
-
-                if (response) {
-
-                    const result = response;
-
-                    setTicketTypeList(result);
-
-                }
-
-            })
-            .catch(err => {
-
-                alertService.showToast('error', err.msg);
-
-            });
-    };
+    }
 
     const categorySelect = (value) => {
 
@@ -170,15 +150,15 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
     //         const wordsLeft = e.target.value;
 
-    //         // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
+            // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
 
     //         setTagList([...tagList, wordsLeft])
     //         setTagId([...tagList, wordsLeft])
     //         setCurrentTag('')
 
-    //         // setTagList([...tagList,...wordsLeft])
-    //         // setCurrentTag('')
-    //         // setTagId([...tagList,...wordsLeft])
+             // setTagList([...tagList,...wordsLeft])
+             // setCurrentTag('')
+             // setTagId([...tagList,...wordsLeft])
 
     //     }
 
@@ -244,9 +224,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         if (topic || topicDescriptions || priorities.id !== 0 || tagId.length > 0 || videoData.length > 0 || ticketType.id !== 0) {
             setOpenPopUp(true)
         } else {
-            // setNavigateSupport(true);;
+            // setNavigateSupport(true);
             closeCreateTicket();
-            getTopicsBasedOnFilter();
+            // getTopicsBasedOnFilter();
         }
     }
 
@@ -286,7 +266,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         const token = `Bearer ${jwt_token}`;
 
 
-        // ! test if api is working without sending client_id
         // const client = user.last_fetched_client;
 
         const organisation = user.organization_id;
@@ -319,6 +298,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                 alertService.showToast("success", result.message);
 
                 chatId = result.data.id;
+
+                if (getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1);
 
                 setCurrentCreatedTicketData(result.data);
 
@@ -522,11 +503,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         }
 
-        if (ticketTypeList.length === 0) {
-
-            fetchTypeData();
-
-        }
 
         document.addEventListener("mouseup", (event) => {
 
@@ -737,7 +713,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                         <div className='iassist-panel-btn'>
                             <button className='btn-with-icon btn-small btn-approve' onClick={() => {
                                 closeCreateTicket();
-                                getTopicsBasedOnFilter();
+                                // getTopicsBasedOnFilter();
                                 }}><i></i><span>Confirm</span></button>
 
                             <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
@@ -762,7 +738,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                     panelPosition={panelPosition}
                     platformId={platformId}
                     closeChatScreen={closeCreateTicket} 
-                    getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                    // getTopicsBasedOnFilter={getTopicsBasedOnFilter}
                     />
             }
 
@@ -775,11 +751,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         </>
 
     ) 
-    // //: (<Support
-    //     closePane={closePane}
-    //     webSocket={socketDetail}
-    //     panelPosition={panelPosition}
-    //     platformId={platformId} />)
 }
 
 export default CreateChatRoom;

@@ -20,7 +20,6 @@ import ClickOutsideListner from "./ClickOutsideListener";
 let pageNumber = 1;
 const pageSize = 10;
 let totalPage = 0;
-// const scrollPadding = 10;
 let tabData = 'open';
 let dateRange = ['Date'];
 const defType = { 'name': 'All', 'id': 'All' };
@@ -189,10 +188,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     }
 
-    const getTopicsBasedOnFilter = async (searchQuery, isDelete) => {
+    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber) => {
+
+        if (updatedPageNumber) pageNumber = updatedPageNumber;
 
 
-        setShowLoader(true);
+        if (!updatedPageNumber) setShowLoader(true);
         setDisableButton(true)
 
         dispatch({ type: actionType.initial_load_status, payload: false })
@@ -274,12 +275,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                 data?.forEach((topicValue) =>
                                     activity.current.push(topicValue)
                                 )
-
                         }
 
                     }
-
-
 
                     setDisableButton(false);
                     setShowLoader(false);
@@ -290,10 +288,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
             .catch(err => {
                 setDisableButton(false)
 
-
-
                 setShowLoader(false);
-
 
                 alertService.showToast('error', err.msg);
 
@@ -501,7 +496,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         dispatch({ type: actionType.feedBack_id, payload: '' })
         dispatch({ type: actionType.get_topic_id, payload: '' })
 
-
     }
 
     const showUnreadNotification = (id) => {
@@ -566,9 +560,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     const clearFilter = (isClose = true) => {
 
-
-
-
         retainedStatus = { ...retainedStatus, read: true, unread: true };
 
         if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || !unRead.current || !readCheckBoxStatus.current) {
@@ -589,6 +580,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     const deleteTopic = async (e, data) => {
 
         isDeleteClick = false;
+
         setShowLoader(true);
 
         e.stopPropagation();
@@ -659,6 +651,65 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         }
 
     }
+
+   
+
+    //get formated period
+    const getFormatedPeriod = (period) => {
+        let newdate = period ? new Date(period) : new Date();
+        let month = newdate.getMonth() + 1;
+        let date = newdate.getDate();
+        let year = newdate.getFullYear();
+        return year + "-" + month + "-" + date;
+    }
+
+    const handleCalendar = (range) => {
+        let updatedValue = null;
+
+        if (range.largestRangeIndex !== null) {
+            let firstValue = getFormatedPeriod(range.ranges[0][0]);
+            updatedValue = getFormatedPeriod(range.ranges[0][1]);
+            dateRange = [firstValue, updatedValue];
+            dispatch({ type: actionType.selected_date, payload: range.ranges[0][1] })
+            getTopicsBasedOnFilter();
+
+        }
+    }
+
+
+    const onCheckboxClick = (e, type) => {
+
+
+        if (type === 'read') {
+            readCheckBoxStatus.current = e.target.checked;
+            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, read: e.target.checked } })
+
+            retainedStatus = { ...retainedStatus, read: e.target.checked }
+
+        }
+
+        if (type === 'unread') {
+            unRead.current = e.target.checked;
+            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, unRead: e.target.checked } })
+
+            retainedStatus = { ...retainedStatus, unread: e.target.checked }
+
+        }
+
+        pageNumber = 1;
+        getTopicsBasedOnFilter();
+    }
+
+
+    const closeChatRoom = () => {
+        dispatch({ type: actionType.show_chat, payload: false });
+        dispatch({ type: actionType.topic_click, payload: false })
+    }
+
+    const disableScrollWhenDelete = () => {
+        isDeleteClick = false;
+    }
+
 
     useEffect(() => {
 
@@ -745,65 +796,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     useEffect(() => {
 
+        const subheaderAvailable = document.getElementById('app-sub-header');
+        if (subheaderAvailable) {
+            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+            conatinerWrapper[0].style.top = '65px';
+            conatinerWrapper[0].style.maxHeight = '92.5%';
+        }
+
         if (bodyRef.current) { bodyRef.current.addEventListener('scroll', onScroll) };
 
-    }, [state.showChat, state.topicClick])
 
-    //get formated period
-    const getFormatedPeriod = (period) => {
-        let newdate = period ? new Date(period) : new Date();
-        let month = newdate.getMonth() + 1;
-        let date = newdate.getDate();
-        let year = newdate.getFullYear();
-        return year + "-" + month + "-" + date;
-    }
-
-    const handleCalendar = (range) => {
-        let updatedValue = null;
-
-        if (range.largestRangeIndex !== null) {
-            let firstValue = getFormatedPeriod(range.ranges[0][0]);
-            updatedValue = getFormatedPeriod(range.ranges[0][1]);
-            dateRange = [firstValue, updatedValue];
-            dispatch({ type: actionType.selected_date, payload: range.ranges[0][1] })
-            getTopicsBasedOnFilter();
-
-        }
-    }
-
-
-    const onCheckboxClick = (e, type) => {
-
-
-        if (type === 'read') {
-            readCheckBoxStatus.current = e.target.checked;
-            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, read: e.target.checked } })
-
-            retainedStatus = { ...retainedStatus, read: e.target.checked }
-
-        }
-
-        if (type === 'unread') {
-            unRead.current = e.target.checked;
-            dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, unRead: e.target.checked } })
-
-            retainedStatus = { ...retainedStatus, unread: e.target.checked }
-
-        }
-
-        pageNumber = 1;
-        getTopicsBasedOnFilter();
-    }
-
-
-    const closeChatRoom = () => {
-        dispatch({ type: actionType.show_chat, payload: false });
-        dispatch({ type: actionType.topic_click, payload: false })
-    }
-
-    const disableScrollWhenDelete = () => {
-        isDeleteClick = false;
-    }
+    }, [state.showChat, state.topicClick]) // eslint-disable-line
 
     return (
 
@@ -1099,7 +1102,16 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
 
 
-            {state.topicClick && !state.showChat && <CreateChatRoom closePane={closePanes} socketDetail={webSocket} panelPosition={panelPosition} platformId={platformId} closeCreateTicket={closeChatRoom} getTopicsBasedOnFilter={getTopicsBasedOnFilter} />}
+            {state.topicClick && !state.showChat && 
+            <CreateChatRoom 
+                closePane={closePanes} 
+                socketDetail={webSocket} 
+                panelPosition={panelPosition} 
+                platformId={platformId} 
+                closeCreateTicket={closeChatRoom} 
+                getTopicsBasedOnFilter={getTopicsBasedOnFilter}     
+                ticketTypeList={ticketTypeList.current}
+            />}
 
             {state.showChat && <ChatRoom closePane={closePanes}
                 chatIds={chatId}
@@ -1115,7 +1127,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                 panelPosition={panelPosition}
                 platformId={platformId}
                 closeChatScreen={closeChatRoom}
-                getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                // getTopicsBasedOnFilter={getTopicsBasedOnFilter}
             />
             }
 

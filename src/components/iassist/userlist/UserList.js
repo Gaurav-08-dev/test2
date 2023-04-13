@@ -146,8 +146,8 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
                 <div className={"main-wrapper"} id={id}>
 
                     {header && <div className='iassist-panel-header'>
-                        <h4 className='header-title'>Manage Team</h4>
-                        <button className='header-close' onClick={() => close(false)}></button>
+                        <h4 className='iassist-header-title'>Manage Team</h4>
+                        <button className='iassist-header-close' onClick={() => close(false)}></button>
                     </div>}
 
                     {!header && <div className='title'>Add members from your team to this ticket.</div>}

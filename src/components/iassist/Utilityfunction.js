@@ -40,7 +40,6 @@ export const getUserNameImage = (userList, id, isReply ,type) => {
 
     let user;
 
-
     if (userList?.length > 0) {
 
         for (let i = 0; i < userList.length; i++) {
@@ -55,13 +54,15 @@ export const getUserNameImage = (userList, id, isReply ,type) => {
 
         }
 
+
+
         if (user) {
 
             if(type==='detail'){
 
                 return <Avatar imgSrc={user.cover_img_url}
-                    firstName={user.first_name?user.first_name:'test'}
-                    lastName={user.last_name?user.last_name:'test'}
+                    firstName={user.first_name}
+                    lastName={user.last_name}
                     alt={`${user.first_name}'s pic`}
                     height={20}
                     width={20}
