@@ -1,5 +1,5 @@
 #iassist-panel-wrapper {
-  #loader {
+  #iassist-loader {
     position: fixed;
     top: 60px;
     //bottom: 0px;
@@ -10,7 +10,7 @@
     background: #18ff1c;
     overflow: hidden;
 
-    .line-progress {
+    .iassist-line-progress {
       position: absolute;
       background: #009432;
       height: 100%;
