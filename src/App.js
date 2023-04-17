@@ -5,9 +5,10 @@ import SupportContainer from './components/iassist/SupportContainer';
 import Toast from "./components/Toast/Toast";
 import { GlobalDebug } from "./utils/RemoveConsole";
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
+
 if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") {console.log(process.env.NODE_ENV);disableReactDevTools()}
 
-
+console.log(process.env.NODE_ENV)
 
 
 function App() {
