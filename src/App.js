@@ -14,7 +14,7 @@ function App() {
   
   
   useEffect(()=>{
-    console.log(process.env.NODE_ENV)
+    console.log(process.env)
     (process.env.NODE_ENV === "production" ||
     process.env.REACT_APP_CUSTOM_NODE_ENV === "STAGING") &&
     GlobalDebug(false);
