@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
-if (process.env.NODE_ENV === "production") disableReactDevTools();
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") {console.log(process.env.NODE_ENV);disableReactDevTools()}
 
 
 
