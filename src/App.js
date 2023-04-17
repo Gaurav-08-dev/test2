@@ -4,10 +4,14 @@ import './App.css';
 import SupportContainer from './components/iassist/SupportContainer';
 import Toast from "./components/Toast/Toast";
 import { GlobalDebug } from "./utils/RemoveConsole";
+import { disableReactDevTools } from "@fvilers/disable-react-devtools";
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") {console.log(process.env.NODE_ENV);disableReactDevTools()}
+
 
 
 
 function App() {
+
 
   useEffect(()=>{
     (process.env.NODE_ENV === "production" ||
