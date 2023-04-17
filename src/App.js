@@ -8,13 +8,13 @@ import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 
 if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") {console.log(process.env.NODE_ENV);disableReactDevTools()}
 
-console.log(process.env.NODE_ENV)
 
 
 function App() {
-
-
+  
+  
   useEffect(()=>{
+    console.log(process.env.NODE_ENV)
     (process.env.NODE_ENV === "production" ||
     process.env.REACT_APP_CUSTOM_NODE_ENV === "STAGING") &&
     GlobalDebug(false);
