@@ -131,6 +131,7 @@ const SupportContainer = () => {
 
     const supportButtonClick = (e) => {
 
+
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
