@@ -129,6 +129,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     const prevSearchValue = useRef();
     const allTopics = useRef([]);
+
     const unReadList = useRef([]);
     const activity = useRef([]);
     const btnId = useRef(sessionStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
@@ -147,6 +148,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     const [showLoader, setShowLoader] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [disableButton, setDisableButton] = useState(false);
+
 
     if (ticketTypeList.current.length > 0 && ticketTypeList.current[0].id !== 'All') {
 
@@ -191,7 +193,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber) => {
 
         if (updatedPageNumber) pageNumber = updatedPageNumber;
-
 
         if (!updatedPageNumber) setShowLoader(true);
         setDisableButton(true)
@@ -276,9 +277,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                     activity.current.push(topicValue)
                                 )
                         }
-
                     }
-
                     setDisableButton(false);
                     setShowLoader(false);
 
@@ -421,9 +420,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         const jwt_token = getTokenClient();
 
+        const appConfigId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config_app_id');
+
         const token = `Bearer ${jwt_token}`;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'account_id/?account_id=' + id, null, false, 'GET', controller, token)
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `account_id/?account_id=${id}&app_id=${appConfigId}`, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
@@ -548,7 +549,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     }
 
-
     const openFilterList = (e) => {
 
 
@@ -620,6 +620,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
             });
 
     }
+
     const checkLastActivity = (id) => {
 
         const data = activity.current.filter((val) => val.id === id);
@@ -652,8 +653,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     }
 
-   
-
     //get formated period
     const getFormatedPeriod = (period) => {
         let newdate = period ? new Date(period) : new Date();
@@ -675,7 +674,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         }
     }
-
 
     const onCheckboxClick = (e, type) => {
 
@@ -700,7 +698,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         getTopicsBasedOnFilter();
     }
 
-
     const closeChatRoom = () => {
         dispatch({ type: actionType.show_chat, payload: false });
         dispatch({ type: actionType.topic_click, payload: false })
@@ -709,7 +706,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     const disableScrollWhenDelete = () => {
         isDeleteClick = false;
     }
-
 
     useEffect(() => {
 
@@ -858,7 +854,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                             {state.showMultipleFilters &&
                                 <div className='iassist-sub-header-wrapper'>
 
-                                    <div className='iassist-sub-header-upper-section'>
+                                    <div className='iassist-sub-header-upper-section'> 
                                         <span className="iassist-sub-header-text">Filter</span>
 
                                         <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
@@ -1127,7 +1123,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                 panelPosition={panelPosition}
                 platformId={platformId}
                 closeChatScreen={closeChatRoom}
-                // getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                getTopicsBasedOnFilter={getTopicsBasedOnFilter}
             />
             }
 

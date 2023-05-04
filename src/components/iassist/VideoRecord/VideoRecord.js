@@ -331,6 +331,35 @@ const VideoRecord = ({ save, close, message }) => {
 
         closeInterval=false;
         if (message === 'Record') {
+    //         width: 35px;
+	// height: 35px;
+	// font-size: 0;
+	// background-color: red;
+	// border: 0;
+	// border-radius: 35px;
+	// margin: 18px;
+	// outline: none;
+            
+            const buttonId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId');
+
+            let buttonWrapper = document.getElementById(buttonId);
+
+            let check = [...buttonWrapper?.children];
+            check.forEach((child) => {
+                buttonWrapper.removeChild(child);
+            })
+
+            // debugger;
+            buttonWrapper.id = 'iassist-wrapper-recording';
+            // buttonWrapper.style.width = '20px';
+            // buttonWrapper.style.height = '20px';
+            // buttonWrapper.style.fontSize = 0;
+            // buttonWrapper.style.backgroundColor = 'red';
+            // buttonWrapper.style.border = 0;
+            // buttonWrapper.style.borderRadius = '35px';
+            // buttonWrapper.style.margin = '18px';
+            // buttonWrapper.style.outline = 'none';
+            // buttonWrapper.style.zIndex = 1000;
 
             stream = await recordScreen();
 

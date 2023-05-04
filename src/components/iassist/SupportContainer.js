@@ -18,7 +18,7 @@ const SupportContainer = () => {
     const top = useRef('');
     // const [configData, setConfigData] = useState('');
 
-    const getConfigDetails = async () => {
+    const getConfigDetails = async (type) => {
 
         // app_id=${AppId.current}
 
@@ -37,14 +37,13 @@ const SupportContainer = () => {
 
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'platform', response?.application_parameters?.platform);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
+                        sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'config_app_id', response?.id);
                         simplifyToken()
-
+                        // if (type === 'onButtonClick') setOpenSupport(true)
                     }
-
                 })
                 .catch(err => {
                     alertService.showToast('error', err.msg);
-
                 });
         }
     }
@@ -129,9 +128,10 @@ const SupportContainer = () => {
     const closePane = () => {
         setOpenSupport(false);
     }
+
     const supportButtonClick = (e) => {
 
-        // console.log("Support buttonclick")
+
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
@@ -139,7 +139,8 @@ const SupportContainer = () => {
             setOpenSupport(true);
         } else {
             if (!webSocket && triggerButton?.contains(e.target)) {
-                getConfigDetails();
+
+                // getConfigDetails('onButtonClick');
                 alertService.showToast('process', 'Loading...');
             }
         }
@@ -203,20 +204,21 @@ const SupportContainer = () => {
 
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
-    useEffect(()=>{
+    useEffect(() => {
         document.addEventListener('click', supportButtonClick);
 
-        return ()=>{
-            document.removeEventListener('click',supportButtonClick);
+        return () => {
+            document.removeEventListener('click', supportButtonClick);
         }
-    },[]) // eslint-disable-line 
+    }, []) // eslint-disable-line 
 
 
     return (
         <>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
-            
-            {openSupport && <Support
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button className="btn-support"></button></div>} */}
+
+            {openSupport && 
+            <Support
                 closePane={closePane}
                 webSocket={webSocket}
                 panelPosition={panelPosition.current}
@@ -228,3 +230,7 @@ const SupportContainer = () => {
 }
 
 export default memo(SupportContainer);
+
+
+
+

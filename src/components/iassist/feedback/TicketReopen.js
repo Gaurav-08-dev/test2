@@ -6,7 +6,7 @@ import APIService from '../../../services/apiService';
 import alertService from '../../../services/alertService';
 
 
-const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, topic, setLoader, placeHolders }) => {
+const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, className, topic, setLoader, placeHolders, getTopicsBasedOnFilter }) => {
 
     const [suggestion, setSuggestion] = useState('');
 
@@ -68,6 +68,8 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                         if (response) {
 
+                            if (getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1);
+                            
                             setLoader(false);
 
                             if (topic) {
@@ -88,7 +90,7 @@ const TicketReopen = ({ closePane, id, ticket, disableButton, allTopic, classNam
 
                             if (result.message) {
 
-                                alertService.showToast("success", result.message);
+                                alertService.showToast("success", "Ticket has been re-opened");
 
                                 if (allTopic?.length > 10) {
 
