@@ -5,7 +5,7 @@ import { getTokenClient } from '../../../utils/Common';
 import './Feedback.scss'
 import * as Constants from '../../Constants';
 
-const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, topic, setLoader, placeHolders }) => {
+const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, topic, setLoader, placeHolders, getTopicsBasedOnFilter }) => {
 
     const [feedbackValue, setFeedBackValue] = useState('');
 
@@ -36,7 +36,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
         setChangeButtonStatus(!changeButtonStatus);
 
-    }, [id])
+    }, [id]) //eslint-disable-line
 
     const submitFeedback = () => {
 
@@ -65,6 +65,8 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
                     .then(response => {
 
                         if (response) {
+
+                           if (getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1);
 
                             setLoader(false);
 
@@ -145,7 +147,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
     return (
         <div className={"main-wrappers" + (className ? className : '')}>
 
-            <div className='content-wrapper'>
+            <div className='iassist-content-wrapper'>
 
                 <div className='description'>
 

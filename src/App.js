@@ -9,6 +9,7 @@ import { GlobalDebug } from "./utils/RemoveConsole";
 
 function App() {
 
+
   useEffect(()=>{
     (process.env.NODE_ENV === "production" ||
     process.env.REACT_APP_CUSTOM_NODE_ENV === "STAGING") &&

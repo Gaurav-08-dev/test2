@@ -3,9 +3,8 @@ import ChatRoom from './newRoom';
 import './CreateChatRoom.scss';
 import * as Constants from '../Constants';
 import SpeedSelect from 'react-speedselect';
-import { debounce, getToken, getTokenClient, getUser } from '../../utils/Common';
+import { debounce, getTokenClient, getUser } from '../../utils/Common';
 import alertService from "../../services/alertService";
-import Support from './Support';
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
@@ -18,26 +17,23 @@ const descriptionMaxChar = 150;
 const nameMaxChar = 45;
 
 
-const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) => {
+const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, closeCreateTicket, 
+    getTopicsBasedOnFilter, 
+    ticketTypeList }) => {
 
     const priorityTypeList = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
-
     const tagRef = useRef();
     const titleRef = useRef();
-
     const controller = new AbortController();
-
 
     const [currentTag, setCurrentTag] = useState('');
     const [topic, setTopic] = useState('');
     const [chatRoom, setChatRoom] = useState(false);
     const [priorities, setPriorities] = useState({id: 0});
     const [ticketType, setTicketType] = useState({id: 0});
-    const [ticketTypeList, setTicketTypeList] = useState([]);
     const [topicDescriptions, setTopicDescriptions] = useState('');
     const [tagList, setTagList] = useState([]);
     const [currentCreatedTicketData, setCurrentCreatedTicketData] = useState([]);
-    const [navigateSupport, setNavigateSupport] = useState(false);
     const [tagRemove, setTagRemove] = useState(false);
     const [tagId, setTagId] = useState([]);
     const [tagSuggestion, setTagSuggestion] = useState([]);
@@ -56,32 +52,11 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
     const [openPopUp, setOpenPopUp] = useState(false);
 
 
-    const fetchTypeData = async () => {
+    if (ticketTypeList.length > 0 && ticketTypeList[0].id === 'All') {
 
-        const jwt_token = getToken();
+        ticketTypeList.shift();
 
-        const token = `Bearer ${jwt_token}`;
-
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'ticket_type/', null, false, 'GET', controller, token)
-            .then(response => {
-
-                if (response) {
-
-                    const result = response;
-
-                    setTicketTypeList(result);
-
-                }
-
-            })
-            .catch(err => {
-
-                alertService.showToast('error', err.msg);
-
-            });
-    };
-
-
+    }
 
     const categorySelect = (value) => {
 
@@ -168,27 +143,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
     }
 
-    // const handleFocusOut = (e) => {
-
-
-    //     if (e.target.value.trim() && e.target.value.length > 1) {
-
-    //         const wordsLeft = e.target.value;
-
-    //         // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
-
-    //         setTagList([...tagList, wordsLeft])
-    //         setTagId([...tagList, wordsLeft])
-    //         setCurrentTag('')
-
-    //         // setTagList([...tagList,...wordsLeft])
-    //         // setCurrentTag('')
-    //         // setTagId([...tagList,...wordsLeft])
-
-    //     }
-
-    // }
-
     const selectPriority = (value) => {
 
         setPriorities(value);
@@ -203,7 +157,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         if (!topic.trim()) {
 
-            err = [...err, 'Name'];
+            err = [...err, 'Topic'];
 
         }
         if (!topicDescriptions.trim()) {
@@ -236,7 +190,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         } else {
 
-            err = err.join(" , ").concat(' are Required');
+
+            err = err.join(" , ").concat(err.length > 1 ?' are required':' is required');
             data && alertService.showToast('warn', err);
             setDisableCreate(false)
             return false;
@@ -249,7 +204,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
         if (topic || topicDescriptions || priorities.id !== 0 || tagId.length > 0 || videoData.length > 0 || ticketType.id !== 0) {
             setOpenPopUp(true)
         } else {
-            setNavigateSupport(true);
+            // setNavigateSupport(true);
+            closeCreateTicket();
+            // getTopicsBasedOnFilter();
         }
     }
 
@@ -288,13 +245,14 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         const token = `Bearer ${jwt_token}`;
 
-        const client = user.last_fetched_client;
+
+        // const client = user.last_fetched_client;
 
         const organisation = user.organization_id;
 
         const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
-
-        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&client_id=${client}&app_id=${platformId}`
+        // &client_id=${client}
+        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&app_id=${platformId}`
 
         if (token && validation) {
 
@@ -321,6 +279,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                 chatId = result.data.id;
 
+                if (getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1);
+
                 setCurrentCreatedTicketData(result.data);
 
                 setUserData(result.user ? result.user : []);
@@ -341,8 +301,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
             }
 
             setShowLoading(false);
-
-
         }
 
     }
@@ -364,6 +322,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
     function onKeyDownEvent(e) {
 
         e.persist();
+
+
 
         if (e.key === 'Enter' && e.target.value.length <= 1) return;
 
@@ -440,6 +400,17 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
             }
             bringSelectedTagInView(tagSuggestion[suggestIndex].name)
 
+        }
+    }
+
+    const handleFocusOut=(e)=>{
+
+        if(e.target.value.length > 2){
+            const wordsLeft=e.target.value.replace(/\s{2,}/g, " ").split(" ");
+
+            setTagList([...tagList,...wordsLeft])
+            setTagId([...tagList,...wordsLeft])
+            setCurrentTag('')
         }
     }
 
@@ -523,11 +494,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         }
 
-        if (ticketTypeList.length === 0) {
-
-            fetchTypeData();
-
-        }
 
         document.addEventListener("mouseup", (event) => {
 
@@ -569,7 +535,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
     }, [videoUrl.length])
 
-    return !navigateSupport ? (
+    return (
 
         <>
 
@@ -578,7 +544,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                     <div className='iassist-panel-inner'>
                         <div className='iassist-panel-header'>
                             <div className='title-with-breadcrumb'>
-                                <h4 className='header-title' onClick={() => discardChanges()}>iAssist</h4>
+                                <h4 className='iassist-header-title' onClick={() => discardChanges()}>iAssist</h4>
                                 <div className="breadcrumb">
                                     <ul>
                                         <li>New Ticket</li>
@@ -586,16 +552,19 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                 </div>
                             </div>
 
-                            <div className='header-right'>
-                                <button onClick={() => closePane()} className='header-close'></button>
+                            <div className='iassist-header-right'>
+                                <button onClick={() => {
+                                    discardChanges();
+                                // closePane()
+                                }} className='iassist-header-close'></button>
                             </div>
 
                         </div>
                         {showLoading && <LoadingScreen />}
                         <div className='iassist-panel-body'>
-                            <div className='create-ticket-wrapper'>
+                            <div className='iassist-create-ticket-wrapper'>
                                 <div className='field-w-label'>
-                                    <label>Topic</label>
+                                    <label>Topic <span className='mandatory-mark'>*</span></label>
                                     <div className='field' onClick={() => titleRef.current.focus()}>
                                         <input ref={titleRef} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></input>
                                         <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
@@ -603,7 +572,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                 </div>
                                 <div className='field-w-label'>
                                     <label>Tags</label>
-                                    <div className='field tags' onClick={() => tagRef.current.focus()}>
+                                    <div className='field tags' onClick={() => tagRef.current.focus()} >
                                         {tagList.length > 0 && tagList.map((tag, index) => (
                                             <div className={'tag-box'} key={index}>
                                                 <div className={'tag-text'}>{tag}</div>
@@ -618,8 +587,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                                 value={currentTag}
                                                 onChange={(e) => handleInputChange(e, 'tag')}
                                                 onKeyUp={onKeyDownEvent}
-                                            // onBlur={handleFocusOut}
+                                                onBlur={handleFocusOut}
+                                                
                                             />
+
                                         </div>
 
                                         {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
@@ -634,7 +605,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                     </div>
                                 </div>
                                 <div className='field-w-label'>
-                                    <label>Description</label>
+                                    <label>Description <span className='mandatory-mark'>*</span></label>
                                     <div className='field textarea'>
                                         <textarea
                                             value={topicDescriptions}
@@ -643,8 +614,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                         <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
                                     </div>
                                 </div>
-
-
 
                                 <div className='filter-dropdown'>
                                     <div className='type no-bg'>
@@ -657,6 +626,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                             uniqueKey='id'
                                             displayKey='name'
                                             onSelect={(value) => categorySelect(value, 'Category')} />
+                                            <span className='mandatory-mark'>*</span>
                                     </div>
 
                                     <div className='priority no-bg'>
@@ -668,17 +638,20 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                                             maxWidth={80}
                                             uniqueKey='id'
                                             displayKey='value'
-                                            onSelect={(value) => selectPriority(value)} />
+                                            onSelect={(value) => selectPriority(value)}
+                                            />
+                                            <span className='mandatory-mark'>*</span>
+
                                     </div>
                                 </div>
 
-                                <div className='record-wrapper'>
+                                <div className='iassist-record-wrapper'>
 
-                                    <div className='record-header'>
+                                    <div className='iassist-record-header'>
 
                                         <div className='text'>Capture current tab</div>
 
-                                        <div className='record-button'>
+                                        <div className='iassist-record-button'>
 
                                             <button onClick={() => {
                                                 setDisplayMessage('Record');
@@ -694,7 +667,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                                     </div>
 
-                                    {videoUrl.length > 0 && <div className='video-content-wrapper'>
+                                    {videoUrl.length > 0 && <div className='iassist-video-content-wrapper'>
                                         {videoUrl.map((vid, index) => {
                                             return <div key={vid.id} className='vid-content'>
 
@@ -726,18 +699,22 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
                             </div>
                         </div>
-                        <div className='submit-wrapper'>
+                        <div className='iassist-submit-wrapper'>
                             <button className='btn-with-icon btn-small btn-approve' disabled={disableCreate} onClick={createRoom}><i></i><span>Create</span></button>
 
                             <button className="btn-with-icon btn-small btn-cancel-white" disabled={disableCancel} onClick={() => discardChanges()}><i></i><span>Cancel</span></button>
 
                         </div>
                     </div>
-                    {openPopUp && <div className='iassist-panel-popup-wrapper'>
+                    {openPopUp && 
+                    <div className='iassist-panel-popup-wrapper'>
 
                         <div className='details'> Are you sure you want to discard changes? </div>
                         <div className='iassist-panel-btn'>
-                            <button className='btn-with-icon btn-small btn-approve' onClick={() => setNavigateSupport(true)}><i></i><span>Confirm</span></button>
+                            <button className='btn-with-icon btn-small btn-approve' onClick={() => {
+                                closeCreateTicket();
+                                // getTopicsBasedOnFilter();
+                                }}><i></i><span>Confirm</span></button>
 
                             <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
                         </div>
@@ -759,7 +736,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
                     activity={true}
                     socketDetail={socketDetail}
                     panelPosition={panelPosition}
-                    platformId={platformId} />
+                    platformId={platformId}
+                    closeChatScreen={closeCreateTicket} 
+                    getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                    />
             }
 
             {showVideo && !chatRoom &&
@@ -770,11 +750,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId }) 
 
         </>
 
-    ) : (<Support
-        closePane={closePane}
-        webSocket={socketDetail}
-        panelPosition={panelPosition}
-        platformId={platformId} />)
+    ) 
 }
 
 export default CreateChatRoom;

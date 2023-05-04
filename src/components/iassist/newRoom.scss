@@ -2,7 +2,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 
 #iassist-panel{
   .iassist-panel-header {
-    .header-back {
+    .iassist-header-back {
       display: flex;
       align-items: center;
       gap: 5px;
@@ -21,7 +21,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       }
     }
 
-    .header-right {
+    .iassist-header-right {
       .author-list {
         span {
           position: relative;
@@ -71,7 +71,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     position: absolute;
   }
 
-  .title-widget {
+  .iassist-title-widget {
     font-size: 11px;
     padding: 10px;
     border-bottom: 1px solid rgb(117, 115, 115);
@@ -107,7 +107,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       white-space: normal;
     }
   }
-  .msg-area {
+  .iassist-msg-area {
     height: 100%;
     overflow: hidden;
     display: flex;
@@ -123,7 +123,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     }
   }
 
-  .chat-list-wrapper {
+  .iassist-chat-list-wrapper {
     width: 100%;
     padding: 150px 0 0;
     max-height: 100%;
@@ -418,7 +418,8 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           position: absolute;
           padding: 5px;
           right: 0;
-          top: 15px;
+          top: 10px;
+          // bottom: 0;
           background: #fff;
           margin: 0;
           min-width: 70px;
@@ -687,7 +688,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     top: 15%;
   }
 
-  .message {
+  .iassist-message {
     width: 100%;
     background: #000000;
     border-radius: 2px;
