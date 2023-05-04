@@ -143,6 +143,27 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
     }
 
+    // const handleFocusOut = (e) => {
+
+
+    //     if (e.target.value.trim() && e.target.value.length > 1) {
+
+    //         const wordsLeft = e.target.value;
+
+            // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
+
+    //         setTagList([...tagList, wordsLeft])
+    //         setTagId([...tagList, wordsLeft])
+    //         setCurrentTag('')
+
+             // setTagList([...tagList,...wordsLeft])
+             // setCurrentTag('')
+             // setTagId([...tagList,...wordsLeft])
+
+    //     }
+
+    // }
+
     const selectPriority = (value) => {
 
         setPriorities(value);
@@ -553,10 +574,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                             </div>
 
                             <div className='iassist-header-right'>
-                                <button onClick={() => {
-                                    discardChanges();
-                                // closePane()
-                                }} className='iassist-header-close'></button>
+                                <button onClick={() => closePane()} className='iassist-header-close'></button>
                             </div>
 
                         </div>
