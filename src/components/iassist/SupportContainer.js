@@ -159,7 +159,7 @@ const SupportContainer = () => {
         const linkTag = document.createElement("link");
         // 
         // https://gaurav-08-dev.github.io/test2/index.css
-        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
+        linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
