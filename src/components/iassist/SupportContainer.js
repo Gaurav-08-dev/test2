@@ -215,7 +215,7 @@ const SupportContainer = () => {
 
     return (
         <>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button className="btn-support"></button></div>} */}
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
             {openSupport && 
             <Support
