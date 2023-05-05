@@ -14,10 +14,16 @@ let selectMedia;
 let backspace = false;
 let stream;
 let closeInterval = false;
+const recordingClass = 'iassist-wrapper-recording';
+let removedChildForRecord;
+let mediaStreamRecord;
 
 const VideoRecord = ({ save, close, message }) => {
 
     const ref = useRef(5);
+
+    const initialLoad = useRef(false);
+
     const interval = useRef(null);
 
     const img = useRef();
@@ -110,7 +116,52 @@ const VideoRecord = ({ save, close, message }) => {
             }
         }, 1000);
 
+        document.addEventListener('click', recordStopClick);
+
+        return () => {
+            document.removeEventListener('click', recordStopClick);
+        }
+
     }, [])
+
+    const recordStopClick = (e) => {
+        const triggerButton = document.getElementById(recordingClass);
+
+        if (triggerButton?.contains(e.target)) {
+            e.preventDefault();
+            mediaStreamRecord.stop();
+        }
+    }
+
+    useEffect(() => {
+        let video = document.getElementById('iassist-vid-player');
+
+        if (video) {
+
+            video.play();
+
+            video.currentTime = 1000000000;
+
+            video.onended = () => {
+
+                if (!initialLoad.current) {
+
+                    // setShowLoader(false);
+
+                    video.play();
+
+                    video.controls = true;
+
+                    initialLoad.current = true;
+
+                    video.currentTime = 0;
+
+                }
+
+            }
+
+        }
+    }, [videoUrl])
 
     const getMediaId = () => {
 
@@ -170,6 +221,7 @@ const VideoRecord = ({ save, close, message }) => {
 
         } catch (err) {
 
+            // removeRecordIconFromBrowser()
             alertService.showToast('error', err.message);
 
             close(false);
@@ -179,6 +231,18 @@ const VideoRecord = ({ save, close, message }) => {
         return combine;
 
     }
+
+    const removeRecordIconFromBrowser = () => {
+        const buttonId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId');
+
+            let buttonWrapper = document.getElementById(recordingClass);
+
+            buttonWrapper.id = buttonId;
+            removedChildForRecord.forEach(child => {
+                buttonWrapper.appendChild(child);
+            })
+
+    } 
 
     function createRecorder(stream, mimeType) {
 
@@ -211,8 +275,9 @@ const VideoRecord = ({ save, close, message }) => {
 
             recordedChunks = [];
 
-
             setEmpty(false);
+
+            removeRecordIconFromBrowser();
 
         };
 
@@ -331,35 +396,8 @@ const VideoRecord = ({ save, close, message }) => {
 
         closeInterval=false;
         if (message === 'Record') {
-    //         width: 35px;
-	// height: 35px;
-	// font-size: 0;
-	// background-color: red;
-	// border: 0;
-	// border-radius: 35px;
-	// margin: 18px;
-	// outline: none;
+
             
-            const buttonId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId');
-
-            let buttonWrapper = document.getElementById(buttonId);
-
-            let check = [...buttonWrapper?.children];
-            check.forEach((child) => {
-                buttonWrapper.removeChild(child);
-            })
-
-            // debugger;
-            buttonWrapper.id = 'iassist-wrapper-recording';
-            // buttonWrapper.style.width = '20px';
-            // buttonWrapper.style.height = '20px';
-            // buttonWrapper.style.fontSize = 0;
-            // buttonWrapper.style.backgroundColor = 'red';
-            // buttonWrapper.style.border = 0;
-            // buttonWrapper.style.borderRadius = '35px';
-            // buttonWrapper.style.margin = '18px';
-            // buttonWrapper.style.outline = 'none';
-            // buttonWrapper.style.zIndex = 1000;
 
             stream = await recordScreen();
 
@@ -367,8 +405,19 @@ const VideoRecord = ({ save, close, message }) => {
 
             if (stream) {
 
+                const buttonId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId');
+
+                let buttonWrapper = document.getElementById(buttonId);
+
+                let check = [...buttonWrapper?.children];
+                removedChildForRecord = [...buttonWrapper?.children];
+                check.forEach((child) => {
+                    buttonWrapper.removeChild(child);
+                })
+                buttonWrapper.id = recordingClass;
+
                 // mediaRecorder = 
-                createRecorder(stream, mimeType);
+                mediaStreamRecord = createRecorder(stream, mimeType);
 
                 // time = 5;
 
@@ -885,7 +934,7 @@ const VideoRecord = ({ save, close, message }) => {
                             <button title="redo" className="redo" onClick={redo}></button>
                         </div>}
                     </div>
-                    {message === 'Record' && <video src={videoUrl} controls></video>}
+                    {message === 'Record' && <video src={videoUrl} controls id="iassist-vid-player"></video>}
 
                     {message === 'Shot' && <div id="edit-image" className="image-edit" onMouseDown={onMouseDown} onMouseMove={handleMouseMove} onMouseOut={handleMouseOut} onMouseUp={handleMouseUp}></div>}
 

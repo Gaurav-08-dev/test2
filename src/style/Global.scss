@@ -79,44 +79,6 @@ p {
 }
 
 #iassist-panel-wrapper {
-  #btn-support-wrapper {
-    display: block;
-    width: 16px;
-    height: 16px;
-    
-    .btn-support {
-      border: none;
-      padding: 0;
-      display: flex;
-      cursor: pointer;
-      display: block;
-      width: 16px;
-      height: 16px;
-      -webkit-mask: url("../images/icon-filters.svg") no-repeat center center;
-      mask: url("../images/icon-filters.svg") no-repeat center center;
-      -webkit-mask-size: 16px;
-      mask-size: 16px;
-      background-color: #fff;
-      transition: var(--transition);
-      &:hover{
-        background-color: #fff;
-      }
-
-    }
-
-    .topic-chat-notify-layer {
-      display: none;
-      background-color: red;
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      margin-left: 9px;
-      border-radius: 50%;
-      // right: 7px;
-      top: 6px;
-      
-    }
-  }
   button {
     cursor: pointer;
     font-size: 11px;
@@ -1186,29 +1148,41 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 }
 
 #iassist-wrapper-recording {
-  width: 20px;
-	height: 20px;
+  width: 12px;
+	height: 12px;
 	font-size: 0;
-	background-color: red;
+	background-color: #FF0000;;
 	border: 0;
 	border-radius: 35px;
-	margin: 18px;
+  border: 1px solid #B1B2B3;
 	outline: none;
   z-index: 1000;
   animation-name: iassist-record;
 	animation-duration: 1.5s;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
+  cursor: pointer;
 }
 
 @keyframes iassist-record{
 	0%{
-		box-shadow: 0px 0px 5px 0px rgba(173,0,0,.3);
+		// box-shadow: 0px 0px 5px 0px none;//rgba(173,0,0,.3);
+    opacity: 1;
+    // transition: opacity 0.5s linear;
 	}
-	65%{
-		box-shadow: 0px 0px 5px 13px rgba(173,0,0,.3);
+  40%{
+		// box-shadow: 0px 0px 5px 0px none;//rgba(173,0,0,.3);
+    opacity: 1;
+    // transition: opacity 0.5s linear;
 	}
-	90%{
-		box-shadow: 0px 0px 5px 13px rgba(173,0,0,0);
+  60%{
+		// box-shadow: 0px 0px 5px 0px none;//rgba(173,0,0,.3);
+    opacity: 0;
+    // transition: opacity 1s linear;
+	}
+	100%{
+		// box-shadow: 0px 0px 2px 7px #FF0000(173,0,0,.3);
+    opacity: 1;
+    // transition: opacity 0.5s linear;
 	}
 }
