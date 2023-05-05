@@ -143,27 +143,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
     }
 
-    // const handleFocusOut = (e) => {
-
-
-    //     if (e.target.value.trim() && e.target.value.length > 1) {
-
-    //         const wordsLeft = e.target.value;
-
-            // const wordsLeft=e.target.value.replace(/ /g, " ").split(' ').filter(item=>!tagList.includes(item) && item.length > 1).filter(item=>item!=='')
-
-    //         setTagList([...tagList, wordsLeft])
-    //         setTagId([...tagList, wordsLeft])
-    //         setCurrentTag('')
-
-             // setTagList([...tagList,...wordsLeft])
-             // setCurrentTag('')
-             // setTagId([...tagList,...wordsLeft])
-
-    //     }
-
-    // }
-
     const selectPriority = (value) => {
 
         setPriorities(value);
@@ -178,7 +157,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         if (!topic.trim()) {
 
-            err = [...err, 'Name'];
+            err = [...err, 'Topic'];
 
         }
         if (!topicDescriptions.trim()) {
@@ -211,7 +190,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         } else {
 
-            err = err.join(" , ").concat(' are Required');
+
+            err = err.join(" , ").concat(err.length > 1 ?' are required':' is required');
             data && alertService.showToast('warn', err);
             setDisableCreate(false)
             return false;
@@ -321,8 +301,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             }
 
             setShowLoading(false);
-
-
         }
 
     }
@@ -344,6 +322,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     function onKeyDownEvent(e) {
 
         e.persist();
+
+
 
         if (e.key === 'Enter' && e.target.value.length <= 1) return;
 
@@ -420,6 +400,17 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             }
             bringSelectedTagInView(tagSuggestion[suggestIndex].name)
 
+        }
+    }
+
+    const handleFocusOut=(e)=>{
+
+        if(e.target.value.length > 2){
+            const wordsLeft=e.target.value.replace(/\s{2,}/g, " ").split(" ");
+
+            setTagList([...tagList,...wordsLeft])
+            setTagId([...tagList,...wordsLeft])
+            setCurrentTag('')
         }
     }
 
@@ -562,7 +553,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                             </div>
 
                             <div className='iassist-header-right'>
-                                <button onClick={() => closePane()} className='iassist-header-close'></button>
+                                <button onClick={() => {
+                                    discardChanges();
+                                // closePane()
+                                }} className='iassist-header-close'></button>
                             </div>
 
                         </div>
@@ -570,7 +564,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                         <div className='iassist-panel-body'>
                             <div className='iassist-create-ticket-wrapper'>
                                 <div className='field-w-label'>
-                                    <label>Topic</label>
+                                    <label>Topic <span className='mandatory-mark'>*</span></label>
                                     <div className='field' onClick={() => titleRef.current.focus()}>
                                         <input ref={titleRef} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></input>
                                         <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
@@ -578,7 +572,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                 </div>
                                 <div className='field-w-label'>
                                     <label>Tags</label>
-                                    <div className='field tags' onClick={() => tagRef.current.focus()}>
+                                    <div className='field tags' onClick={() => tagRef.current.focus()} >
                                         {tagList.length > 0 && tagList.map((tag, index) => (
                                             <div className={'tag-box'} key={index}>
                                                 <div className={'tag-text'}>{tag}</div>
@@ -593,8 +587,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                                 value={currentTag}
                                                 onChange={(e) => handleInputChange(e, 'tag')}
                                                 onKeyUp={onKeyDownEvent}
-                                            // onBlur={handleFocusOut}
+                                                onBlur={handleFocusOut}
+                                                
                                             />
+
                                         </div>
 
                                         {showSuggestion && <div className='tag-suggestion-container' id='suggestion'>
@@ -609,7 +605,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                     </div>
                                 </div>
                                 <div className='field-w-label'>
-                                    <label>Description</label>
+                                    <label>Description <span className='mandatory-mark'>*</span></label>
                                     <div className='field textarea'>
                                         <textarea
                                             value={topicDescriptions}
@@ -630,6 +626,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                             uniqueKey='id'
                                             displayKey='name'
                                             onSelect={(value) => categorySelect(value, 'Category')} />
+                                            <span className='mandatory-mark'>*</span>
                                     </div>
 
                                     <div className='priority no-bg'>
@@ -641,7 +638,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                             maxWidth={80}
                                             uniqueKey='id'
                                             displayKey='value'
-                                            onSelect={(value) => selectPriority(value)} />
+                                            onSelect={(value) => selectPriority(value)}
+                                            />
+                                            <span className='mandatory-mark'>*</span>
+
                                     </div>
                                 </div>
 
@@ -738,7 +738,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                     panelPosition={panelPosition}
                     platformId={platformId}
                     closeChatScreen={closeCreateTicket} 
-                    // getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                    getTopicsBasedOnFilter={getTopicsBasedOnFilter}
                     />
             }
 

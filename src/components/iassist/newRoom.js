@@ -55,7 +55,7 @@ const ChatRoom = ({
     panelPosition, 
     // platformId, 
     closeChatScreen, 
-    // getTopicsBasedOnFilter 
+    getTopicsBasedOnFilter 
 }) => {
 
     const bodyRef = useRef();
@@ -679,6 +679,9 @@ const ChatRoom = ({
 
         console.log("websocket connected")
 
+        console.log(unRead);
+        if (unRead > 0 && getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1)
+
     };
 
     ws.onclose = function () {
@@ -863,9 +866,11 @@ const ChatRoom = ({
 
         if (searchString) { key = `&key=${searchString}` }
 
+        const appConfigId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config_app_id');
+
         if (query) { key = `&key=${query}` }
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/key/?topic_id=${chatIds}${key}&page_size=1000&page_number=1`, null, false, 'GET', controller, token)
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/key/?topic_id=${chatIds}${key}&page_size=1000&page_number=1&app_id=${appConfigId}`, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1127,9 +1132,10 @@ const ChatRoom = ({
 
                         if (userData?.id === id) {
 
+                            getTopicsBasedOnFilter();
                             setNavigateHome(true);
                             closeChatScreen();
-                            // getTopicsBasedOnFilter();
+                            
                         }
 
                     }
@@ -1174,12 +1180,14 @@ const ChatRoom = ({
 
                     let result = response;
 
+                    getTopicsBasedOnFilter(undefined, 1);
+
                     alertService.showToast('success', result.message);
 
                     setNavigateHome(true);
                     closeChatScreen();
                     // getTopicsBasedOnFilter();
-                    setConfirmDelete(false)
+                    setConfirmDelete(false);
 
                 }
 
@@ -1555,7 +1563,10 @@ const ChatRoom = ({
 
                             </div>}
 
-                            <button className='iassist-header-close' onClick={() => close()}></button>
+                            <button className='iassist-header-close' onClick={() =>{
+                                closeChatScreen();
+                            //  close()
+                             }}></button>
 
                         </div>
 
@@ -1952,11 +1963,11 @@ const ChatRoom = ({
                         </div>
 
                         {!showSearch && !confirmDelete && <div className='iassist-message' id='message'>
-                            {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' />}
+                            {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' getTopicsBasedOnFilter={getTopicsBasedOnFilter}/>}
 
                             {/* Reopen Msg */}
 
-                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' />}
+                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' getTopicsBasedOnFilter={getTopicsBasedOnFilter}/>}
 
                             {!showFeedback && !showReopen && <div className='topic-filter-search-iassist'>
 
