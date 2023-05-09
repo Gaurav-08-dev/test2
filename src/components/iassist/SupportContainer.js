@@ -152,8 +152,8 @@ const SupportContainer = () => {
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
+        console.log("here")
         if (prevAppId !== AppId.current || !configDetails) {
-            console.log("here")
             getConfigDetails();
         }
 
