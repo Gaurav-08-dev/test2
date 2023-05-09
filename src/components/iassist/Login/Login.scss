@@ -1,0 +1,52 @@
+// .iassist-panel{
+
+.login-page {
+  width: 450px;
+  position: fixed;
+  top: 35px;
+  bottom: 5px;
+  right: 0;
+  overflow: hidden;
+  background: #232931;
+  color: #fff;
+  border-radius: 2px 0px 0px 2px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  justify-content: center;
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    label {
+      margin-bottom: 10px;
+      font-size: 18px;
+
+      input {
+        width: 200px;
+        padding: 5px;
+        font-size: 16px;
+      }
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  }
+  // }
+}

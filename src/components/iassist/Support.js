@@ -150,7 +150,7 @@ console.log(storedData)
     const [disableButton, setDisableButton] = useState(false);
     const [updateValue, setUpdateValue] = useState(false);
     if (allTopics.current.length === 0 && (tabData=== 'open' && storedData.Active.length !== 0 || tabData === 'resolved' && storedData.Resolved.length !== 0)) {
-        debugger;
+
         setValueFromMemory(tabData === 'open'? storedData.Active : storedData.Resolved);
     }
 
@@ -196,7 +196,7 @@ console.log(storedData)
     }
 
     const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber, ticket) => {
-debugger;
+
         if (updatedPageNumber) pageNumber = updatedPageNumber;
 
         setUpdateValue(true);
@@ -232,7 +232,7 @@ debugger;
                         let data = result[key];
 
                         if (key === 'topic_data') {
-                            // debugger;
+                            // ;
 
                             if (pageNumber > 1) {
                             //    allTopics.current = removeDuplicatesFromCollection([...data, ...allTopics.current])

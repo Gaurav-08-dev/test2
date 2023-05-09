@@ -5,37 +5,47 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
+import LoginPage from "./Login/Login";
 let webSocket;
 
 const SupportContainer = () => {
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
+    const [isElectronApp,setIsElectronApp] = useState(false);
     const AppId = useRef(window?.iAssistAppId);
     const tokenConstant = useRef('');
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
+    const [storedTicket, setStoredTicket] = useState({ Active: [], Resolved: [] });
+    const [isLoggedIn,setIsLoggedIn]=useState(false)
     // const [configData, setConfigData] = useState('');
 
     function isElectron() {
         // Renderer process
         if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-            return true;
+            // return true;
+            setIsElectronApp(true)
         }
-    
+
         // Main process
         if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-            return true;
+            // return true;
+            setIsElectronApp(true)
+
         }
-    
+
         // Detect the user agent when the `nodeIntegration` option is set to true
         if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-            return true;
+            // return true;
+            setIsElectronApp(true)
+
         }
-    
-        return false;
+
+        // return false;
+        setIsElectronApp(false)
+
     }
 
     const getConfigDetails = async (type) => {
@@ -118,8 +128,6 @@ const SupportContainer = () => {
             };
 
             webSocket.onopen = function () {
-                console.log(isElectron())
-                isElectron() && setOpenSupport(true)
                 console.log("websocket listen connected")
             };
 
@@ -168,11 +176,16 @@ const SupportContainer = () => {
         }
     }
 
+
+    useEffect(()=>{
+        isElectron()
+    },[])
+
     useEffect(() => {
 
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
-
+        
 
         if (prevAppId !== AppId.current || !configDetails) {
             getConfigDetails();
@@ -182,10 +195,10 @@ const SupportContainer = () => {
         const linkTag = document.createElement("link");
         // 
         // https://gaurav-08-dev.github.io/test2/index.css
-        linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
-        linkTag.rel = "stylesheet";
-        linkTag.id = "iassist-css";
-        bodyElement.append(linkTag);
+        // linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
+        // linkTag.rel = "stylesheet";
+        // linkTag.id = "iassist-css";
+        // bodyElement.append(linkTag);
 
         return (() => {
             setOpenSupport(false)
@@ -240,15 +253,22 @@ const SupportContainer = () => {
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
-            {openSupport && 
-            <Support
-                closePane={closePane}
-                webSocket={webSocket}
-                panelPosition={panelPosition.current}
-                platformId={platformId}
-                storedData={storedTicket}
-                setStoredData={setStoredTicket}
-            />}
+            {openSupport &&
+                <Support
+                    closePane={closePane}
+                    webSocket={webSocket}
+                    panelPosition={panelPosition.current}
+                    platformId={platformId}
+                    storedData={storedTicket}
+                    setStoredData={setStoredTicket}
+                />}
+
+                {
+                    !isElectronApp && !isLoggedIn && <LoginPage 
+                        setOpenSupport={setOpenSupport}
+                        setIsLoggedIn={setIsLoggedIn}
+                    />
+                }
         </>
 
     )
