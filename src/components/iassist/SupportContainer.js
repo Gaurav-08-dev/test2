@@ -193,12 +193,12 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
         const linkTag = document.createElement("link");
-        // 
-        // https://gaurav-08-dev.github.io/test2/index.css
-        // linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
-        // linkTag.rel = "stylesheet";
-        // linkTag.id = "iassist-css";
-        // bodyElement.append(linkTag);
+        
+        // https://gaurav-08-dev.github.io/test2/index.css;
+        linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
+        linkTag.rel = "stylesheet";
+        linkTag.id = "iassist-css";
+        bodyElement.append(linkTag);
 
         return (() => {
             setOpenSupport(false)
