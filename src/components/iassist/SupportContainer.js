@@ -19,6 +19,25 @@ const SupportContainer = () => {
     const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     // const [configData, setConfigData] = useState('');
 
+    function isElectron() {
+        // Renderer process
+        if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+            return true;
+        }
+    
+        // Main process
+        if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+            return true;
+        }
+    
+        // Detect the user agent when the `nodeIntegration` option is set to true
+        if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+            return true;
+        }
+    
+        return false;
+    }
+
     const getConfigDetails = async (type) => {
 
         // app_id=${AppId.current}
@@ -100,6 +119,8 @@ const SupportContainer = () => {
 
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
+
+                isElectron() && setOpenSupport(true)
             };
 
             webSocket.onclose = function () {
@@ -142,7 +163,7 @@ const SupportContainer = () => {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
                 // getConfigDetails('onButtonClick');
-                alertService.showToast('process', 'Loading...');
+                alertService.showToast('process', 'Please refresh the page');
             }
         }
     }
@@ -152,7 +173,7 @@ const SupportContainer = () => {
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        console.log("here")
+
         if (prevAppId !== AppId.current || !configDetails) {
             getConfigDetails();
         }
