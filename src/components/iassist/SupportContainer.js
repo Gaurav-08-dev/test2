@@ -16,6 +16,7 @@ const SupportContainer = () => {
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
+    const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     // const [configData, setConfigData] = useState('');
 
     const getConfigDetails = async (type) => {
@@ -223,6 +224,8 @@ const SupportContainer = () => {
                 webSocket={webSocket}
                 panelPosition={panelPosition.current}
                 platformId={platformId}
+                storedData={storedTicket}
+                setStoredData={setStoredTicket}
             />}
         </>
 
