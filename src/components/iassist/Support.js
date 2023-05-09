@@ -96,8 +96,8 @@ const reducer = (state, action) => {
 }
 
 
-const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }) => {
-
+const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, storedData,setStoredData }) => {
+console.log(storedData)
 
     const initialState = {
         topicClick: topicClick ? topicClick : false,
@@ -148,6 +148,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
     const [showLoader, setShowLoader] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [disableButton, setDisableButton] = useState(false);
+    const [updateValue, setUpdateValue] = useState(false);
+    if (allTopics.current.length === 0 && (tabData=== 'open' && storedData.Active.length !== 0 || tabData === 'resolved' && storedData.Resolved.length !== 0)) {
+        debugger;
+        setValueFromMemory(tabData === 'open'? storedData.Active : storedData.Resolved);
+    }
 
 
     if (ticketTypeList.current.length > 0 && ticketTypeList.current[0].id !== 'All') {
@@ -190,12 +195,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
     }
 
-    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber) => {
-
+    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber, ticket) => {
+debugger;
         if (updatedPageNumber) pageNumber = updatedPageNumber;
 
-        if (!updatedPageNumber) setShowLoader(true);
-        setDisableButton(true)
+        setUpdateValue(true);
+
+        if (!updatedPageNumber && !ticket) setShowLoader(true);
+        if(!ticket) setDisableButton(true)
 
         dispatch({ type: actionType.initial_load_status, payload: false })
 
@@ -214,6 +221,10 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
                 if (response) {
 
+                    // sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickets', JSON.stringify(response));
+                    if (pageNumber === 1) {
+                        setStoredData(tabData === 'open' ? {Active: response,Resolved: []}: {Active: [], Resolved: response})
+                    }
                     const result = response;
 
                     for (let key in result) {
@@ -221,11 +232,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                         let data = result[key];
 
                         if (key === 'topic_data') {
+                            // debugger;
 
-                            if (pageNumber > 1)
+                            if (pageNumber > 1) {
+                            //    allTopics.current = removeDuplicatesFromCollection([...data, ...allTopics.current])
                                 data?.forEach((topicValue) =>
                                     allTopics.current.push(topicValue)
                                 )
+                            }
 
                             if (pageNumber === 1)
                                 allTopics.current = data;
@@ -280,6 +294,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                     }
                     setDisableButton(false);
                     setShowLoader(false);
+                    setUpdateValue((value) => !value);
 
                 }
 
@@ -392,6 +407,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'ticket_type/', null, false, 'GET', controller, token)
             .then(response => {
+
+                sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickettype', JSON.stringify(response));
 
                 if (response) {
 
@@ -601,6 +618,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                     allTopics.current = allTopics.current.filter(topic => topic.id !== data);
                     unReadList.current = unReadList.current.filter(topic => topic.topic_id !== data)
                     activity.current = activity.current.filter(topic => topic.id !== data)
+                    // sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickets', JSON.stringify(allTopics.current));
+                    setStoredData({Active: allTopics.current, Resolved: storedData?.Resolved});
 
                     alertService.showToast('success', result.message);
 
@@ -707,7 +726,89 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
         isDeleteClick = false;
     }
 
+    function setValueFromMemory(topicData) {
+        const result = topicData;
+        for (let key in result) {
+
+            let data = result[key];
+
+            if (key === 'topic_data') {
+
+                if (pageNumber > 1)
+                    data?.forEach((topicValue) =>
+                        allTopics.current.push(topicValue)
+                    )
+
+                if (pageNumber === 1)
+                    allTopics.current = data;
+
+            } else if (key === 'unread_data') {
+
+                if (pageNumber === 1)
+                    unReadList.current = data;
+
+                if (pageNumber > 1)
+                    data?.forEach((topicValue) =>
+                        unReadList.current.push(topicValue)
+                    )
+
+            } else if (key === 'pagination') {
+
+                totalPage = data.no_of_pages;
+
+            } else if (key === 'message' && data === 'no tickets found') {
+
+                allTopics.current = [];
+
+            } else if (key === 'user_data') {
+
+                if (pageNumber === 1)
+                    allUser.current = data;
+
+                if (pageNumber > 1)
+                    data?.forEach((topicValue) =>
+                        allUser.current.push(topicValue)
+                    )
+            } else if (key === 'account_data') {
+
+                if (pageNumber === 1)
+                    allAccount.current = data;
+
+                if (pageNumber > 1)
+                    data?.forEach((topicValue) =>
+                        allAccount.current.push(topicValue)
+                    )
+
+            } else if (key === 'activity') {
+
+                if (pageNumber === 1)
+                    activity.current = data;
+
+                if (pageNumber > 1)
+                    data?.forEach((topicValue) =>
+                        activity.current.push(topicValue)
+                    )
+            }
+        }
+        setUpdateValue(val => !val);
+    }
+
+    const removeDuplicatesFromCollection = (collectionData) => {
+        const jsonObject = collectionData.map(JSON.stringify);
+        const uniqueDataSet = new Set(jsonObject);
+        const uniqueData = Array.from(uniqueDataSet).map(JSON.parse);
+        return uniqueData
+    }
+
     useEffect(() => {
+
+        const TicketsInMemory = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'tickettype'))
+
+         ticketTypeList.current = TicketsInMemory === null || undefined ? [] : TicketsInMemory; 
+
+        // const getTicket = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'tickets'));
+
+        // setValueFromMemory(storedData);
 
         unRead.current = retainedStatus.unread;
         readCheckBoxStatus.current = retainedStatus.read;
@@ -755,7 +856,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
             conatinerWrapper[0].style.maxHeight = '92.5%';
         }
 
-        getTopicsBasedOnFilter();
+        let checkStoreData = tabData === 'open'? storedData.Active.length !== 0 : storedData.Resolved.length !== 0;
+
+        getTopicsBasedOnFilter(undefined, undefined, checkStoreData? storedData : undefined);
 
 
         document.addEventListener("mouseup", (event) => {
@@ -801,7 +904,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
 
         if (bodyRef.current) { bodyRef.current.addEventListener('scroll', onScroll) };
 
-
+        return () => {
+            if (bodyRef.current) bodyRef.current.addEventListener('scroll', onScroll);
+        }
     }, [state.showChat, state.topicClick]) // eslint-disable-line
 
     return (
@@ -973,9 +1078,10 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId }
                                         onClick={() => {
                                             if (tabData !== 'resolved') {
                                                 tabData = 'resolved';
+                                                pageNumber = 1;
                                                 dispatch({ type: actionType.status_tab, payload: 'resolved' })
                                                 clearData(false);
-                                                getTopicsBasedOnFilter();
+                                                getTopicsBasedOnFilter(undefined, undefined, undefined);
                                             }
                                         }}>
 
