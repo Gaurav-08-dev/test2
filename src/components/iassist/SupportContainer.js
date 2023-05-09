@@ -118,9 +118,9 @@ const SupportContainer = () => {
             };
 
             webSocket.onopen = function () {
-                console.log("websocket listen connected")
                 console.log(isElectron())
                 isElectron() && setOpenSupport(true)
+                console.log("websocket listen connected")
             };
 
             webSocket.onclose = function () {
