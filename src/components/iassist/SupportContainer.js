@@ -186,7 +186,6 @@ const SupportContainer = () => {
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
-        setTimeout( ()=>isElectron(),[1000])
     },[])
 
     useEffect(() => {
@@ -208,6 +207,7 @@ const SupportContainer = () => {
         // linkTag.id = "iassist-css";
         // bodyElement.append(linkTag);
 
+        isElectron()
         return (() => {
             setOpenSupport(false)
         })
