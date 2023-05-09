@@ -875,7 +875,6 @@ debugger;
 
             if (home && !(home.contains(event.target))) {
 
-
                 closePanes();
                 clearData();
 

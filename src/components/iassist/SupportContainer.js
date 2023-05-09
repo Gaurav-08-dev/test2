@@ -153,6 +153,7 @@ const SupportContainer = () => {
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
         if (prevAppId !== AppId.current || !configDetails) {
+            console.log("here")
             getConfigDetails();
         }
 
@@ -216,7 +217,7 @@ const SupportContainer = () => {
 
     return (
         <>
-            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
             {openSupport && 
             <Support
