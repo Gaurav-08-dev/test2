@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChatRoom from './newRoom';
 import './CreateChatRoom.scss';
 import * as Constants from '../Constants';
-import SpeedSelect from 'react-speedselect';
+// import SpeedSelect from 'react-speedselect';
 import { debounce, getTokenClient, getUser } from '../../utils/Common';
 import alertService from "../../services/alertService";
 import LoadingScreen from './loader/Loading';
@@ -13,12 +13,12 @@ import VideoRecord from './VideoRecord/VideoRecord';
 
 let suggestIndex = -1;
 let chatId;
-const descriptionMaxChar = 150;
+// const descriptionMaxChar = 150;
 const nameMaxChar = 45;
 
 
-const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, closeCreateTicket, 
-    getTopicsBasedOnFilter, 
+const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, closeCreateTicket,
+    getTopicsBasedOnFilter,
     ticketTypeList }) => {
 
     const priorityTypeList = JSON.parse('[{"id":3,"value":"High"},{"id":2,"value":"Medium"},{"id":1,"value":"Low"}]');
@@ -29,8 +29,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [currentTag, setCurrentTag] = useState('');
     const [topic, setTopic] = useState('');
     const [chatRoom, setChatRoom] = useState(false);
-    const [priorities, setPriorities] = useState({id: 0});
-    const [ticketType, setTicketType] = useState({id: 0});
+    const [priorities, setPriorities] = useState({ id: 0 });
+    const [ticketType, setTicketType] = useState({ id: 0 });
     const [topicDescriptions, setTopicDescriptions] = useState('');
     const [tagList, setTagList] = useState([]);
     const [currentCreatedTicketData, setCurrentCreatedTicketData] = useState([]);
@@ -39,7 +39,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [tagSuggestion, setTagSuggestion] = useState([]);
     const [showSuggestion, setShowSuggestion] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
-    const [totalRowsForTextarea, setTotalRowsForTextarea] = useState(2);
+    // const [totalRowsForTextarea, setTotalRowsForTextarea] = useState(2);
     const [userData, setUserData] = useState([]);
     const [accountData, setAccountData] = useState([]);
     const [showVideo, setShowVideo] = useState(false);
@@ -58,9 +58,11 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
     }
 
-    const categorySelect = (value) => {
+    const categorySelect = (e, ticketValue) => {
 
-        setTicketType(value);
+        e.stopPropagation()
+
+        setTicketType(ticketValue);
 
         requiredFieldValidation(false, 'Type');
 
@@ -130,22 +132,24 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             }
         } else if (type === 'description') {
 
-            if (e.target.value.length <= 150) {
+            // if (e.target.value.length) {
 
                 setTopicDescriptions(e.target.value);
 
-                setTotalRowsForTextarea(topicDescriptions.length >= 68 ? 4 : 2)
+                // setTotalRowsForTextarea(topicDescriptions.length >= 68 ? 4 : 2)
 
-            }
+            // }
 
         }
 
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
     }
 
-    const selectPriority = (value) => {
+    const selectPriority = (e,value) => {
 
+        e.stopPropagation()
         setPriorities(value);
+
 
         requiredFieldValidation(false, 'Priority');
 
@@ -191,7 +195,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         } else {
 
 
-            err = err.join(" , ").concat(err.length > 1 ?' are required':' is required');
+            err = err.join(" , ").concat(err.length > 1 ? ' are required' : ' is required');
             data && alertService.showToast('warn', err);
             setDisableCreate(false)
             return false;
@@ -403,13 +407,13 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         }
     }
 
-    const handleFocusOut=(e)=>{
+    const handleFocusOut = (e) => {
 
-        if(e.target.value.length > 2){
-            const wordsLeft=e.target.value.replace(/\s{2,}/g, " ").split(" ");
+        if (e.target.value.length > 2) {
+            const wordsLeft = e.target.value.replace(/\s{2,}/g, " ").split(" ");
 
-            setTagList([...tagList,...wordsLeft])
-            setTagId([...tagList,...wordsLeft])
+            setTagList([...tagList, ...wordsLeft])
+            setTagId([...tagList, ...wordsLeft])
             setCurrentTag('')
         }
     }
@@ -555,7 +559,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                             <div className='iassist-header-right'>
                                 <button onClick={() => {
                                     discardChanges();
-                                // closePane()
+                                    // closePane()
                                 }} className='iassist-header-close'></button>
                             </div>
 
@@ -564,7 +568,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                         <div className='iassist-panel-body'>
                             <div className='iassist-create-ticket-wrapper'>
                                 <div className='field-w-label'>
-                                    <label>Topic <span className='mandatory-mark'>*</span></label>
+                                    <label>Topic*
+                                        {/* <span className='mandatory-mark'>*</span> */}
+                                    </label>
                                     <div className='field' onClick={() => titleRef.current.focus()}>
                                         <input ref={titleRef} value={topic} onChange={(e) => handleInputChange(e, 'topic')} ></input>
                                         <span className={'max-length'}> {topic !== '' ? topic.length : 0}/{nameMaxChar}</span>
@@ -588,7 +594,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                                 onChange={(e) => handleInputChange(e, 'tag')}
                                                 onKeyUp={onKeyDownEvent}
                                                 onBlur={handleFocusOut}
-                                                
+
                                             />
 
                                         </div>
@@ -605,18 +611,37 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                     </div>
                                 </div>
                                 <div className='field-w-label'>
-                                    <label>Description <span className='mandatory-mark'>*</span></label>
+                                    <label>Description*
+                                        {/* <span className='mandatory-mark'>*</span> */}
+                                    </label>
                                     <div className='field textarea'>
                                         <textarea
                                             value={topicDescriptions}
-                                            rows={totalRowsForTextarea}
+                                            // rows={totalRowsForTextarea}
                                             onChange={(e) => handleInputChange(e, 'description')}></textarea>
-                                        <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div>
+                                        {/* <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div> */}
                                     </div>
                                 </div>
 
-                                <div className='filter-dropdown'>
-                                    <div className='type no-bg'>
+                                <div className='field-w-label'>
+                                    <label className='mandatory-mark'>Type*</label>
+
+                                    <div className='options-wrapper'>
+
+                                        {
+                                            ticketTypeList.map(ticket => (
+                                                <button
+                                                    key={ticket.id}
+                                                    className={`option ${+ticketType.id === +ticket.id ? ' active' : ''}`}
+                                                    onClick={(item) => categorySelect(item, ticket)}
+                                                >
+                                                    {ticket.name}
+                                                </button>
+                                            ))
+                                        }
+
+                                    </div>
+                                    {/* <div className='type no-bg'>
                                         <SpeedSelect
                                             options={ticketTypeList}
                                             selectLabel={ticketType.name}
@@ -626,10 +651,10 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                             uniqueKey='id'
                                             displayKey='name'
                                             onSelect={(value) => categorySelect(value, 'Category')} />
-                                            <span className='mandatory-mark'>*</span>
-                                    </div>
+                                            
+                                    </div> */}
 
-                                    <div className='priority no-bg'>
+                                    {/* <div className='priority no-bg'>
                                         <SpeedSelect
                                             options={priorityTypeList}
                                             selectLabel={priorities?.value}
@@ -640,11 +665,27 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                             displayKey='value'
                                             onSelect={(value) => selectPriority(value)}
                                             />
-                                            <span className='mandatory-mark'>*</span>
-
-                                    </div>
+                                    </div> */}
                                 </div>
 
+                                <div className='field-w-label'>
+                                    <label className='mandatory-mark'>Priority*</label>
+
+                                    <div className='options-wrapper'>
+                                    {
+                                        priorityTypeList.map(priority => (
+                                            <button
+                                                key={priority.id}
+                                                className={`option ${+priorities.id === +priority.id ? ' active' : ''}`}
+                                                onClick={(item) => selectPriority(item, priority)}
+                                            >
+                                                {priority.value}
+                                            </button>
+                                        ))
+                                    }
+                                    </div>
+
+                                </div>
                                 <div className='iassist-record-wrapper'>
 
                                     <div className='iassist-record-header'>
@@ -706,20 +747,20 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
                         </div>
                     </div>
-                    {openPopUp && 
-                    <div className='iassist-panel-popup-wrapper'>
+                    {openPopUp &&
+                        <div className='iassist-panel-popup-wrapper'>
 
-                        <div className='details'> Are you sure you want to discard changes? </div>
-                        <div className='iassist-panel-btn'>
-                            <button className='btn-with-icon btn-small btn-approve' onClick={() => {
-                                closeCreateTicket();
-                                // getTopicsBasedOnFilter();
+                            <div className='details'> Are you sure you want to discard changes? </div>
+                            <div className='iassist-panel-btn'>
+                                <button className='btn-with-icon btn-small btn-approve' onClick={() => {
+                                    closeCreateTicket();
+                                    // getTopicsBasedOnFilter();
                                 }}><i></i><span>Confirm</span></button>
 
-                            <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
-                        </div>
+                                <button className="btn-with-icon btn-small btn-cancel-white" onClick={() => setOpenPopUp(false)}><i></i><span>Cancel</span></button>
+                            </div>
 
-                    </div>}
+                        </div>}
                 </div>
 
 
@@ -737,9 +778,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                     socketDetail={socketDetail}
                     panelPosition={panelPosition}
                     platformId={platformId}
-                    closeChatScreen={closeCreateTicket} 
+                    closeChatScreen={closeCreateTicket}
                     getTopicsBasedOnFilter={getTopicsBasedOnFilter}
-                    />
+                />
             }
 
             {showVideo && !chatRoom &&
@@ -750,7 +791,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         </>
 
-    ) 
+    )
 }
 
 export default CreateChatRoom;

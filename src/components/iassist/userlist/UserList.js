@@ -159,7 +159,7 @@ const UserList = ({ clientUser, supportUser, position, header, userSelect, colla
                             <div className='topic-filter-search'>
                                 <div className='search'>
                                     <button className='btn' title='search'></button>
-                                    <input type={'text'} title='Search' onChange={GetSearchUser} />
+                                    <input placeholder='Find and add team members' type={'text'} title='Search' onChange={GetSearchUser} />
                                 </div>
                             </div>
                         </div>

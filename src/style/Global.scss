@@ -3,7 +3,7 @@
 // @import "modules/buttons.scss";
 // @import "modules/forms.scss";
 // @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
 
 $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 
@@ -47,7 +47,7 @@ html {
 #iassist-panel-body-tag {
   background: #000;
   color: #fff;
-  font-family: "Poppins", sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 11px;
   font-weight: 400;
   line-height: 1.4;
@@ -83,7 +83,7 @@ p {
     cursor: pointer;
     font-size: 11px;
     font-weight: 500;
-    font-family: "Poppins", sans-serif;
+    font-family: "Open Sans", sans-serif;
     border: none;
     margin: 0;
     &:disabled {
@@ -360,7 +360,7 @@ p {
   textarea:focus {
     outline: none;
     font-size: 11px;
-    font-family: "Poppins";
+    font-family: "Open Sans";
   }
 
   .btn-with-icon {
@@ -999,7 +999,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       margin-bottom: 5px;
 
       .mandatory-mark {
-        color: #ff0000;
+        color: #B1B2B3;
       }
     }
     .field {
@@ -1112,14 +1112,36 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         outline: none;
       }
     }
+
+    .options-wrapper{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 13px;
+
+      .active{
+        background-color: #2151FF !important; 
+        color: #fff !important;
+        border: none !important;
+
+
+      }
+      .option{
+        width: 96px;
+        height: 20px;
+        border: 1px solid #87929D;
+        background: none; 
+        text-align: center; 
+        color: #B1B2B3;
+        border-radius: 2px;
+        text-transform: capitalize;
+      }
+    }
   }
 
   .no-bg {
     display: flex;
     gap: 7px;
-    .mandatory-mark {
-      color: #ff0000;
-    }
+    
     .react-speedselect-container {
       align-items: center;
       background-color: transparent !important;
