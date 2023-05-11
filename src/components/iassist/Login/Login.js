@@ -11,14 +11,10 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [appName, setAppName] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [inProgress, setInProgress] = useState('');
 
 
-  const handleAppNameChange = (event) => {
-    setAppName(event.target.value);
-  }
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -76,9 +72,10 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
           setDesktopUserSession(response.access_token, user_details); //Set token and user details in session
           
           setTimeout(()=>{
-            console.log('Successfully Login');
             setAuthentication(true)
             setIsLoggedIn(true)
+            console.log('Successfully Login');
+            
           });
           
         } else {
@@ -97,10 +94,6 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
     <div className='login-page'>
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        <label>
-          {/* Application Name: */}
-          <input autoComplete="off"  placeholder='Enter Application Name' type="text" value={appName} onChange={handleAppNameChange} />
-        </label>
         <label>
           {/* Email: */}
           <input autoComplete="off" placeholder='Enter Email' type="email" value={email} onChange={handleEmailChange} />

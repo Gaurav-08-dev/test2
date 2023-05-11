@@ -220,6 +220,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             .then(response => {
 
                 if (response) {
+                    if(response.message === "no tickets found") {setShowLoader(false);setDisableButton(false); return [];}
 
                     
                 

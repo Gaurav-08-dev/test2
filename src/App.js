@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import './App.css';
-import Main from './components/iassist/main';
+import Main from './components/iassist/Main';
 import Toast from "./components/Toast/Toast";
 import { GlobalDebug } from "./utils/RemoveConsole";
 
