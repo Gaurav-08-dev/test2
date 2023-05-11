@@ -13,7 +13,7 @@ import TicketReopen from './feedback/TicketReopen';
 import Detail from './userlist/Detail';
 import Delete from './DeleteConfirmation/Delete';
 import MultiPeriodPickerPanel from '../MultiPeriodPicker/MultiPeriodPicker';
-import { formatDates } from "./Utilityfunction";
+import { formatDates, isElectron } from "./Utilityfunction";
 import ClickOutsideListner from "./ClickOutsideListener";
 
 
@@ -97,7 +97,6 @@ const reducer = (state, action) => {
 
 
 const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, storedData,setStoredData }) => {
-console.log(storedData)
 
     const initialState = {
         topicClick: topicClick ? topicClick : false,
@@ -142,6 +141,7 @@ console.log(storedData)
     const reportersList = useRef([]);
 
     const unRead = useRef(true);
+    const checkApptype = useRef(isElectron());
     const readCheckBoxStatus = useRef(true)
 
 
@@ -873,7 +873,7 @@ console.log(storedData)
 
             const home = document.getElementById('iassist-panel');
 
-            if (home && !(home.contains(event.target))) {
+            if (home && !(home.contains(event.target)) && !checkApptype.current) {
 
                 closePanes();
                 clearData();
@@ -950,7 +950,7 @@ console.log(storedData)
                                     </button>
 
                                 </div>
-                                <button className='iassist-header-close' onClick={() => closePanes()}></button>
+                               {!checkApptype.current && <button className='iassist-header-close' onClick={() => closePanes()}></button>}
                             </div>
                         </div>
 

@@ -8,6 +8,7 @@ import alertService from "../../services/alertService";
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
+import { isElectron } from './Utilityfunction';
 
 
 
@@ -50,6 +51,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [displayMessage, setDisplayMessage] = useState([]);
     const [deleteSavedItem, setDeleteSavedItem] = useState(false);
     const [openPopUp, setOpenPopUp] = useState(false);
+    const checkApptype = useRef(isElectron());
 
 
     if (ticketTypeList.length > 0 && ticketTypeList[0].id === 'All') {
@@ -515,7 +517,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             }
             const container = document.getElementById('iassist-panel');
 
-            if ((container && !(container.contains(event.target)))) {
+            if ((container && !(container.contains(event.target))) && !checkApptype.current) {
 
                 closePanes()
 

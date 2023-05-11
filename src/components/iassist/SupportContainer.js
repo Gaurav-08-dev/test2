@@ -5,48 +5,21 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
-import LoginPage from "./Login/Login";
+import { isElectron } from "./Utilityfunction";
 let webSocket;
 
 const SupportContainer = () => {
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
-    const [isElectronApp,setIsElectronApp] = useState(false);
     const AppId = useRef(window?.iAssistAppId);
     const tokenConstant = useRef('');
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    const [storedTicket, setStoredTicket] = useState({ Active: [], Resolved: [] });
-    const [isLoggedIn,setIsLoggedIn]=useState(false)
+    const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
+    const checkApptype = useRef(true);
     // const [configData, setConfigData] = useState('');
-
-    function isElectron() {
-        // Renderer process
-        if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-            return true;
-            // setIsElectronApp(true)
-        }
-
-        // Main process
-        if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-            return true;
-            // setIsElectronApp(true)
-
-        }
-
-        // Detect the user agent when the `nodeIntegration` option is set to true
-        if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-            return true;
-            // setIsElectronApp(true)
-
-        }
-
-        return false;
-        // setIsElectronApp(false)
-
-    }
 
     const getConfigDetails = async (type) => {
 
@@ -124,11 +97,16 @@ const SupportContainer = () => {
                     changeValue(isUnread);
                 } if (received_msg.type === 'chat') {
                     changeValue(true);
+                    alertService.showToast('info', `New Message Arrived on topic id: ${received_msg.topic_id}`);
                 }
             };
 
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
+                if (checkApptype.current) {
+                    console.log(checkApptype);
+                    setOpenSupport(true);
+                }
             };
 
             webSocket.onclose = function () {
@@ -171,45 +149,29 @@ const SupportContainer = () => {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
                 // getConfigDetails('onButtonClick');
-                alertService.showToast('process', 'Please refresh the page');
+                alertService.showToast('process', 'Loading...');
             }
         }
     }
-
-
-    useEffect(()=>{
-        const bodyElement = document.getElementsByTagName('body')[0];
-        const linkTag = document.createElement("link");
-        
-        // https://gaurav-08-dev.github.io/test2/index.css;
-        linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
-        linkTag.rel = "stylesheet";
-        linkTag.id = "iassist-css";
-        bodyElement.append(linkTag);
-    },[])
 
     useEffect(() => {
 
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
-        
 
         if (prevAppId !== AppId.current || !configDetails) {
             getConfigDetails();
         }
 
-        // const bodyElement = document.getElementsByTagName('body')[0];
-        // const linkTag = document.createElement("link");
-        
-        // // https://gaurav-08-dev.github.io/test2/index.css;
-        // linkTag.href = "https://gaurav-08-dev.github.io/test2/index.css";
-        // linkTag.rel = "stylesheet";
-        // linkTag.id = "iassist-css";
-        // bodyElement.append(linkTag);
+        const bodyElement = document.getElementsByTagName('body')[0];
+        const linkTag = document.createElement("link");
+        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
+        linkTag.rel = "stylesheet";
+        linkTag.id = "iassist-css";
+        bodyElement.append(linkTag);
 
-        isElectron()
         return (() => {
-            setOpenSupport(false)
+            if (!checkApptype.current) setOpenSupport(false)
         })
 
     }, []) //eslint-disable-line 
@@ -249,6 +211,8 @@ const SupportContainer = () => {
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
     useEffect(() => {
+        console.log(checkApptype);
+        // checkApptype.current = isElectron();
         document.addEventListener('click', supportButtonClick);
 
         return () => {
@@ -256,28 +220,19 @@ const SupportContainer = () => {
         }
     }, []) // eslint-disable-line 
 
-    console.log(isElectronApp)
-
     return (
         <>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
+            { <div id="btn-support-wrapper"> <button>Open</button></div>}
 
-            {openSupport &&
-                <Support
-                    closePane={closePane}
-                    webSocket={webSocket}
-                    panelPosition={panelPosition.current}
-                    platformId={platformId}
-                    storedData={storedTicket}
-                    setStoredData={setStoredTicket}
-                />}
-
-                {
-                    !isElectronApp && !isLoggedIn && <LoginPage 
-                        setOpenSupport={setOpenSupport}
-                        setIsLoggedIn={setIsLoggedIn}
-                    />
-                }
+            {openSupport && 
+            <Support
+                closePane={closePane}
+                webSocket={webSocket}
+                panelPosition={panelPosition.current}
+                platformId={platformId}
+                storedData={storedTicket}
+                setStoredData={setStoredTicket}
+            />}
         </>
 
     )

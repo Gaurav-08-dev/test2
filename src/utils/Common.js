@@ -24,6 +24,19 @@ export const getToken = () => {
  * Get User Auth Token
  */
 // return the token from the session storage
+export const getDesktopToken = () => {
+  return localStorage.getItem(Constants.DESKTOP_SITE_PREFIX + 'token') || null;
+  
+  // New method - get token from sso site
+  // window.SSO.getToken((token) => {
+  //   return token;
+  // });
+}
+
+/************************************************
+ * Get User Auth Token
+ */
+// return the token from the session storage
 export const getTokenClient = () => {
   return sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') || null;
   
@@ -91,6 +104,15 @@ export const setUserSession = (token, user, uniqueid = null) => {
   }
 }
 
+// Set the token and user from the session storage for desktop app
+export const setDesktopUserSession = (token, user, uniqueid = null) => {
+  localStorage.setItem(Constants.DESKTOP_SITE_PREFIX + 'token', token);
+  localStorage.setItem(Constants.DESKTOP_SITE_PREFIX + 'user', JSON.stringify(user));
+  if (uniqueid) {
+    localStorage.setItem(Constants.DESKTOP_SITE_PREFIX + 'sessionid', uniqueid);
+  }
+}
+
 export const setUserToken = (token) => {
   sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'token', token);
 }
@@ -113,7 +135,7 @@ export const removeUserSession = () => {
   var arr = []; // Array to hold the keys
   // Iterate over localStorage and insert the keys that meet the condition into arr
   for (let i = 0; i < localStorage.length; i++) {
-    if (localStorage.key(i).substring(0, 6) === Constants.SITE_PREFIX || localStorage.key(i).substring(0, 13) === Constants.SITE_PREFIX_CLIENT) {
+    if (localStorage.key(i).substring(0, 6) === Constants.SITE_PREFIX || localStorage.key(i).substring(0, 15) === Constants.SITE_PREFIX_CLIENT || localStorage.key(i).substring(0, 23) === Constants.DESKTOP_SITE_PREFIX) {
       arr.push(localStorage.key(i));
     }
   }
