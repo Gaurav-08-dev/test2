@@ -3,6 +3,7 @@
 
 export const SITE_TITLE = 'Sight byData';
 export const SITE_PREFIX = 'iassist_main_';
+export const DESKTOP_SITE_PREFIX = 'iassist_client_desktop_';
 export const SITE_PREFIX_CLIENT = 'iassist_client_';
 export const API_BASE_URL = process.env.REACT_APP_API_URL; //Prod
 export const API_WEBSOCKET_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_WEBSOCKET_URL : "wss://support-dev-api.bydata.com/";
