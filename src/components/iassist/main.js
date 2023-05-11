@@ -1,14 +1,10 @@
-import React, { memo, useEffect, useRef, useState } from "react";
-import Support from "./Support";
-import * as Constants from '../Constants';
-import { getDesktopToken, getTokenClient, getUserDetailsFromToken, removeUserSession, setUserData, setUserToken } from "../../utils/Common";
+import React, { useEffect, useState } from "react";
+import { getDesktopToken, removeUserSession } from "../../utils/Common";
 import '../../style/Global.scss';
-import alertService from '../../services/alertService';
-import APIService from '../../services/apiService';
 import LoginPage from "./Login/Login";
 import SupportContainer from "./SupportContainer";
 import { isElectron } from "./Utilityfunction";
-let webSocket;
+import './Main.scss';
 
 const Main = () => {
     const [isLoggedIn,setIsLoggedIn]=useState(false);
@@ -36,7 +32,7 @@ const Main = () => {
     return (
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
-            {isAuthenticationSuccess && <button onClick={() => Logout()}>Logout</button>}
+            {isAuthenticationSuccess && <button className="iassist-logout" onClick={() => Logout()}>Logout</button>}
             {console.log('checauth', isAuthenticationSuccess, isElectronApp)}
             {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer />}
 
