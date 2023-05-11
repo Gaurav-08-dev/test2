@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
-import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
+import { getTokenClient, getUserDetailsFromToken, removeUserSession, setUserData, setUserToken } from "../../utils/Common";
 import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
@@ -44,12 +44,18 @@ const Main = () => {
     useEffect(() => {
         console.log('useeffe')
         isElectron()
-    }, []) //eslint-disable-line 
+    }, []) //eslint-disable-line
+
+    const Logout = () => {
+        removeUserSession();
+        setIsAuthenticationSuccess(false);
+        setIsLoggedIn(false);
+    }
 
     return (
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
-
+            <button onClick={isAuthenticationSuccess? Logout: {}}>{isAuthenticationSuccess? 'Logout': 'Login'}</button>
             {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer />}
 
             {
