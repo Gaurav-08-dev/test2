@@ -21,10 +21,10 @@ const Main = () => {
         console.log('useeffe')
         const checkIsElectron = isElectron();
         if (checkIsElectron && getDesktopToken()) {
-            setIsAuthenticationSuccess(true);
-            setIsLoggedIn(true);
+            // setIsAuthenticationSuccess(true);
+            // setIsLoggedIn(true);
         }
-        setIsElectronApp(checkIsElectron)
+        // setIsElectronApp(checkIsElectron)
     }, []) //eslint-disable-line
 
     const Logout = () => {
