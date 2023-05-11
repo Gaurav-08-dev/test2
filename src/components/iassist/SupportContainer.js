@@ -171,7 +171,7 @@ const SupportContainer = () => {
         bodyElement.append(linkTag);
 
         return (() => {
-            if (!checkApptype.current) setOpenSupport(false)
+            // if (!checkApptype.current) setOpenSupport(false)
         })
 
     }, []) //eslint-disable-line 
