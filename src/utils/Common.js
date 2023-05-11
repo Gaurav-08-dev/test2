@@ -24,6 +24,19 @@ export const getToken = () => {
  * Get User Auth Token
  */
 // return the token from the session storage
+export const getDesktopToken = () => {
+  return localStorage.getItem(Constants.DESKTOP_SITE_PREFIX + 'token') || null;
+  
+  // New method - get token from sso site
+  // window.SSO.getToken((token) => {
+  //   return token;
+  // });
+}
+
+/************************************************
+ * Get User Auth Token
+ */
+// return the token from the session storage
 export const getTokenClient = () => {
   return sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'token') || null;
   

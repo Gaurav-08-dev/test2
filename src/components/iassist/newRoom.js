@@ -19,7 +19,7 @@ import PlayButton from './Player/PlayButton';
 import RecordOption from './MediaOption/RecordOption';
 import Steno from 'react-steno';
 import parse from 'html-react-parser';
-import { getUserNameBasedOnId, getUserNameImage, getTimeZone } from "./Utilityfunction";
+import { getUserNameBasedOnId, getUserNameImage, getTimeZone, isElectron } from "./Utilityfunction";
 
 
 const pageNumber = 1;
@@ -74,6 +74,8 @@ const ChatRoom = ({
     const [editedMessage, setEditedMessage] = useState('');
     const Size = useRef(pageSize);
     const fetchedClientUsers=useRef([]);
+
+    const checkApptype = useRef(isElectron());
 
     const [messageList, setMessageList] = useState([]);
 
@@ -574,7 +576,7 @@ const ChatRoom = ({
 
             const chatContainer = document.getElementById('iassist-panel');
 
-            if (chatContainer && !(chatContainer.contains(event.target))) {
+            if (chatContainer && !(chatContainer.contains(event.target)) && !checkApptype.current) {
 
                 Size.current = pageSize;
 

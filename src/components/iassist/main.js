@@ -1,12 +1,13 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
-import { getTokenClient, getUserDetailsFromToken, removeUserSession, setUserData, setUserToken } from "../../utils/Common";
+import { getDesktopToken, getTokenClient, getUserDetailsFromToken, removeUserSession, setUserData, setUserToken } from "../../utils/Common";
 import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
 import LoginPage from "./Login/Login";
 import SupportContainer from "./SupportContainer";
+import { isElectron } from "./Utilityfunction";
 let webSocket;
 
 const Main = () => {
@@ -14,39 +15,16 @@ const Main = () => {
     const [isElectronApp,setIsElectronApp] = useState(false);
     const [isAuthenticationSuccess, setIsAuthenticationSuccess] = useState(false);
 
-    function isElectron() {
-        // Renderer process
-        if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-            // return true;
-            setIsElectronApp(true)
-            return;
-        }
 
-        // Main process
-        if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-            // return true;
-            setIsElectronApp(true)
-            return
-        }
-
-        // Detect the user agent when the `nodeIntegration` option is set to true
-        if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-            // return true;
-            setIsElectronApp(true)
-            return
-
-        }
-        console.log('not electron')
-        // return false;
-        setIsAuthenticationSuccess(true)
-        setIsElectronApp(false)
-        return;
-
-    }
 
     useEffect(() => {
         console.log('useeffe')
-        isElectron()
+        const checkIsElectron = isElectron();
+        if (checkIsElectron && getDesktopToken()) {
+            setIsAuthenticationSuccess(true);
+            setIsLoggedIn(true);
+        }
+        setIsElectronApp(checkIsElectron)
     }, []) //eslint-disable-line
 
     const Logout = () => {
