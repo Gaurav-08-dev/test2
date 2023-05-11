@@ -156,6 +156,7 @@ const SupportContainer = () => {
     }
 
     useEffect(() => {
+        console.log('useeffect in suppcon1')
 
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
@@ -172,12 +173,13 @@ const SupportContainer = () => {
         bodyElement.append(linkTag);
 
         return (() => {
-            if (!checkApptype.current) setOpenSupport(false)
+            setOpenSupport(false)
         })
 
     }, []) //eslint-disable-line 
 
     useEffect(() => {
+        console.log('useeffect in suppcon1 btnid')
 
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
@@ -212,6 +214,7 @@ const SupportContainer = () => {
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
     useEffect(() => {
+        console.log('useeffect in suppcon3')
         document.addEventListener('click', supportButtonClick);
 
         return () => {
