@@ -173,7 +173,7 @@ const SupportContainer = () => {
         bodyElement.append(linkTag);
 
         return (() => {
-            webSocket.close();
+            if (webSocket) webSocket.close();
             setOpenSupport(false)
         })
 
