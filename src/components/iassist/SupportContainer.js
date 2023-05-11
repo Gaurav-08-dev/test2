@@ -103,6 +103,9 @@ const SupportContainer = () => {
 
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
+                if (checkApptype.current) {
+                    setOpenSupport(true)
+                }
             };
 
             webSocket.onclose = function () {
@@ -209,9 +212,6 @@ const SupportContainer = () => {
     useEffect(() => {
         console.log(checkApptype);
         // checkApptype.current = isElectron();
-        if (checkApptype.current) {
-            setOpenSupport(true)
-        }
         document.addEventListener('click', supportButtonClick);
 
         return () => {
