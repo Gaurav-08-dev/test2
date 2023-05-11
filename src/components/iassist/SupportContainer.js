@@ -212,6 +212,40 @@ const SupportContainer = () => {
         }
     }, []) // eslint-disable-line 
 
+    function isElectron() {
+        // Renderer process
+        if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+            // return true;
+            // setIsElectronApp(true);
+            console.log(true);
+            return;
+        }
+
+        // Main process
+        if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+            // return true;
+            // setIsElectronApp(true);
+            console.log(true);
+            return;
+        }
+
+        // Detect the user agent when the `nodeIntegration` option is set to true
+        if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+            // return true;
+            // setIsElectronApp(true);
+            console.log(true)
+            return
+
+        }
+        console.log('not electron support')
+        // return false;
+        // setIsAuthenticationSuccess(true);
+        // setIsElectronApp(false);
+        console.log(false);
+        return;
+
+    }
+
 
     return (
         <>
