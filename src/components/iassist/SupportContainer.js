@@ -25,26 +25,26 @@ const SupportContainer = () => {
     function isElectron() {
         // Renderer process
         if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-            // return true;
-            setIsElectronApp(true)
+            return true;
+            // setIsElectronApp(true)
         }
 
         // Main process
         if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-            // return true;
-            setIsElectronApp(true)
+            return true;
+            // setIsElectronApp(true)
 
         }
 
         // Detect the user agent when the `nodeIntegration` option is set to true
         if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-            // return true;
-            setIsElectronApp(true)
+            return true;
+            // setIsElectronApp(true)
 
         }
 
-        // return false;
-        setIsElectronApp(false)
+        return false;
+        // setIsElectronApp(false)
 
     }
 
@@ -256,6 +256,7 @@ const SupportContainer = () => {
         }
     }, []) // eslint-disable-line 
 
+    console.log(isElectronApp)
 
     return (
         <>
