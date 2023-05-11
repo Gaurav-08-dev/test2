@@ -37,7 +37,8 @@ const Main = () => {
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
             <button onClick={isAuthenticationSuccess?() => Logout(): (e) => {e.preventDefault()}}>{isAuthenticationSuccess? 'Logout': 'Login'}</button>
-            {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer />}
+            {/* {(isAuthenticationSuccess || !isElectronApp) &&  */}
+            {<SupportContainer />}
 
             {
                 isElectronApp && !isLoggedIn && <LoginPage 
