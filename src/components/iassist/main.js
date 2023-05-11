@@ -32,9 +32,7 @@ const Main = () => {
     return (
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
-            {console.log('auth', isAuthenticationSuccess)}
             {isAuthenticationSuccess && <button className="iassist-logout" onClick={() => Logout()}>Logout</button>}
-            {console.log('checauth', isAuthenticationSuccess, isElectronApp)}
             {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer />}
 
             {
