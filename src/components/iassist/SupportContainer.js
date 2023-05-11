@@ -9,6 +9,7 @@ import { isElectron } from "./Utilityfunction";
 let webSocket;
 
 const SupportContainer = () => {
+    console.log('check');
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
@@ -236,7 +237,7 @@ const SupportContainer = () => {
     )
 }
 
-export default memo(SupportContainer);
+export default SupportContainer;
 
 
 
