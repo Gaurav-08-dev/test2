@@ -37,6 +37,7 @@ const Main = () => {
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
             {isAuthenticationSuccess && <button onClick={() => Logout()}>Logout</button>}
+            {console.log('checauth', isAuthenticationSuccess, isElectronApp)}
             {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer />}
 
             {
