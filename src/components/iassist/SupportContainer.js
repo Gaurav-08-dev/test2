@@ -211,8 +211,6 @@ const SupportContainer = () => {
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
     useEffect(() => {
-        console.log(checkApptype);
-        // checkApptype.current = isElectron();
         document.addEventListener('click', supportButtonClick);
 
         return () => {

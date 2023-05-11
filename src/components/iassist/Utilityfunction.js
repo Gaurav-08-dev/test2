@@ -26,7 +26,6 @@ export function isElectron() {
         return true;
 
     }
-    console.log('not electron')
     return false;
 }
 
