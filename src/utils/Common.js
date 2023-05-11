@@ -91,6 +91,15 @@ export const setUserSession = (token, user, uniqueid = null) => {
   }
 }
 
+// Set the token and user from the session storage for desktop app
+export const setDesktopUserSession = (token, user, uniqueid = null) => {
+  localStorage.setItem(Constants.DESKTOP_SITE_PREFIX + 'token', token);
+  localStorage.setItem(Constants.DESKTOP_SITE_PREFIX + 'user', JSON.stringify(user));
+  if (uniqueid) {
+    localStorage.setItem(Constants.DESKTOP_SITE_PREFIX + 'sessionid', uniqueid);
+  }
+}
+
 export const setUserToken = (token) => {
   sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'token', token);
 }

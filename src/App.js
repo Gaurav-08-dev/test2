@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import './App.css';
-import SupportContainer from './components/iassist/SupportContainer';
+import Main from './components/iassist/main';
 import Toast from "./components/Toast/Toast";
 import { GlobalDebug } from "./utils/RemoveConsole";
 
@@ -22,7 +22,7 @@ function App() {
   return (
     <>
       <Toast />
-      <SupportContainer />
+      <Main />
     </>
   );
 }
