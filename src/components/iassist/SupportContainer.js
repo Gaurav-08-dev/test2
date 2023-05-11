@@ -104,7 +104,8 @@ const SupportContainer = () => {
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
                 if (checkApptype.current) {
-                    setOpenSupport(true)
+                    console.log(checkApptype);
+                    setOpenSupport(true);
                 }
             };
 
@@ -170,7 +171,7 @@ const SupportContainer = () => {
         bodyElement.append(linkTag);
 
         return (() => {
-            setOpenSupport(false)
+            if (!checkApptype.current) setOpenSupport(false)
         })
 
     }, []) //eslint-disable-line 
