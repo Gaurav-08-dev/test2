@@ -5,6 +5,7 @@ import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } fr
 import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
+import { isElectron } from "./Utilityfunction";
 let webSocket;
 
 const SupportContainer = () => {
@@ -17,6 +18,7 @@ const SupportContainer = () => {
     const panelPosition = useRef('Right');
     const top = useRef('');
     const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
+    const checkApptype = useRef(isElectron());
     // const [configData, setConfigData] = useState('');
 
     const getConfigDetails = async (type) => {
@@ -159,7 +161,7 @@ const SupportContainer = () => {
 
         const bodyElement = document.getElementsByTagName('body')[0];
         const linkTag = document.createElement("link");
-        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
+        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
         linkTag.rel = "stylesheet";
         linkTag.id = "iassist-css";
         bodyElement.append(linkTag);
@@ -205,47 +207,17 @@ const SupportContainer = () => {
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
     useEffect(() => {
+        console.log(checkApptype);
+        // checkApptype.current = isElectron();
+        if (checkApptype.current) {
+            setOpenSupport(true)
+        }
         document.addEventListener('click', supportButtonClick);
 
         return () => {
             document.removeEventListener('click', supportButtonClick);
         }
     }, []) // eslint-disable-line 
-
-    function isElectron() {
-        // Renderer process
-        if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-            // return true;
-            // setIsElectronApp(true);
-            console.log(true);
-            return;
-        }
-
-        // Main process
-        if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-            // return true;
-            // setIsElectronApp(true);
-            console.log(true);
-            return;
-        }
-
-        // Detect the user agent when the `nodeIntegration` option is set to true
-        if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-            // return true;
-            // setIsElectronApp(true);
-            console.log(true)
-            return
-
-        }
-        console.log('not electron support')
-        // return false;
-        // setIsAuthenticationSuccess(true);
-        // setIsElectronApp(false);
-        console.log(false);
-        return;
-
-    }
-
 
     return (
         <>
