@@ -19,7 +19,7 @@ const SupportContainer = () => {
     const panelPosition = useRef('Right');
     const top = useRef('');
     const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
-    const checkApptype = useRef(true);
+    const checkApptype = useRef(isElectron());
     // const [configData, setConfigData] = useState('');
 
     const getConfigDetails = async (type) => {

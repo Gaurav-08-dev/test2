@@ -141,7 +141,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     const reportersList = useRef([]);
 
     const unRead = useRef(true);
-    const checkApptype = useRef(true);
+    const checkApptype = useRef(isElectron());
     const readCheckBoxStatus = useRef(true)
 
 
