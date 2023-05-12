@@ -94,6 +94,54 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
             background-color: #fff
           };
         }
+        .iassist-header-3-dot-option {
+          position: absolute;
+          right: 4px;
+          transform: rotate(90deg);
+
+          cursor: pointer;
+          align-items: flex-end;
+          mask: url($image-prefix + "icon-dots.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-dots.svg") no-repeat center
+            center;
+
+          background-color: #fff;
+          mask-size: 12px;
+          -webkit-mask-size: 12px;
+
+          //transform: rotate(90deg);
+          min-height: 16px;
+        }
+        .pane {
+          position: absolute;
+          padding: 0px;
+          right: 10px;
+          top: 25px;
+          // bottom: 0;
+          background: #fff;
+          margin: 0;
+          min-width: 50px;
+          border-radius: 2px;
+          z-index: 1;
+
+          &:hover {
+            cursor: pointer;
+          }
+
+          li {
+            list-style: none;
+            color: #333;
+            padding: 0 5px;
+            line-height: 20px;
+            transition: 300ms all;
+            cursor: pointer;
+            font-weight: 500;
+
+            &:hover {
+              background-color: #eeeeee;
+            }
+          }
+        }
       }
     }
     .iassist-sub-header-wrapper {

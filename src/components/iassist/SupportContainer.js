@@ -8,7 +8,7 @@ import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 let webSocket;
 
-const SupportContainer = () => {
+const SupportContainer = ({logOut}) => {
     console.log('check');
 
     const [openSupport, setOpenSupport] = useState(false);
@@ -19,7 +19,7 @@ const SupportContainer = () => {
     const panelPosition = useRef('Right');
     const top = useRef('');
     const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
-    const checkApptype = useRef(true);
+    const checkApptype = useRef(isElectron());
     // const [configData, setConfigData] = useState('');
 
     const getConfigDetails = async (type) => {
@@ -226,7 +226,7 @@ const SupportContainer = () => {
 
     return (
         <>
-            { <div id="btn-support-wrapper"> <button>Open</button></div>}
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
             {openSupport && 
             <Support
@@ -236,6 +236,7 @@ const SupportContainer = () => {
                 platformId={platformId}
                 storedData={storedTicket}
                 setStoredData={setStoredTicket}
+                logOut={logOut}
             />}
         </>
 
