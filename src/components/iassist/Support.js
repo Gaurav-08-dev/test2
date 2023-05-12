@@ -96,7 +96,7 @@ const reducer = (state, action) => {
 }
 
 
-const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, storedData,setStoredData }) => {
+const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, storedData,setStoredData, logOut }) => {
 
     const initialState = {
         topicClick: topicClick ? topicClick : false,
@@ -149,6 +149,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [disableButton, setDisableButton] = useState(false);
     const [updateValue, setUpdateValue] = useState(false);
+    const [openDesktopMenu, setOpenDesktopMenu] = useState(false);
     if (allTopics.current.length === 0 && (tabData=== 'open' && storedData.Active.length !== 0 || tabData === 'resolved' && storedData.Resolved.length !== 0)) {
 
         setValueFromMemory(tabData === 'open'? storedData.Active : storedData.Resolved);
@@ -825,10 +826,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             if (reporter_detail.id !== 0) dispatch({ type: actionType.reporters_label, payload: reporter_detail })
 
         }
+        let containerWrapper = document.getElementById('iassist-panel');
+        if (checkApptype.current) {
+            containerWrapper.style.top = 0;
+        }
 
         if (panelPosition && panelPosition !== 'Right') {
 
-            let containerWrapper = document.getElementById('iassist-panel');
+            
             if (panelPosition.toLowerCase() === 'left') {
                 containerWrapper.style.left = 0;
             } else if (panelPosition.toLowerCase() === 'center') {
@@ -955,6 +960,19 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                                 </div>
                                {!checkApptype.current && <button className='iassist-header-close' onClick={() => closePanes()}></button>}
+                               {checkApptype.current && <button className='iassist-header-3-dot-option' onClick={() => setOpenDesktopMenu(true)}></button>}
+                               {openDesktopMenu &&
+                                <ul id='menu' className='pane'>
+
+                                    <li onClick={() => {
+                                        if (logOut) logOut();
+                                        setOpenDesktopMenu(false)
+                                    }}>Logout</li>
+        
+
+                                </ul>
+
+                                }
                             </div>
                         </div>
 
