@@ -223,6 +223,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                 if (response) {
                     if(response.message === "no tickets found") {setShowLoader(false);setDisableButton(false); return [];}
 
+                    
+                
+                if(response.message === "no tickets found") {setShowLoader(false);setDisableButton(false); return [];}
                     // sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickets', JSON.stringify(response));
                     if (pageNumber === 1) {
                         setStoredData(tabData === 'open' ? {Active: response,Resolved: []}: {Active: [], Resolved: response})
