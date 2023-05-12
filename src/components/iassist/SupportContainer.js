@@ -8,7 +8,7 @@ import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 let webSocket;
 
-const SupportContainer = () => {
+const SupportContainer = ({logOut}) => {
     console.log('check');
 
     const [openSupport, setOpenSupport] = useState(false);
@@ -236,6 +236,7 @@ const SupportContainer = () => {
                 platformId={platformId}
                 storedData={storedTicket}
                 setStoredData={setStoredTicket}
+                logOut={logOut}
             />}
         </>
 

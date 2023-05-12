@@ -23,7 +23,7 @@ const Main = () => {
         setIsElectronApp(checkIsElectron);
     }, []) //eslint-disable-line
 
-    const Logout = () => {
+    const logout = () => {
         removeUserSession();
         setIsAuthenticationSuccess(false);
         setIsLoggedIn(false);
@@ -32,8 +32,8 @@ const Main = () => {
     return (
         <>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
-            {isAuthenticationSuccess && <button className="iassist-logout" onClick={() => Logout()}>Logout</button>}
-            {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer />}
+            {/* {isAuthenticationSuccess && <button className="iassist-logout" onClick={() => Logout()}>Logout</button>} */}
+            {(isAuthenticationSuccess || !isElectronApp) && <SupportContainer logOut={logout} />}
 
             {
                 isElectronApp && !isLoggedIn && <LoginPage 
