@@ -179,7 +179,7 @@ const SupportContainer = ({logOut, setLoader}) => {
 
     useEffect(() => {
         if (localStorage.length) getConfigDetails();
-    }, [isLocalEmpty.current]) //eslint-disable-line
+    }, [localStorage.length]) //eslint-disable-line
 
     useEffect(() => {
 
