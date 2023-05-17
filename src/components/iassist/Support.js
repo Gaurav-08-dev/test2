@@ -18,8 +18,11 @@ import ClickOutsideListner from "./ClickOutsideListener";
 
 
 let pageNumber = 1;
+let pageNumber_resolved = 1;
+
 const pageSize = 10;
 let totalPage = 0;
+let totalPage_resolved = 0;
 let tabData = 'open';
 let dateRange = ['Date'];
 const defType = { 'name': 'All', 'id': 'All' };
@@ -96,7 +99,8 @@ const reducer = (state, action) => {
 }
 
 
-const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, storedData,setStoredData, logOut }) => {
+const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, logOut }) => {
+
 
     const initialState = {
         topicClick: topicClick ? topicClick : false,
@@ -127,33 +131,39 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     const controller = new AbortController();
 
     const prevSearchValue = useRef();
-    const allTopics = useRef([]);
 
+    const allTopics = useRef([]);
     const unReadList = useRef([]);
+    const allUser = useRef([]);
+    const allAccount = useRef([]);
     const activity = useRef([]);
+
+    const allTopics_resolved = useRef([]);
+    const unReadList_resolved = useRef([]);
+    const allUser_resolved = useRef([]);
+    const allAccount_resolved = useRef([]);
+    const activity_resolved = useRef([]);
+
     const btnId = useRef(sessionStorage?.getItem(Constants.SITE_PREFIX_CLIENT + 'buttonId'));
 
     const bodyRef = useRef();
+    const bodyRef_resolved= useRef();
+
     const searchString = useRef('');
-    const allUser = useRef([]);
-    const allAccount = useRef([]);
     const ticketTypeList = useRef([]);
     const reportersList = useRef([]);
 
-    const unRead = useRef(true);
+    const unRead = useRef(true); // for URL 
+    const readCheckBoxStatus = useRef(true);
     const checkApptype = useRef(isElectron());
-    const readCheckBoxStatus = useRef(true)
 
 
     const [showLoader, setShowLoader] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [disableButton, setDisableButton] = useState(false);
-    const [updateValue, setUpdateValue] = useState(false);
     const [openDesktopMenu, setOpenDesktopMenu] = useState(false);
-    if (allTopics.current.length === 0 && (tabData=== 'open' && storedData.Active.length !== 0 || tabData === 'resolved' && storedData.Resolved.length !== 0)) {
 
-        setValueFromMemory(tabData === 'open'? storedData.Active : storedData.Resolved);
-    }
+
 
 
     if (ticketTypeList.current.length > 0 && ticketTypeList.current[0].id !== 'All') {
@@ -184,11 +194,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         if (dateRange[0] === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
+            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${tabData==='open'?pageNumber:pageNumber_resolved}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${pageNumber}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
+            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${tabData==='open'?pageNumber:pageNumber_resolved}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
 
         }
 
@@ -196,14 +206,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     }
 
-    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber, ticket) => {
+    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber) => {
 
         if (updatedPageNumber) pageNumber = updatedPageNumber;
 
-        setUpdateValue(true);
-
-        if (!updatedPageNumber && !ticket) setShowLoader(true);
-        if(!ticket) setDisableButton(true)
+        if (!updatedPageNumber) setShowLoader(true);
+        setDisableButton(true)
 
         dispatch({ type: actionType.initial_load_status, payload: false })
 
@@ -217,19 +225,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         const token = `Bearer ${jwt_token}`;
 
+        const currentPageNumber = tabData==='open'?pageNumber:pageNumber_resolved;
         APIService.apiRequest(url, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
-                    if(response.message === "no tickets found") {setShowLoader(false);setDisableButton(false); return [];}
 
-                    
-                
-                if(response.message === "no tickets found") {setShowLoader(false);setDisableButton(false); return [];}
-                    // sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickets', JSON.stringify(response));
-                    if (pageNumber === 1) {
-                        setStoredData(tabData === 'open' ? {Active: response,Resolved: []}: {Active: [], Resolved: response})
-                    }
                     const result = response;
 
                     for (let key in result) {
@@ -237,69 +238,76 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                         let data = result[key];
 
                         if (key === 'topic_data') {
-                            // ;
 
-                            if (pageNumber > 1) {
-                            //    allTopics.current = removeDuplicatesFromCollection([...data, ...allTopics.current])
-                                data?.forEach((topicValue) =>
+                            if (currentPageNumber > 1)
+                                
+                            tabData==='open' ?data?.forEach((topicValue) =>
                                     allTopics.current.push(topicValue)
-                                )
-                            }
+                                ):data?.forEach((topicValue) =>
+                                allTopics_resolved.current.push(topicValue)
+                            )
 
-                            if (pageNumber === 1)
-                                allTopics.current = data;
+                            if (currentPageNumber === 1)
+                                tabData==='open'?allTopics.current = data:allTopics_resolved.current = data;
 
                         } else if (key === 'unread_data') {
 
-                            if (pageNumber === 1)
-                                unReadList.current = data;
+                            if (currentPageNumber === 1)
+                                tabData==='open'?unReadList.current = data:unReadList_resolved.current = data;
 
-                            if (pageNumber > 1)
-                                data?.forEach((topicValue) =>
+                            if (currentPageNumber > 1)
+                               tabData==='open'?data?.forEach((topicValue) =>
                                     unReadList.current.push(topicValue)
-                                )
+                                ):data?.forEach((topicValue) =>
+                                unReadList_resolved.current.push(topicValue)
+                            )
 
                         } else if (key === 'pagination') {
 
-                            totalPage = data.no_of_pages;
+                            tabData==='open'?  totalPage = data.no_of_pages:totalPage_resolved=data.no_of_pages; 
 
                         } else if (key === 'message' && data === 'no tickets found') {
 
-                            allTopics.current = [];
+                            tabData==='open'?allTopics.current = []:allTopics_resolved.current = [];
 
                         } else if (key === 'user_data') {
 
-                            if (pageNumber === 1)
-                                allUser.current = data;
+                            if (currentPageNumber === 1)
+                            tabData==='open'?allUser.current = data:allUser_resolved.current = data;
 
-                            if (pageNumber > 1)
-                                data?.forEach((topicValue) =>
+                            if (currentPageNumber > 1)
+                            tabData==='open'? data?.forEach((topicValue) =>
                                     allUser.current.push(topicValue)
-                                )
+                                ):data?.forEach((topicValue) =>
+                                allUser_resolved.current.push(topicValue)
+                            )
                         } else if (key === 'account_data') {
 
-                            if (pageNumber === 1)
-                                allAccount.current = data;
+                            if (currentPageNumber === 1)
+                            tabData==='open'?allAccount.current = data:allAccount_resolved.current = data;
 
-                            if (pageNumber > 1)
-                                data?.forEach((topicValue) =>
+                            if (currentPageNumber > 1)
+                            tabData==='open'?data?.forEach((topicValue) =>
                                     allAccount.current.push(topicValue)
+                                ):data?.forEach((topicValue) =>
+                                allAccount_resolved.current.push(topicValue)
                                 )
 
                         } else if (key === 'activity') {
 
-                            if (pageNumber === 1)
-                                activity.current = data;
+                            if (currentPageNumber === 1)
+                            tabData==='open'?activity.current = data:activity_resolved.current = data;
 
-                            if (pageNumber > 1)
-                                data?.forEach((topicValue) =>
+                            if (currentPageNumber > 1)
+                            tabData==='open'?data?.forEach((topicValue) =>
                                     activity.current.push(topicValue)
+                                ):data?.forEach((topicValue) =>
+                                activity_resolved.current.push(topicValue)
                                 )
                         }
                     }
                     setDisableButton(false);
                     setShowLoader(false);
-                    setUpdateValue((value) => !value);
 
                 }
 
@@ -414,7 +422,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             .then(response => {
 
                 sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickettype', JSON.stringify(response));
-
                 if (response) {
 
                     const result = response;
@@ -472,7 +479,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         unReadList.current = [];
 
-        pageNumber = 1;
+        allTopics_resolved.current = [];
+        activity_resolved.current = [];
+        allAccount_resolved.current = [];
+
+    tabData==='open'?pageNumber = 1:pageNumber_resolved = 1;
 
         if (resetUnread) {
             unRead.current = false;
@@ -503,7 +514,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     const closePanes = () => {
 
         closePane();
-
         dispatch({ type: actionType.show_chat, payload: false })
         dispatch({ type: actionType.topic_click, payload: false })
 
@@ -529,7 +539,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         })
 
         return unreadFlag && unreadFlag.length > 0 && unreadFlag[0].unread_count > 0 ? true : false;
-
     }
 
     //For filter drop down changes
@@ -623,8 +632,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                     allTopics.current = allTopics.current.filter(topic => topic.id !== data);
                     unReadList.current = unReadList.current.filter(topic => topic.topic_id !== data)
                     activity.current = activity.current.filter(topic => topic.id !== data)
-                    // sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'tickets', JSON.stringify(allTopics.current));
-                    setStoredData({Active: allTopics.current, Resolved: storedData?.Resolved});
 
                     alertService.showToast('success', result.message);
 
@@ -657,20 +664,31 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         if ((e.keyCode === 13 || e === 'click') && (searchString.current !== '' || prevSearchValue.current)) {
             prevSearchValue.current = searchString.current;
+
+            tabData === 'open' ? pageNumber = 1 : pageNumber_resolved = 1;
             getTopicsBasedOnFilter(searchString.current);
         }
     }
 
     const onScroll = async () => {
 
+        console.log('scrolling');
 
-        if (bodyRef.current.scrollTop + bodyRef.current.clientHeight + 2 >= bodyRef.current.scrollHeight && !isDeleteClick) {
+        const temp=tabData==='open'?bodyRef:bodyRef_resolved;
 
 
-            if (totalPage > pageNumber) {
+
+        if (temp.current.scrollTop + temp.current.clientHeight + 2 >= temp.current.scrollHeight && !isDeleteClick) {
+
+
+            if(tabData==='open' && totalPage > pageNumber){
                 pageNumber += 1;
                 await getTopicsBasedOnFilter();
+            }
 
+            if(tabData==='resolved' && totalPage_resolved > pageNumber_resolved){
+                pageNumber_resolved += 1;
+                await getTopicsBasedOnFilter();
             }
 
         }
@@ -718,7 +736,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         }
 
-        pageNumber = 1;
+        tabData==='open'?pageNumber = 1:pageNumber_resolved = 1;
+        // pageNumber = 1;
         getTopicsBasedOnFilter();
     }
 
@@ -731,89 +750,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         isDeleteClick = false;
     }
 
-    function setValueFromMemory(topicData) {
-        const result = topicData;
-        for (let key in result) {
-
-            let data = result[key];
-
-            if (key === 'topic_data') {
-
-                if (pageNumber > 1)
-                    data?.forEach((topicValue) =>
-                        allTopics.current.push(topicValue)
-                    )
-
-                if (pageNumber === 1)
-                    allTopics.current = data;
-
-            } else if (key === 'unread_data') {
-
-                if (pageNumber === 1)
-                    unReadList.current = data;
-
-                if (pageNumber > 1)
-                    data?.forEach((topicValue) =>
-                        unReadList.current.push(topicValue)
-                    )
-
-            } else if (key === 'pagination') {
-
-                totalPage = data.no_of_pages;
-
-            } else if (key === 'message' && data === 'no tickets found') {
-
-                allTopics.current = [];
-
-            } else if (key === 'user_data') {
-
-                if (pageNumber === 1)
-                    allUser.current = data;
-
-                if (pageNumber > 1)
-                    data?.forEach((topicValue) =>
-                        allUser.current.push(topicValue)
-                    )
-            } else if (key === 'account_data') {
-
-                if (pageNumber === 1)
-                    allAccount.current = data;
-
-                if (pageNumber > 1)
-                    data?.forEach((topicValue) =>
-                        allAccount.current.push(topicValue)
-                    )
-
-            } else if (key === 'activity') {
-
-                if (pageNumber === 1)
-                    activity.current = data;
-
-                if (pageNumber > 1)
-                    data?.forEach((topicValue) =>
-                        activity.current.push(topicValue)
-                    )
-            }
-        }
-        setUpdateValue(val => !val);
-    }
-
-    const removeDuplicatesFromCollection = (collectionData) => {
-        const jsonObject = collectionData.map(JSON.stringify);
-        const uniqueDataSet = new Set(jsonObject);
-        const uniqueData = Array.from(uniqueDataSet).map(JSON.parse);
-        return uniqueData
-    }
-
     useEffect(() => {
 
         const TicketsInMemory = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'tickettype'))
 
-         ticketTypeList.current = TicketsInMemory === null || undefined ? [] : TicketsInMemory; 
-
-        // const getTicket = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'tickets'));
-
-        // setValueFromMemory(storedData);
+        ticketTypeList.current = TicketsInMemory === null || undefined ? [] : TicketsInMemory;
 
         unRead.current = retainedStatus.unread;
         readCheckBoxStatus.current = retainedStatus.read;
@@ -826,14 +767,10 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             if (reporter_detail.id !== 0) dispatch({ type: actionType.reporters_label, payload: reporter_detail })
 
         }
-        let containerWrapper = document.getElementById('iassist-panel');
-        if (checkApptype.current) {
-            containerWrapper.style.top = 0;
-        }
 
         if (panelPosition && panelPosition !== 'Right') {
 
-            
+            let containerWrapper = document.getElementById('iassist-panel');
             if (panelPosition.toLowerCase() === 'left') {
                 containerWrapper.style.left = 0;
             } else if (panelPosition.toLowerCase() === 'center') {
@@ -865,9 +802,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             conatinerWrapper[0].style.maxHeight = '92.5%';
         }
 
-        let checkStoreData = tabData === 'open'? storedData.Active.length !== 0 : storedData.Resolved.length !== 0;
-
-        getTopicsBasedOnFilter(undefined, undefined, checkStoreData? storedData : undefined);
+        getTopicsBasedOnFilter();
 
 
         document.addEventListener("mouseup", (event) => {
@@ -880,9 +815,13 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
             }
 
+            const pane = document.getElementById('menu');
+
+            if (pane && !pane.contains(event.target)) setOpenDesktopMenu(false);
+
             const home = document.getElementById('iassist-panel');
 
-            if (home && !(home.contains(event.target)) && !checkApptype.current) {
+            if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) {
 
                 closePanes();
                 clearData();
@@ -903,6 +842,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     useEffect(() => {
 
+        let containerWrapper = document.getElementById('iassist-panel');
+        if (checkApptype.current) {
+            containerWrapper.style.top = 0;
+        }
+
+
         const subheaderAvailable = document.getElementById('app-sub-header');
         if (subheaderAvailable) {
             let conatinerWrapper = document.getElementsByClassName('iassist-panel');
@@ -910,12 +855,22 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             conatinerWrapper[0].style.maxHeight = '92.5%';
         }
 
-        if (bodyRef.current) { bodyRef.current.addEventListener('scroll', onScroll) };
+        if (bodyRef.current && tabData==='open') { bodyRef.current.addEventListener('scroll', onScroll) };
+
+
+        if(bodyRef_resolved.current && tabData==='resolved') { bodyRef_resolved.current.addEventListener('scroll', onScroll) };
 
         return () => {
-            if (bodyRef.current) bodyRef.current.addEventListener('scroll', onScroll);
+            if (bodyRef.current) bodyRef.current.addEventListener('scroll', onScroll); // eslint-disable-line
+            if (bodyRef_resolved.current) bodyRef_resolved.current.addEventListener('scroll', onScroll); // eslint-disable-line
+
         }
-    }, [state.showChat, state.topicClick]) // eslint-disable-line
+
+
+    }, [state.showChat, state.topicClick,tabData]) // eslint-disable-line
+
+
+    
 
     return (
 
@@ -959,20 +914,22 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                     </button>
 
                                 </div>
-                               {!checkApptype.current && <button className='iassist-header-close' onClick={() => closePanes()}></button>}
-                               {checkApptype.current && <button className='iassist-header-3-dot-option' onClick={() => setOpenDesktopMenu(true)}></button>}
-                               {openDesktopMenu &&
-                                <ul id='menu' className='pane'>
+                                {!checkApptype.current && <button className='iassist-header-close' onClick={() => closePanes()}></button>}
+                                {checkApptype.current && <button className='iassist-header-three-dot-option' onClick={() => setOpenDesktopMenu(true)}></button>}
+                                {openDesktopMenu &&
+                                    <ul id='menu' className='pane'>
 
-                                    <li onClick={() => {
-                                        if (logOut) logOut();
-                                        setOpenDesktopMenu(false)
-                                    }}>Logout</li>
-        
+                                        <li onClick={() => {
+                                            if (logOut) logOut();
+                                            setOpenDesktopMenu(false)
+                                        }}>Logout</li>
 
-                                </ul>
+
+                                    </ul>
 
                                 }
+
+                                {/* <button className='iassist-header-close' onClick={() => closePanes()}></button> */}
                             </div>
                         </div>
 
@@ -980,7 +937,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                             {state.showMultipleFilters &&
                                 <div className='iassist-sub-header-wrapper'>
 
-                                    <div className='iassist-sub-header-upper-section'> 
+                                    <div className='iassist-sub-header-upper-section'>
                                         <span className="iassist-sub-header-text">Filter</span>
 
                                         <button className='clear' disabled={disableButton} onClick={() => clearFilter()}>Clear</button>
@@ -1084,8 +1041,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                             if (tabData !== 'open') {
                                                 tabData = 'open';
                                                 dispatch({ type: actionType.status_tab, payload: 'open' })
-                                                clearData(false);
-                                                getTopicsBasedOnFilter();
+                                                // clearData(false);
+                                                if(dateRange[0] !== 'Date' || searchString.current !== '' || prevSearchValue.current || allTopics.length===0 || state.ticketTypeLabel!=='Select' || state.reporterLabel!=='All' || !(state.readUnreadStatus.read===true && state.readUnreadStatus.unread)) getTopicsBasedOnFilter();
 
                                             }
                                         }}>
@@ -1099,10 +1056,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                         onClick={() => {
                                             if (tabData !== 'resolved') {
                                                 tabData = 'resolved';
-                                                pageNumber = 1;
                                                 dispatch({ type: actionType.status_tab, payload: 'resolved' })
-                                                clearData(false);
-                                                getTopicsBasedOnFilter(undefined, undefined, undefined);
+                                                // clearData(false);
+                                                if( dateRange[0] !== 'Date' || searchString.current !== '' || prevSearchValue.current || allTopics_resolved.current.length===0 || state.ticketTypeLabel!=='Select' || state.reporterLabel!=='All' || !(state.readUnreadStatus.read===true && state.readUnreadStatus.unread)) getTopicsBasedOnFilter();
                                             }
                                         }}>
 
@@ -1114,9 +1070,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                             </div>
 
-                            <div className={'iassist-topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+                            {state.statusTab === 'resolved' && <div className={'iassist-topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef_resolved}>
 
-                                {!confirmDelete && allTopics.current.length > 0 && allTopics.current.map((topic, index) => {
+                                {!confirmDelete && allTopics_resolved.current.length > 0 && allTopics_resolved.current.map((topic, index) => {
 
                                     return (
                                         <div className='iassist-topic' key={topic.id}>
@@ -1131,7 +1087,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                                                 <div className='iassist-topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
 
-                                                <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
+                                                <Detail topic={topic} type={ticketTypeList.current} allUser={allUser_resolved.current.length ? allUser_resolved.current : reportersList.current} allAccount={allAccount_resolved.current} />
 
                                             </div>}
 
@@ -1144,7 +1100,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                         id={state.feedbackId}
                                                         ticket={getTopicsBasedOnFilter}
                                                         disabledButton={setDisableButton}
-                                                        allTopic={allTopics.current}
+                                                        allTopic={allTopics_resolved.current}
                                                         setLoader={setShowLoader}
                                                         placeHolders='Type here' />}
 
@@ -1180,7 +1136,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                         id={state.getTopicId.id}
                                                         ticket={getTopicsBasedOnFilter}
                                                         disableButton={setDisableButton}
-                                                        allTopic={allTopics.current}
+                                                        allTopic={allTopics_resolved.current}
                                                         setLoader={setShowLoader}
                                                         placeHolders='Type here'
 
@@ -1214,27 +1170,134 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                 }
 
 
-                                {allTopics.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
+                                {allTopics_resolved.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
 
-                            </div>
+                            </div>}
+
+                            {
+                                state.statusTab === 'open' &&
+
+                                <div className={'iassist-topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef}>
+
+                                    {!confirmDelete && allTopics.current.length > 0 && allTopics.current.map((topic, index) => {
+
+                                        return (
+                                            <div className='iassist-topic' key={topic.id}>
+
+                                                {<div className='iassist-topic-header' onClick={() => openChat(topic)}>
+
+                                                    <div className='topic-header-inner'>
+                                                        <h4 className='topic-name'>{topic.name}</h4>
+                                                        <div className='topic-chat-notify'></div>
+                                                        {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
+                                                    </div>
+
+                                                    <div className='iassist-topic-description'>{topic?.description.substr(0, 100)}{topic?.description?.length > 102 && '...'}</div>
+
+                                                    <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
+
+                                                </div>}
+
+
+                                                {<div className='iassist-topic-meta'>
+
+                                                    {(state.statusTab !== 'resolved') && state.showFeedback && state.feedbackId === topic.id &&
+                                                        <FeedBack
+                                                            closePane={closeFeedbackandReopenPane}
+                                                            id={state.feedbackId}
+                                                            ticket={getTopicsBasedOnFilter}
+                                                            disabledButton={setDisableButton}
+                                                            allTopic={allTopics.current}
+                                                            setLoader={setShowLoader}
+                                                            placeHolders='Type here' />}
+
+
+                                                    {state.feedbackId !== topic.id && (state.statusTab === 'open') ?
+                                                        <div className='topic-buttons'>
+
+                                                            <button className='btn-resolve icon-btn' disabled={disableButton} onClick={() => {
+                                                                setDisableButton(true);
+                                                                dispatch({ type: actionType.show_feedback, payload: true })
+                                                                dispatch({ type: actionType.feedBack_id, payload: topic.id })
+                                                            }}>
+                                                                <i></i>
+                                                                <span>Resolve</span>
+                                                            </button>
+
+                                                            {checkLastActivity(topic.id) && <button className='btn-delete icon-btn' disabled={disableButton} onClick={(e) => {
+                                                                isDeleteClick = true;
+                                                                setConfirmDelete(true)
+                                                                setDisableButton(true);
+                                                                dispatch({ type: actionType.delete_id, payload: topic.id })
+                                                            }
+                                                            }>
+                                                                <i></i>
+                                                                <span>Delete</span>
+                                                            </button>}
+
+                                                        </div> : ''}
+
+                                                    {(state.statusTab === 'resolved') && state.showReopenPanel && state.getTopicId.id === topic.id &&
+                                                        <TicketReopen
+                                                            closePane={closeFeedbackandReopenPane}
+                                                            id={state.getTopicId.id}
+                                                            ticket={getTopicsBasedOnFilter}
+                                                            disableButton={setDisableButton}
+                                                            allTopic={allTopics.current}
+                                                            setLoader={setShowLoader}
+                                                            placeHolders='Type here'
+
+                                                        />}
+                                                    {(state.statusTab === 'resolved') && (!state.showReopenPanel) && <div className='topic-buttons'>
+
+                                                        {state.getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
+                                                            setDisableButton(true);
+                                                            dispatch({ type: actionType.get_topic_id, payload: topic })
+                                                            dispatch({ type: actionType.show_reopen_panel, payload: true })
+                                                        }}>
+                                                            <i></i>
+                                                            <span>Re-Open</span>
+                                                        </button>}
+
+                                                    </div>}
+
+                                                </div>}
+
+                                            </div>
+
+                                        )
+                                    })}
+
+                                    {confirmDelete && <Delete deleteTopic={deleteTopic}
+                                        topic={state.deleteId}
+                                        setConfirmDelete={setConfirmDelete}
+                                        disable={setDisableButton}
+                                        isScrollWhenDelete={disableScrollWhenDelete}
+                                    />
+                                    }
+
+
+                                    {allTopics.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
+
+                                </div>
+
+                            }
                         </div>
 
                     </div>
 
                 </div>}
 
-
-
-            {state.topicClick && !state.showChat && 
-            <CreateChatRoom 
-                closePane={closePanes} 
-                socketDetail={webSocket} 
-                panelPosition={panelPosition} 
-                platformId={platformId} 
-                closeCreateTicket={closeChatRoom} 
-                getTopicsBasedOnFilter={getTopicsBasedOnFilter}     
-                ticketTypeList={ticketTypeList.current}
-            />}
+            {state.topicClick && !state.showChat &&
+                <CreateChatRoom
+                    closePane={closePanes}
+                    socketDetail={webSocket}
+                    panelPosition={panelPosition}
+                    platformId={platformId}
+                    closeCreateTicket={closeChatRoom}
+                    getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                    ticketTypeList={ticketTypeList.current}
+                />}
 
             {state.showChat && <ChatRoom closePane={closePanes}
                 chatIds={chatId}

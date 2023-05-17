@@ -8,7 +8,7 @@ import alertService from "../../services/alertService";
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
-import { isElectron } from './Utilityfunction';
+import { isElectron,convertFileSizeToMB } from './Utilityfunction';
 
 
 
@@ -52,6 +52,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [deleteSavedItem, setDeleteSavedItem] = useState(false);
     const [openPopUp, setOpenPopUp] = useState(false);
     const checkApptype = useRef(isElectron());
+    const [selectedFile, setSelectedFile] = useState([]);
+
 
 
     if (ticketTypeList.length > 0 && ticketTypeList[0].id === 'All') {
@@ -127,6 +129,11 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         } else if (type === 'topic') {
 
+            if(e.target.value.length > 45) {
+
+                alertService.showToast('warn', 'Topic name should not exceed 45 characters');
+                
+            }
             if (e.target.value.length <= 45) {
 
                 setTopic(e.target.value);
@@ -136,9 +143,9 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
             // if (e.target.value.length) {
 
-                setTopicDescriptions(e.target.value);
+            setTopicDescriptions(e.target.value);
 
-                // setTotalRowsForTextarea(topicDescriptions.length >= 68 ? 4 : 2)
+            // setTotalRowsForTextarea(topicDescriptions.length >= 68 ? 4 : 2)
 
             // }
 
@@ -147,7 +154,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
         requiredFieldValidation(false, type === 'topic' ? 'Name' : 'Description');
     }
 
-    const selectPriority = (e,value) => {
+    const selectPriority = (e, value) => {
 
         e.stopPropagation()
         setPriorities(value);
@@ -223,7 +230,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         let data = {
             tags: tagId,
-            file_data: videoData
+            file_data: [...videoData,...selectedFile]
         }
 
         const formData = new FormData();
@@ -258,7 +265,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
         const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
         // &client_id=${client}
-        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&app_id=${platformId}`
+        const url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_name=${topic}&topic_description=${topicDescriptions}&account_id=${organisation}&priority=${priorities.id}&ticket_type_id=${ticketType.id}&app_id=${platformId}&tags=${tagId}`
 
         if (token && validation) {
 
@@ -269,7 +276,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             const res = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token
+                    'Authorization': token,
+                    'App-Version': window.SITE_VERSION
                 },
                 body: formData
             })
@@ -299,6 +307,8 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             } else {
 
                 if (result.detail) {
+
+                    setShowLoading(false);
 
                     alertService.showToast('error', result.detail);
 
@@ -477,6 +487,37 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
     }
 
+    const handleFileChange = (e) => {
+
+        //  check each file size
+
+        const selectedFilesList = Array.from(e.target.files);
+
+
+        const selectedFilesTotalSize = convertFileSizeToMB([...selectedFile, ...selectedFilesList].reduce((acc, currentValue) => acc + currentValue.size, 0));
+
+        if (selectedFilesTotalSize > 50) {
+
+            alertService.showToast('warn', 'File size exceeds 50MB');
+
+            return;
+
+        }
+
+        selectedFilesList.map((file) => (
+            file.url = URL.createObjectURL(file)
+        ))
+
+        setSelectedFile([...selectedFile, ...selectedFilesList])
+
+    }
+
+    const handleDeleteFile = (item) => {
+
+        const updatedFileList = selectedFile.filter((file) => file.name !== item);
+        setSelectedFile([...updatedFileList])
+
+    }
     useEffect(() => {
 
         if (panelPosition && panelPosition !== 'Right') {
@@ -484,7 +525,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             if (panelPosition.toLowerCase() === 'left') {
                 containerWrapper.style.left = 0;
             } else if (panelPosition.toLowerCase() === 'center') {
-                var screenWidth = window.innerWidth;
+                let screenWidth = window.innerWidth;
                 containerWrapper.style.left = (screenWidth / 2) - (containerWrapper.offsetWidth / 2) + "px";
             }
 
@@ -643,48 +684,24 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                         }
 
                                     </div>
-                                    {/* <div className='type no-bg'>
-                                        <SpeedSelect
-                                            options={ticketTypeList}
-                                            selectLabel={ticketType.name}
-                                            prominentLabel='Type'
-                                            maxHeight={100}
-                                            maxWidth={80}
-                                            uniqueKey='id'
-                                            displayKey='name'
-                                            onSelect={(value) => categorySelect(value, 'Category')} />
-                                            
-                                    </div> */}
-
-                                    {/* <div className='priority no-bg'>
-                                        <SpeedSelect
-                                            options={priorityTypeList}
-                                            selectLabel={priorities?.value}
-                                            prominentLabel='Priority'
-                                            maxHeight={100}
-                                            maxWidth={80}
-                                            uniqueKey='id'
-                                            displayKey='value'
-                                            onSelect={(value) => selectPriority(value)}
-                                            />
-                                    </div> */}
+                                    
                                 </div>
 
                                 <div className='field-w-label'>
                                     <label className='mandatory-mark'>Priority*</label>
 
                                     <div className='options-wrapper'>
-                                    {
-                                        priorityTypeList.map(priority => (
-                                            <button
-                                                key={priority.id}
-                                                className={`option ${+priorities.id === +priority.id ? ' active' : ''}`}
-                                                onClick={(item) => selectPriority(item, priority)}
-                                            >
-                                                {priority.value}
-                                            </button>
-                                        ))
-                                    }
+                                        {
+                                            priorityTypeList.map(priority => (
+                                                <button
+                                                    key={priority.id}
+                                                    className={`option ${+priorities.id === +priority.id ? ' active' : ''}`}
+                                                    onClick={(item) => selectPriority(item, priority)}
+                                                >
+                                                    {priority.value}
+                                                </button>
+                                            ))
+                                        }
                                     </div>
 
                                 </div>
@@ -706,11 +723,26 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
                                                 setShowVideo(true);
                                             }} className='shot'>Screenshot</button>
 
+
+
+                                            <div className="file-input-wrapper">
+                                                <input
+                                                    type="file"
+                                                    id="myFileInput"
+                                                    className='iassist-file-input'
+                                                    name="myfile"
+                                                    onChange={handleFileChange}
+                                                    accept='image/*,video/*,audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.presentation,application/zip,application/x-7z-compressed,application/x-rar-compressed,application/x-tar,application/x-bzip,application/x-bzip2,application/x-zip,application/x-zip-compressed,.icns'
+                                                    multiple />
+                                                <label htmlFor="myFileInput">Choose a file</label>
+                                            </div>
+
+
                                         </div>
 
                                     </div>
 
-                                    {videoUrl.length > 0 && <div className='iassist-video-content-wrapper'>
+                                    {(videoUrl.length > 0 || (selectedFile.length > 0)) && <div className='iassist-video-content-wrapper'>
                                         {videoUrl.map((vid, index) => {
                                             return <div key={vid.id} className='vid-content'>
 
@@ -734,9 +766,24 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
 
                                         })}
 
+                                        {
+                                            selectedFile.map((file, index) => (
+                                                <div key={index} className='vid-content'>
+                                                    <img src={file.url} alt={file.name} width="150px" height="100px" />
+                                                    <div className='footer'>
+
+                                                        <div className='id'>{file.name}</div>
+
+                                                        <button onClick={() => handleDeleteFile(file.name)}></button>
+
+                                                    </div>
+                                                </div>
+                                            ))
+                                        }
+
                                     </div>}
 
-                                    {videoUrl.length === 0 && <span className='not-found'>No file attached</span>}
+                                    {(videoUrl.length === 0 || !selectedFile.length) && <span className='not-found'>No file attached</span>}
 
                                 </div>
 

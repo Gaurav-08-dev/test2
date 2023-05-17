@@ -60,6 +60,7 @@ function forceLogout(msg){
     return;
 }
 
+console.log('API Service Loaded',window.SITE_VERSION)
 
 function getAPIRequestOptions(req_method, authHeader, data, controller){
     let headerAuthHeader = (authHeader===null) ? AuthHeader() : authHeader;
@@ -197,6 +198,7 @@ const APIService = {
 
                 //handle when it is ok
                 if (showProgress) {
+
                     if (!response.ok) { throw Error(response.status + ' ' + response.statusText) }
 
                     // ensure ReadableStream is supported

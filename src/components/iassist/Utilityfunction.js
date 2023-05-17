@@ -1,5 +1,7 @@
 import Avatar from "../Avatar/Avatar";
 import React from 'react';
+import {APPLICATION_NAME} from '../Constants';
+
 
 
 const formatShiftDate = new Intl.DateTimeFormat('en-US', {
@@ -10,20 +12,23 @@ const formatShiftDate = new Intl.DateTimeFormat('en-US', {
 });
 
 export function isElectron() {
+
+
+    const isIassist='iAssist-end-user'=== APPLICATION_NAME 
+
     // Renderer process
     if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-        return true;
+        return true && isIassist;
     }
 
     // Main process
     if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-        return true;
-
+        return true && isIassist;
     }
 
     // Detect the user agent when the `nodeIntegration` option is set to true
     if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-        return true;
+        return true && isIassist;
 
     }
     return false;
@@ -232,3 +237,12 @@ export const formatDates=(inputDate, format)=> {
 
     return inputDate;
 }
+
+
+export function convertFileSizeToMB(fileSizeInBytes) {
+
+    if(!fileSizeInBytes) return ;
+    // console.log('fileSizeInBytes',fileSizeInBytes/(1000 * 1000))
+    const fileSizeInMB = fileSizeInBytes / (1024 * 1000); // Convert bytes to megabytes
+    return fileSizeInMB.toFixed(2); // Round to 2 decimal places
+  }

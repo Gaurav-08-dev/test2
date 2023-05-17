@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
@@ -8,8 +8,8 @@ import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 let webSocket;
 
-const SupportContainer = ({logOut}) => {
-    console.log('check');
+const SupportContainer = ({logOut, setLoader}) => {
+
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
@@ -18,9 +18,11 @@ const SupportContainer = ({logOut}) => {
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
+    // const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     const checkApptype = useRef(isElectron());
     // const [configData, setConfigData] = useState('');
+    console.log('localstorage', localStorage.length)
+    const isLocalEmpty = useRef(localStorage.length);
 
     const getConfigDetails = async (type) => {
 
@@ -105,8 +107,9 @@ const SupportContainer = ({logOut}) => {
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
                 if (checkApptype.current) {
-                    console.log(checkApptype);
+
                     setOpenSupport(true);
+                    setLoader(false);
                 }
             };
 
@@ -140,7 +143,6 @@ const SupportContainer = ({logOut}) => {
 
     const supportButtonClick = (e) => {
 
-
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
@@ -156,21 +158,16 @@ const SupportContainer = ({logOut}) => {
     }
 
     useEffect(() => {
-        console.log('useeffect in suppcon1')
 
-        const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        if (prevAppId !== AppId.current || !configDetails) {
-            getConfigDetails();
-        }
+        // const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
+        // const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        const bodyElement = document.getElementsByTagName('body')[0];
-        const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
-        linkTag.rel = "stylesheet";
-        linkTag.id = "iassist-css";
-        bodyElement.append(linkTag);
+        // if (prevAppId !== AppId.current || !configDetails) {
+        //     getConfigDetails();
+        // }
+
+        
 
         return (() => {
 
@@ -178,10 +175,13 @@ const SupportContainer = ({logOut}) => {
             setOpenSupport(false)
         })
 
-    }, []) //eslint-disable-line 
+    }, []) //eslint-disable-line
 
     useEffect(() => {
-        console.log('useeffect in suppcon1 btnid')
+        if (localStorage.length) getConfigDetails();
+    }, [isLocalEmpty.current]) //eslint-disable-line
+
+    useEffect(() => {
 
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
@@ -216,7 +216,7 @@ const SupportContainer = ({logOut}) => {
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
     useEffect(() => {
-        console.log('useeffect in suppcon3')
+
         document.addEventListener('click', supportButtonClick);
 
         return () => {
@@ -234,8 +234,8 @@ const SupportContainer = ({logOut}) => {
                 webSocket={webSocket}
                 panelPosition={panelPosition.current}
                 platformId={platformId}
-                storedData={storedTicket}
-                setStoredData={setStoredTicket}
+                // storedData={storedTicket}
+                // setStoredData={setStoredTicket}
                 logOut={logOut}
             />}
         </>
