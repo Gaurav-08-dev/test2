@@ -166,7 +166,8 @@ const SupportContainer = ({logOut, setLoader}) => {
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        if (prevAppId !== AppId.current || !configDetails) {
+        // if (prevAppId !== AppId.current || !configDetails) {
+        if (localStorage.length) {
             getConfigDetails();
         }
 
