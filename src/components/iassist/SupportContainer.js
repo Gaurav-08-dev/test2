@@ -21,12 +21,12 @@ const SupportContainer = ({logOut, setLoader}) => {
     // const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     const checkApptype = useRef(isElectron());
     // const [configData, setConfigData] = useState('');
-    console.log('localstorage', localStorage.length)
-    const isLocalEmpty = useRef(localStorage.length);
+    const [configLoader, setConfigLoader] = useState(false);
 
     const getConfigDetails = async (type) => {
 
         // app_id=${AppId.current}
+        setConfigLoader(true);
 
         if (AppId.current) {
             const tokens = `Bearer ${AppId.current}`;
@@ -44,11 +44,13 @@ const SupportContainer = ({logOut, setLoader}) => {
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'platform', response?.application_parameters?.platform);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'config_app_id', response?.id);
-                        simplifyToken()
+                        simplifyToken();
+                        setConfigLoader(false);
                         // if (type === 'onButtonClick') setOpenSupport(true)
                     }
                 })
                 .catch(err => {
+                    setConfigLoader(false);
                     alertService.showToast('error', err.msg);
                 });
         }
@@ -152,6 +154,7 @@ const SupportContainer = ({logOut, setLoader}) => {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
                 // getConfigDetails('onButtonClick');
+                if (!configLoader) getConfigDetails();
                 alertService.showToast('process', 'Loading...');
             }
         }
@@ -160,12 +163,12 @@ const SupportContainer = ({logOut, setLoader}) => {
     useEffect(() => {
 
 
-        // const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        // const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
+        const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
+        const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        // if (prevAppId !== AppId.current || !configDetails) {
-        //     getConfigDetails();
-        // }
+        if (prevAppId !== AppId.current || !configDetails) {
+            getConfigDetails();
+        }
 
         
 
@@ -176,10 +179,6 @@ const SupportContainer = ({logOut, setLoader}) => {
         })
 
     }, []) //eslint-disable-line
-
-    useEffect(() => {
-        if (localStorage.length) getConfigDetails();
-    }, [localStorage.length]) //eslint-disable-line
 
     useEffect(() => {
 
