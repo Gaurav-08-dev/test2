@@ -60,7 +60,6 @@ function forceLogout(msg){
     return;
 }
 
-console.log('API Service Loaded',window.SITE_VERSION)
 
 function getAPIRequestOptions(req_method, authHeader, data, controller){
     let headerAuthHeader = (authHeader===null) ? AuthHeader() : authHeader;
@@ -71,7 +70,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
         headers: {
             'Content-Type': 'application/json',
             'Authorization': headerAuthHeader,
-            'App-Version': window.SITE_VERSION || '0.0.0'
+            'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
         },
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer' // no-referrer, *client
@@ -113,7 +112,7 @@ const APIService = {
                                 mode: 'cors', // no-cors, *cors, same-origin
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'App-Version': window.SITE_VERSION || '0.0.0'
+                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
                                 },
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client

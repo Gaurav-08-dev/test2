@@ -4,7 +4,7 @@ import './newRoom.scss';
 import * as Constants from '../Constants';
 import { getTokenClient, getUser } from '../../utils/Common';
 import alertService from '../../services/alertService';
-// import Support from './Support';
+import { iAssistOutsideClick } from './Support';
 import Avatar from '../Avatar/Avatar';
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
@@ -19,7 +19,7 @@ import PlayButton from './Player/PlayButton';
 import RecordOption from './MediaOption/RecordOption';
 import Steno from 'react-steno';
 import parse from 'html-react-parser';
-import { getUserNameBasedOnId, getUserNameImage, getTimeZone, isElectron } from "./Utilityfunction";
+import { getUserNameBasedOnId, getUserNameImage, getTimeZone, isElectron, convertFileSizeToMB } from "./Utilityfunction";
 
 
 const pageNumber = 1;
@@ -31,39 +31,13 @@ let totalCount = 0;
 let borderChatId = '';
 let parent_note_id = 0;
 let collabId = [];
-let takeSupportId = [];
+// let takeSupportId = [];
 let playerType = '';
 let clickBackButton = false;
 let singleScroll = false;
-
-const videoExtensions = ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.m4v', '.webm'];
-const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.webp'];
-
-
-const otherExtensions = [
-    // Document extensions
-    '.doc', '.docx', '.pdf', '.txt', '.rtf', '.xls', '.xlsx', '.ppt', '.pptx',
-
-    // Audio extensions
-    '.mp3', '.wav', '.aac', '.flac', '.ogg', '.wma',
-
-    // Archive extensions
-    '.zip', '.rar', '.tar', '.gz', '.7z', '.iso',
-
-    // Code extensions
-    '.html', '.css', '.js', '.py', '.java', '.cpp', '.php', '.rb', '.json',
-
-    // Font extensions
-    '.ttf', '.otf', '.woff', '.woff2',
-
-    // Data extensions
-    '.csv', '.xml', '.json', '.sql'
-];
-
-
-
-
-
+let currentPlatform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+const currentLoggedInUserId = getUser()?.id;
+const nameMaxChar = 45;
 
 
 const ChatRoom = ({
@@ -81,7 +55,8 @@ const ChatRoom = ({
     panelPosition,
     // platformId, 
     closeChatScreen,
-    getTopicsBasedOnFilter
+    getTopicsBasedOnFilter,
+
 }) => {
 
     const bodyRef = useRef();
@@ -96,10 +71,15 @@ const ChatRoom = ({
     const editEditorRef = useRef();
     const editFnRef = useRef()
     const fnReplyRef = useRef();
+    const editTicketRef = useRef();
+    const editTicketFnRef = useRef();
     const getMessageHeight = useRef();
+    const editTitleRef = useRef();
     const [editedMessage, setEditedMessage] = useState('');
     const Size = useRef(pageSize);
     const fetchedClientUsers = useRef([]);
+
+    const [agentActivity, setAgentActivity] = useState(false);
 
     const draftReplyId = useRef([]);
 
@@ -130,6 +110,7 @@ const ChatRoom = ({
 
     const [searchString, setSearchString] = useState('');
 
+    const [closeRequestChatId, setCloseRequestChatId] = useState('');
 
     const [showSearch, setShowSearch] = useState(false);
 
@@ -192,6 +173,31 @@ const ChatRoom = ({
     const [showVideoLoader, setShowVideoLoader] = useState(false);
 
     const [showUserDataFetching, setShowUserDataFetching] = useState(true);
+
+    const [rejectRequestActive, setRejectRequestActive] = useState(false);
+    const [currentChatId, setCurrentChatId] = useState('');
+
+    const [editName, setEditName] = useState(false);
+
+    const [editDescription, setEditDescription] = useState(false);
+
+    const [updateTicketDetails, setUpdateTicketDetails] = useState('');
+
+    const [prevDetail, setPrevDetail] = useState({ name: '', description: '' });
+
+    const [editPrevMsg, setEditPrevMessage] = useState('');
+
+    const [saveDataUrlForMessage, setSaveDataUrlForMessage] = useState([]);
+    const [saveDataUrlForReply, setSaveDataUrlForReply] = useState([]);
+
+    const [selectedFile, setSelectedFile] = useState([]);
+    const [selectedFilesForUploadInReply, setSelectedFilesForUploadInReply] = useState([]);
+
+    const [disableSendButton, setDisableSendButton] = useState(false);
+    const [disableReplyButton, setDisableReplyButton] = useState(false);
+
+    const fileInputRef = useRef(null);
+    const fileInputRefForReply = useRef(null)
 
 
 
@@ -262,7 +268,6 @@ const ChatRoom = ({
             });
 
     }
-
     async function fetchCollabUsers() {
 
         setShowLoader(true);
@@ -273,9 +278,9 @@ const ChatRoom = ({
 
         const token = `Bearer ${jwt_token}`;
 
-        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+        // const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/topic/user_details/?topic_id=${chatIds}`, null, false, 'GET', controller, token)
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${currentPlatform}/topic/user_details/?topic_id=${chatIds}`, null, false, 'GET', controller, token)
             .then(response => {
 
                 if (response) {
@@ -299,7 +304,7 @@ const ChatRoom = ({
 
                     collabId = collabUser;
 
-                    takeSupportId = supportUsers;
+                    // takeSupportId = supportUsers;
 
                     setShowLoader(false);
 
@@ -312,7 +317,7 @@ const ChatRoom = ({
 
                 setShowLoader(false);
                 setShowUserDataFetching(false);
-                alertService.showToast('error', err.msg);
+                alertService.showToast('error', err.msg, { autoClose: false });
 
             });
     }
@@ -353,6 +358,14 @@ const ChatRoom = ({
 
     const sendMessage = (e, type, messageId) => {
 
+        const filesToSend = type === 'reply' ? selectedFilesForUploadInReply : selectedFile;
+        const selectedFilesTotalSize = convertFileSizeToMB([...saveDataUrl, ...filesToSend].reduce((acc, currentValue) => acc + currentValue.size, 0));
+
+        if (selectedFilesTotalSize > 50) {
+            alertService.showToast('error', 'File size should not exceed 50 MB');
+            return;
+        }
+
         let msg = {};
 
         setScrolls(false);
@@ -361,18 +374,19 @@ const ChatRoom = ({
 
         msg = {
             "message": {
-                "file": saveDataUrl,
+                "file": type === 'reply' ? [...saveDataUrl, ...saveDataUrlForReply] : [...saveDataUrl, ...saveDataUrlForMessage],
                 "message": type === 'reply' ? replyMessage : message
             },
-            "is_file": saveDataUrl.length > 0 ? 1 : 0,
+            "is_file": saveDataUrl.length > 0 ? 1 : 0 || (type === 'reply' ? saveDataUrlForReply.length > 0 ? 1 : 0 : saveDataUrlForMessage.length > 0 ? 1 : 0),
             "parent_note_id": type === 'reply' ? messageId : 0
         }
+
 
         let validateText = message.replaceAll("&nbsp;", "");
 
         const text = validateText.trim();
 
-        if ((text !== '' && !emptyStringValidation(message)) || (replyMessage !== '' && type === 'reply' && !emptyStringValidation(replyMessage)) || saveDataUrl.length > 0) {
+        if ((text !== '' && !emptyStringValidation(message)) || (replyMessage !== '' && type === 'reply' && !emptyStringValidation(replyMessage)) || saveDataUrl.length > 0 || (type === 'reply' ? saveDataUrlForReply.length > 0 : saveDataUrlForMessage.length > 0)) {
             // Web Socket is connected, send data using send()
 
             if (ws.readyState !== WebSocket.CLOSED) {
@@ -380,17 +394,17 @@ const ChatRoom = ({
                 chatActivity.current = true;
 
                 ws.send(JSON.stringify(msg));
-                
+
                 let dataFromMemory = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'stored_chat_data')) || [];
                 let findChat = dataFromMemory.findIndex(data => data.topic_id === chatIds);
-                if (type === 'reply') {
+                if (type === 'reply' && findChat !== -1) {
                     let draftIndex = draftReplyId.current.indexOf(messageId);
                     draftReplyId.current.splice(draftIndex, 1);
                 }
                 if (findChat !== -1 && ((type !== 'reply' && !dataFromMemory[findChat].reply?.length > 0) || (type === 'reply' && !dataFromMemory[findChat].message && !dataFromMemory[findChat].reply?.length > 0))) {
                     dataFromMemory.splice(findChat, 1);
                     sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'stored_chat_data', JSON.stringify(dataFromMemory));
-                } else if (type === 'reply' && dataFromMemory[findChat].reply?.length > 0) {
+                } else if (findChat !== -1 && type === 'reply' && dataFromMemory[findChat].reply?.length > 0) {
                     let reply = dataFromMemory[findChat].reply;
                     let findIndex = reply.findIndex((rply) => rply.id === messageId);
                     if (findIndex !== -1) {
@@ -400,7 +414,6 @@ const ChatRoom = ({
                     }
 
                 }
-
 
                 setMessage('');
 
@@ -413,6 +426,10 @@ const ChatRoom = ({
                 setVideoUrl([]);
 
                 setVideo([]);
+
+                type === 'reply' ? setSaveDataUrlForReply([]) : setSaveDataUrlForMessage([]);
+
+                type === 'reply' ? setSelectedFilesForUploadInReply([]) : setSelectedFile([]);
 
             }
 
@@ -461,14 +478,19 @@ const ChatRoom = ({
         let isData = false;
 
         isData = subMin <= 3 && subHr === 0 && dateDiff === 0 ? true : false
-
-        if (setAccessValue) {
-
-            setEditAccess(isData);
-
-            return
-
+        const currentUser = getUser();
+        if (currentUser.id !== msg?.user_id) {
+            // setAccessValue && setEditAccess(false);
+            return false;
         }
+
+        // if (setAccessValue) {
+
+        //     // setEditAccess(isData);
+
+        //     return
+
+        // }
 
         return isData;
 
@@ -485,7 +507,6 @@ const ChatRoom = ({
     }
 
     useEffect(() => {
-
         if (refresh) {
 
             fetchCollabUsers()
@@ -571,7 +592,7 @@ const ChatRoom = ({
 
         }
 
-        const onScroll = async (event) => {
+        const onScroll = async () => {
 
             if (bodyRef.current.scrollTop < 10 && (totalCount > Size.current) && !singleScroll) {
 
@@ -598,6 +619,16 @@ const ChatRoom = ({
                 setBorderChat('');
 
             }
+
+            // const edit = document.getElementById('iassist-edit-ticket');
+
+            // if (edit &&!(edit.contains(event.target))) {
+            //     debugger;
+            //     handleEditTicket()
+            //     setEditDescription(false);
+            //     setEditName(false);
+            //     setUpdateTicketDetails('');
+            // }
 
             const head = document.getElementById('menu');
 
@@ -666,6 +697,12 @@ const ChatRoom = ({
             window.removeEventListener('online', onOnline)
 
             window.removeEventListener('offline', onOffline)
+
+            setSaveDataUrl([]);
+            setSaveDataUrlForMessage([]);
+            setSaveDataUrlForReply([]);
+            setSelectedFile([]);
+            setSelectedFilesForUploadInReply([]);
         }
 
     }, []) // eslint-disable-line 
@@ -694,8 +731,32 @@ const ChatRoom = ({
     ws.onmessage = function (evt) {
 
         const received_msg = JSON.parse(evt.data);
+        if (received_msg.type === 'delete_file_chat' || received_msg.type === 'edit_chat') {
+            let currentMessageList = [...messageList];
+            const index = currentMessageList.findIndex(item => item.id === received_msg?.id);
+            currentMessageList.splice(index, 1, received_msg);
+            setMessageList(currentMessageList);
+        } else if (received_msg.type === 'edit_ticket') {
+            if (received_msg.topic_id === chatIds) {
+                topic.current.name = received_msg?.topic_name;
+                topic.current.description = received_msg?.topic_description;
+            }
 
-        if (received_msg.parent_note_id === 0 || 'chat_data' in received_msg) {
+        } else if (received_msg.parent_note_id === 0 || 'chat_data' in received_msg) {
+
+            if (received_msg.is_feedback) topic.current.status_id = 3;
+            else if (received_msg.is_reopen) topic.current.status_id = 1;
+
+            if (received_msg?.note?.feedback || received_msg?.note?.decline_reason) {
+                messageList.forEach((ms) => {
+                    if (ms?.note?.status) {
+                        ms.note.status = 'close';
+                        return;
+                    }
+                })
+            }
+
+            chatActivity.current = true;
 
             if ('chat_data' in received_msg) {
 
@@ -711,7 +772,10 @@ const ChatRoom = ({
 
             if (editorRef.current) editorRef.current.focus();
 
-        } else if (received_msg.parent_note_id !== 0) {
+        } else if (received_msg?.type === 'support_agent') {
+            chatActivity.current = true;
+            setAgentActivity(true);
+        } else if (received_msg?.parent_note_id !== 0) {
 
             messageList.forEach((ms) => {
 
@@ -740,8 +804,6 @@ const ChatRoom = ({
     ws.onopen = function () {
 
         console.log("websocket connected")
-
-        console.log(unRead);
         if (unRead > 0 && getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1)
 
     };
@@ -749,17 +811,27 @@ const ChatRoom = ({
     ws.onclose = function () {
 
         console.log("connection Closed");
-
         if (clickBackButton) {
 
+            if (getTopicsBasedOnFilter) getTopicsBasedOnFilter(undefined, 1)
             closeChatScreen();
-            // getTopicsBasedOnFilter();
             setNavigateHome(true);
 
+        } else {
+            if (!iAssistOutsideClick) {
+                if (ws === undefined || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
+
+                    const jwt_token = getTokenClient();
+
+                    ws = new WebSocket(Constants.API_WEBSOCKET_URL + `chat/${chatIds}/`, jwt_token)
+
+                }
+            }
         }
     };
 
     const removeChatDataInMemory = () => {
+
         let dataFromMemory = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'stored_chat_data')) || [];
         let findChat = dataFromMemory.findIndex(data => data.topic_id === chatIds);
         if (findChat !== -1) {
@@ -769,6 +841,7 @@ const ChatRoom = ({
     }
 
     const checkReplyInMemory = (msgId, wholeReplyMsg, messageReply) => {
+
         let combineReply = wholeReplyMsg
         const collection = wholeReplyMsg;
         let findReplyIndex = collection.findIndex((data) => data.id === chatId);
@@ -782,6 +855,7 @@ const ChatRoom = ({
             combineReply = [...collection, data];
         }
         return combineReply;
+
     }
 
     const storeChatDataInMemory = (messageData, type, chatId = null, replyChatData = null) => {
@@ -796,14 +870,14 @@ const ChatRoom = ({
                     dataFromMemory[findChat].message = messageData;
                 }
             } else {
-                let replyData = type === 'reply' ? {
+                let replyData = type === 'reply' ? [{
                     id: chatId,
                     message: replyChatData
-                } : [];
+                }] : [];
                 let data = {
                     topic_id: chatIds,
                     message: messageData,
-                    reply: [replyData]
+                    reply: replyData
                 }
                 dataFromMemory = dataFromMemory !== null && dataFromMemory !== undefined ? [...dataFromMemory, data] : data;
             }
@@ -861,6 +935,7 @@ const ChatRoom = ({
     useEffect(() => {
 
         chatActivity.current = (topic.current.activity_collaborate || topic.current.activity_chat) ? true : false;
+        setAgentActivity(topic.current.activity_collaborate ? true : false);
 
     }, [topic.current.activity_collaborate, topic.current.activity_chat])
 
@@ -874,10 +949,10 @@ const ChatRoom = ({
 
             let replies = dataFromMemory[findChat];
 
-           let findIndex =  replies.reply.findIndex((data) => data.id === id);
+            let findIndex = replies.reply.findIndex((data) => data.id === id);
 
-           if (findIndex !== -1 && replies.reply[findIndex].message) setReplyMessage(replies.reply[findIndex].message);
-           else setReplyMessage('');
+            if (findIndex !== -1 && replies.reply[findIndex].message) setReplyMessage(replies.reply[findIndex].message);
+            else setReplyMessage('');
 
         } else {
 
@@ -1041,38 +1116,38 @@ const ChatRoom = ({
             });
     }
 
-    const getUserCardLabel = (id) => {
+    // const getUserCardLabel = (id) => {
 
-        let label = '';
+    //     let label = '';
 
-        for (let i = 0; i < collabId.length; i++) {
+    //     for (let i = 0; i < collabId.length; i++) {
 
-            if (collabId[i] === id) {
+    //         if (collabId[i] === id) {
 
-                label = 'CLIENT';
+    //             label = 'CLIENT';
 
-                break;
+    //             break;
 
-            }
+    //         }
 
-        }
+    //     }
 
-        for (let i = 0; i < takeSupportId.length; i++) {
+    //     for (let i = 0; i < takeSupportId.length; i++) {
 
-            if (takeSupportId[i] === id) {
+    //         if (takeSupportId[i] === id) {
 
-                label = label !== '' ? label + ' + AGENT' : 'AGENT';
+    //             label = label !== '' ? label + ' + AGENT' : 'AGENT';
 
-                break;
+    //             break;
 
-            }
+    //         }
 
-        }
+    //     }
 
 
-        return label ? label : 'CLIENT';
+    //     return label ? label : 'CLIENT';
 
-    }
+    // }
 
 
 
@@ -1147,12 +1222,13 @@ const ChatRoom = ({
 
 
         let userDetail = getUser();
-
         if (userDetail.id === msg.user_id) {
 
             setEditId(msg.id);
 
             parent_note_id = msg.parent_note_id;
+
+            setEditPrevMessage(msg?.is_file ? msg?.note?.message : msg.note)
 
             setEditedMessage(msg?.is_file ? msg?.note?.message : msg.note);
 
@@ -1168,57 +1244,68 @@ const ChatRoom = ({
 
     }
 
-    const editMessage = async (e) => {
+    const removeTagFromText = (text) => {
+        return text.replace(/<[^>]*>/g, '');
+    }
 
-        let currentIndex = -1;
+    const editMessage = async () => {
 
-        let jwt_token = getTokenClient();
+        let checkValue = removeTagFromText(editedMessage);
 
-        let data = {
-            chat_id: editId,
-            parent_note_id: parent_note_id,
-            message: editedMessage
-        }
-        setShowLoader(true);
+        if (editPrevMsg !== editedMessage && checkValue.length > 0) {
 
-        const token = `Bearer ${jwt_token}`;
+            let currentIndex = -1;
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/`, data, false, 'PUT', null, token)
-            .then(response => {
+            let jwt_token = getTokenClient();
 
-                if (response) {
+            let data = {
+                chat_id: editId,
+                parent_note_id: parent_note_id,
+                message: editedMessage
+            }
+            setShowLoader(true);
 
-                    const json = response;
+            const token = `Bearer ${jwt_token}`;
+
+            APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/`, data, false, 'PUT', null, token)
+                .then(response => {
+
+                    if (response) {
+
+                        const json = response;
 
 
-                    messageList.forEach((msg, index) => {
-                        if (msg.id === json.chat_data.id) {
+                        messageList.forEach((msg, index) => {
+                            if (msg.id === json.chat_data.id) {
 
-                            msg = json.chat_data;
+                                msg = json.chat_data;
 
-                            currentIndex = index;
+                                currentIndex = index;
 
+                            }
                         }
+                        )
+
+
+                        messageList.splice(currentIndex, 1, json.chat_data);
+
+                        setEditId('');
+
+                        setMessage('');
+
+                        setShowLoader(false);
+
+                        setEditPrevMessage('');
+
                     }
-                    )
 
+                })
+                .catch(err => {
 
-                    messageList.splice(currentIndex, 1, json.chat_data);
+                    alertService.showToast('error', err.msg);
 
-                    setEditId('');
-
-                    setMessage('');
-
-                    setShowLoader(false);
-
-                }
-
-            })
-            .catch(err => {
-
-                alertService.showToast('error', err.msg);
-
-            });
+                });
+        }
 
     }
 
@@ -1245,9 +1332,9 @@ const ChatRoom = ({
 
         const token = `Bearer ${jwt_token}`;
 
-        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+        // const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/add_remove_client/?flag=${add}`, data, false, 'POST', controller, token)
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${currentPlatform}/add_remove_client/?flag=${add}`, data, false, 'POST', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1265,8 +1352,9 @@ const ChatRoom = ({
                         if (userData?.id === id) {
 
                             getTopicsBasedOnFilter();
-                            setNavigateHome(true);
-                            closeChatScreen();
+                            clickBackButton = true;
+
+                            ws.close();
 
                         }
 
@@ -1303,9 +1391,9 @@ const ChatRoom = ({
 
         const token = `Bearer ${jwt_token}`;
 
-        const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+        // const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
 
-        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/topic/?topic_id=${data.id}`, null, false, 'DELETE', controller, token)
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${currentPlatform}/topic/?topic_id=${data.id}`, null, false, 'DELETE', controller, token)
             .then(response => {
 
                 if (response) {
@@ -1315,10 +1403,8 @@ const ChatRoom = ({
                     getTopicsBasedOnFilter(undefined, 1);
 
                     alertService.showToast('success', result.message);
-
-                    setNavigateHome(true);
-                    closeChatScreen();
-                    // getTopicsBasedOnFilter();
+                    clickBackButton = true;
+                    ws.close();
                     setConfirmDelete(false);
 
                 }
@@ -1387,41 +1473,116 @@ const ChatRoom = ({
 
     // }
 
-    const getOtherFileExtensionsDiv = (item) => {
+    const fileExtentsionClassName = (file) => {
+
+        if (Constants.imageExtensionsList.find(item => item === file)) {
+            return 'iassist-file-icon-img';
+        }
+
+        if (Constants.codeExtensions.find(item => item === file)) {
+            return 'iassist-file-icon-code';
+        }
+
+        if (Constants.archiveExtensions.find(item => item === file)) {
+            return 'iassist-file-icon-archive';
+        }
+
+        if (Constants.documentExtensions.find(item => item === file)) {
+
+            if (file === 'pdf') return 'iassist-file-icon-pdf'
+            return 'iassist-file-icon-doc';
+        }
+
+        if (Constants.cssExtensions.find(item => item === file)) {
+            return 'iassist-file-icon-css';
+        }
+    };
+    function downloadFileBlob(url, name) {
+        setShowLoader(true)
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                setShowLoader(false)
+                // Create a temporary anchor element
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = name
+                // getFileNameFromURL(url);
+
+                // Simulate a click event to trigger the download
+                link.click();
+
+                // Clean up the object URL
+                URL.revokeObjectURL(link.href);
+            })
+            .catch(error => {
+                console.error('Error downloading file:', error);
+                setShowLoader(false)
+            });
+    }
+    const downloadFile = (e, item) => {
+
+        console.log(item)
+        e.stopPropagation()
+        const url = item.file.file;
+        downloadFileBlob(url, item.file.name || item.name)
+        // const link = document.createElement('a');
+        // link.href = url;
+        // link.target = '_blank';
+        // link.download = item.file.name || item.name;
+        // link.click();
+
+    }
+    const getOtherFileExtensionsDiv = (item, msg) => {
+
+
+        const currentFileExtension = item.extension.split('.').pop().toLowerCase();
+        const currentClass = fileExtentsionClassName(currentFileExtension);
 
         return (
-        
-        <div className='wrapper-media'>
-        {/* '../../images/file-icons/icon-' + item.extension.replace('.', '') + '.jpg' */}
-            <img width="50" height="50" alt={item.extension + ' file'} src="../../images/file-icons/icons8-pdf-50.png"></img>
-            <div className='media-id'>{item.file.name}</div>
 
-        </div>
+            <div className='wrapper-media-doc'>
+                <div className='iassist-icon-wrapper'>
+                    <button className={`iassist-file ${currentClass}`} />
+                </div>
+                <div className='wrapper-media-doc-footer'>
+                    <div className='media-id'>{item.file.name?.substring(0, 10)}</div>
+                    <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, item)}></button>
+                    {+currentLoggedInUserId === +msg.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, msg, item.file)}></button>}
+                </div>
+
+            </div>
 
         )
     }
     const checkFileExtension = (file) => {
 
+
+
         const extension = '.' + file?.file.split('.').pop();
 
-        if (otherExtensions.includes(extension)) return { type: 'other', value: true, extension: extension }
-        if (videoExtensions.includes(extension)) return { type: 'video', value: true }
-        if (imageExtensions.includes(extension)) {
+        if (Constants.otherExtensions.includes(extension)) return { type: 'other', value: true, extension: extension }
+        if (Constants.videoExtensions.includes(extension)) return { type: 'video', value: true }
+        if (Constants.imageExtensions.includes(extension)) {
             return { type: 'image', value: true }
         }
 
         return { type: '', value: false };
     }
 
-    const uploadFile = async (blobs, message) => {
+    // ! follow below function
+    const uploadFile = async (blobs, type, fileOrigin) => {
+
+        type === 'message' ? setDisableSendButton(true) : setDisableReplyButton(true)
 
         const jwt_token = getTokenClient();
 
         const token = `Bearer ${jwt_token}`;
 
         let data = {
-            file: [blobs]
+            file: blobs
         }
+
 
         const formData = new FormData();
 
@@ -1442,28 +1603,45 @@ const ChatRoom = ({
 
         try {
 
-            const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
-
-            const response = await fetch(Constants.API_IASSIST_BASE_URL + `${platform}/uploadfile/?topic_id=${chatIds}&broadcast=false&file_upload=true`, {
+            // const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+            setShowLoader(true)
+            const response = await fetch(Constants.API_IASSIST_BASE_URL + `${currentPlatform}/uploadfile/?topic_id=${chatIds}&broadcast=false&file_upload=true`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token
+                    'Authorization': token,
+                    'App-Version': Constants.IASSIST_SITE_VERSION,
+
                 },
                 body: formData
             })
 
             const result = await response.json();
+            setShowLoader(false);
 
             let file = result?.file_url[0]?.file;
 
             let name = result?.file_url[0]?.name;
 
-            setSaveDataUrl([...saveDataUrl, { name: name, file: file }])
 
+            if (fileOrigin === 'local') {
+
+                const structuredData = result.file_url.map(item => { return { file: item.file, name: item.name } })
+                console.log([...saveDataUrlForMessage, ...structuredData])
+                type === 'message' ? setSaveDataUrlForMessage([...saveDataUrlForMessage, ...structuredData]) : setSaveDataUrlForReply([...saveDataUrlForReply, ...structuredData])
+                // type === 'message' ? setDisableSendButton(false) : setDisableReplyButton(false);
+            }
+
+            else {
+
+                setSaveDataUrl([...saveDataUrl, { name: name, file: file }])
+            }
+
+            type === 'message' ? setDisableSendButton(false) : setDisableReplyButton(false)
             setShowVideoLoader(false);
 
         } catch (err) {
 
+            type === 'message' ? setDisableSendButton(false) : setDisableReplyButton(false)
             setShowVideoLoader(false);
 
             alertService.showToast('error', err.message);
@@ -1473,7 +1651,7 @@ const ChatRoom = ({
 
     const saveAndClose = (e, blob, id, message, dataUrl) => {
 
-        uploadFile(blob, message)
+        uploadFile([blob], message)
 
         setShowVideo(false);
 
@@ -1639,6 +1817,262 @@ const ChatRoom = ({
         return false;
     }
 
+    const rejectRequest = (topicId, declineReason) => {
+
+        const jwt_token = getTokenClient();
+
+        let token = `Bearer ${jwt_token}`;
+        // const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform')
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${currentPlatform}/request_denied/?topic_id=${topicId}&decline_reason=${declineReason}&request_chat_id=${currentChatId}
+        `, null, false, 'POST', controller, token)
+            .then((response) => {
+                if (response) {
+
+                    // setMessageList([...messageList, response.data.chat_data])
+                    setShowFeedback(false);
+                    setRejectRequestActive(false)
+                }
+            })
+            .catch((err) => {
+                if (err) {
+                    alertService.showToast('error', err.message);
+                }
+            })
+
+    }
+
+    const handleRejectCloseTicketRequest = (item) => {
+        // setCloseRequestChatId(item.id);
+        setCurrentChatId(item.id);
+        setRejectRequestActive(true);
+        setShowFeedback(true);
+
+    }
+
+    const handleEditTicketOption = (e, type, value) => {
+        e.preventDefault();
+        if (type === 'name') {
+            setEditDescription(false);
+            setEditName(true);
+            setPrevDetail({ name: value })
+            setUpdateTicketDetails(value);
+        } else if (type === 'description') {
+
+            setEditName(false);
+            setPrevDetail({ description: value })
+            setUpdateTicketDetails(value);
+            setEditDescription(true);
+        }
+    }
+
+    useEffect(() => {
+        if (editDescription) {
+            if (editTicketRef.current) applyFocusAtEnd(editTicketRef.current) //editTicketRef.current.focus();
+        }
+
+    }, [editName, editDescription])
+
+    const applyFocusAtEnd = (element) => {
+        if (element) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.selectNodeContents(element);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            element.focus();
+        }
+    }
+
+    const handleEditTicket = () => {
+        let prevData = editName ? prevDetail.name : (editDescription ? prevDetail.description : '');
+        let details = editName ? updateTicketDetails : (editDescription ? editTicketRef.current.textContent : '')
+
+        if (prevData !== details && details.length > 0) {
+
+            const jwt_token = getTokenClient();
+
+            setShowLoader(true);
+
+            let token = `Bearer ${jwt_token}`;
+            let data = {};
+            if (editName) {
+                data = {
+                    "name": updateTicketDetails
+                }
+            } else if (editDescription) {
+                data = {
+                    "description": details
+                }
+            }
+
+            APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `support/topic/?topic_id=${chatIds}`, data, false, 'PUT', controller, token)
+                .then(response => {
+
+                    if (response) {
+                        if (editName) {
+                            topic.current.name = response?.data?.name;
+                            setEditName(false);
+                            setUpdateTicketDetails('');
+                            setEditDescription(false);
+                        } else if (editDescription) {
+                            topic.current.description = response?.data?.description;
+                            setEditName(false);
+                            setUpdateTicketDetails('');
+                            setEditDescription(false);
+                        }
+                    }
+                    setShowLoader(false);
+
+                    setPrevDetail({ name: '', description: '' });
+
+                })
+                .catch(err => {
+                    setShowLoader(false);
+                    alertService.showToast('error', err.msg);
+
+                });
+        } else {
+            setEditName(false);
+            setUpdateTicketDetails('');
+            setEditDescription(false);
+        }
+    }
+
+    const handleOnKeyDownEvent = (e) => {
+        e.persist();
+        if (e.key === 'Enter') handleEditTicket();
+    }
+
+    const updateCurrentFileList = (fileList, item) => {
+
+
+        const firstOccurenceIndex = fileList.findIndex(file => file.name === item.name);
+        const fileListCopy = [...fileList];
+        fileListCopy.splice(firstOccurenceIndex, 1)
+        return fileListCopy
+
+    }
+
+    const handleDeleteFile = (item, type) => {
+
+        // let updatedFileList = []
+
+
+        if (type === 'reply') {
+            // updatedFileList = selectedFilesForUploadInReply.filter(file => file.name !== item.name);
+
+            const updatedList = updateCurrentFileList(selectedFilesForUploadInReply, item)
+            setSelectedFilesForUploadInReply([...updatedList])
+
+            // const updatedSaveDataUrl = saveDataUrlForReply.filter(file => file.name !== item.name.split('.')[0]);
+            const updatedSaveDataUrl = updateCurrentFileList(saveDataUrlForReply, item)
+            setSaveDataUrlForReply(updatedSaveDataUrl)
+            // setSaveDataUrlForReply([...updatedFileList])
+        }
+        if (type === 'message') {
+
+            // updatedFileList = selectedFile.filter(file => file.name !== item.name);
+            const updatedList = updateCurrentFileList(selectedFile, item)
+            setSelectedFile([...updatedList])
+
+            const updatedSaveDataUrl = updateCurrentFileList(saveDataUrlForMessage, item)
+            setSaveDataUrlForMessage(updatedSaveDataUrl)
+
+            // setSaveDataUrlForMessage([...updatedFileList])
+        }
+
+    }
+
+
+    const handleDeleteFileFromChat = async (e, item, fileName,) => {
+
+
+        e.stopPropagation();
+        const jwt_token = getTokenClient();
+        let token = `Bearer ${jwt_token}`;
+
+
+        const { id, parent_note_id } = item;
+        const fileDetail = item.note.file.find(file => file.file === fileName.file)
+
+
+        const payLoad = {
+            chat_id: id,
+            parent_note_id: parent_note_id,
+            file: fileDetail
+        }
+
+
+
+        setShowLoader(true);
+
+        APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/file`, payLoad, false, 'DELETE', controller, token)
+            .then((response) => {
+                // ! handle response to update current message list
+                let currentMessageList = [...messageList];
+                const result = response;
+
+                if ('chat_data' in result) {
+                    const index = currentMessageList.findIndex(item => item.id === result?.chat_data?.id);
+                    currentMessageList.splice(index, 1, result.chat_data);
+                    setMessageList(currentMessageList);
+                }
+                setShowLoader(false);
+            })
+            .catch(err => {
+                setShowLoader(false);
+                alertService.showToast('error', err.msg);
+            });
+
+
+    }
+
+
+    const handleFileChange = (e, type) => {
+
+
+        e.stopPropagation()
+        type === 'message' ? setShowScreenButton(false) : setShowReplyScreenButton(false)
+        const selectedFilesList = Array.from(e.target.files);
+
+        const allFiles = type === 'reply' ? [...selectedFilesForUploadInReply, ...selectedFilesList] : [...selectedFile, ...selectedFilesList]
+        const allFileWithRecording = type === 'reply' ? [...selectedFilesForUploadInReply, ...replyVideoUrl] : [...selectedFile, ...selectedFilesList, ...videoUrl]
+        if (allFileWithRecording.length > 5) {
+            alertService.showToast('warn', 'You can upload maximum 5 files at a time');
+            type === 'reply' ? fileInputRefForReply.current.value = null : fileInputRef.current.value = null;
+            return;
+        }
+        const selectedFilesTotalSize = convertFileSizeToMB(allFiles.reduce((acc, currentValue) => acc + currentValue.size, 0));
+
+        if (selectedFilesTotalSize > 50) {
+
+            type === 'reply' ? fileInputRefForReply.current.value = null : fileInputRef.current.value = null;
+            alertService.showToast('warn', 'File size exceeds 50MB');
+            // type === 'reply' ? setSelectedFilesForUploadInReply([]) : setSelectedFile([])
+
+            return;
+
+        }
+
+        // console.log(...Array.from(e.target.files))
+        uploadFile(Array.from(e.target.files), type, 'local');
+        selectedFilesList.map((file) => (
+            file.url = URL.createObjectURL(file)
+        ))
+
+
+        type === 'reply' ? setSelectedFilesForUploadInReply([...allFiles]) : setSelectedFile([...allFiles])
+
+    }
+    const checkPrevilegesForEdit = () => {
+
+        const currentUser = getUser();
+
+        return currentUser?.id === topic.current?.user_id && !topic.current?.activity_collaborate && !agentActivity;
+    }
+
     return (
 
         <>
@@ -1654,6 +2088,7 @@ const ChatRoom = ({
                                 closeChatScreen();
                                 // getTopicsBasedOnFilter();
                             } else {
+
                                 ws.close();
                                 clickBackButton = true;
                             }
@@ -1721,12 +2156,12 @@ const ChatRoom = ({
                             </div>}
 
                             <button className='iassist-header-close' onClick={() => {
-                                closeChatScreen();
-                                //  close()
+                                clickBackButton = true;
+
+                                ws.close();
                             }}></button>
 
                         </div>
-
                     </div>
                     {showLoader && <LoadingScreen />}
 
@@ -1734,13 +2169,69 @@ const ChatRoom = ({
 
                     <div className='iassist-title-widget'>
 
-                        <div className={'name'} onClick={() => setShowExpand(!showExpand)}>{topic.current && topic.current.name}
+                        {!editName && <div className={'name'} onClick={() => setShowExpand(!showExpand)} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'name', topic.current?.name) : () => { }}>{topic.current && parse(topic.current.name, options)}
 
                             <button className={'button' + (showExpand && getTextWidth(topic.current?.description) ? ' full-button' : '')} title='expand'></button>
 
-                        </div>
+                            {checkPrevilegesForEdit() && <button className='iassist-edit-desc' onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditTicketOption(e, 'name', topic.current?.name)
+                            }}></button>}
 
-                        <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')}>{topic.current && topic.current.description}</div>
+                        </div>}
+
+                        {
+                            (editDescription || editName) && checkPrevilegesForEdit() && <div id='iassist-edit-ticket'>
+                                {editName && <div className='iassist-field' onClick={() => editTitleRef.current.focus()}>
+                                    <input ref={editTitleRef} value={updateTicketDetails} autoFocus onChange={(e) => {
+
+                                        if (e.target.value.length <= nameMaxChar) {
+                                            setUpdateTicketDetails(e.target.value)
+                                        } else {
+                                            if (document.getElementsByClassName('toast-wrapper')[0]) return;
+                                            alertService.showToast('warn', 'Topic name should not exceed 45 characters');
+                                        }
+                                    }} onKeyUp={handleOnKeyDownEvent} onBlur={handleEditTicket}></input>
+                                    <span className={'iassist-max-length'}> {updateTicketDetails !== '' ? updateTicketDetails.length : 0}/{nameMaxChar}</span>
+                                </div>}
+                                {/* {editName && <input className='iassist-text-box' autoFocus type='text' value={updateTicketDetails} onChange={(e) => setUpdateTicketDetails(e.target.value)} onKeyUp={handleOnKeyDownEvent} onBlur={handleEditTicket}/>} */}
+                                {editDescription && <Steno
+                                    html={updateTicketDetails}
+                                    disable={false} //indicate that the editor has to be in edit mode
+                                    onChange={(val) => {
+                                        setUpdateTicketDetails(val)
+                                    }}
+                                    innerRef={editTicketRef} //ref attached to the editor
+                                    backgroundColor={'#000'}
+                                    onChangeBackgroundColor={() => { }}
+                                    fontColor={'#fff'}
+                                    onChangeFontColor={() => { }}
+                                    functionRef={editTicketFnRef} //Ref which let parent component to access the methods inside of editor component
+                                    isToolBarVisible={false} //to show/hide the toolbar options
+                                    toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                    formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                    onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                    showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                    fileList={[]} //List of file object to track the files selected by user
+                                    // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                    // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                    sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                    onEnterClickLogic={handleEditTicket} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                    autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                    minEditorHeight='20px' // Default will be 100px
+                                    maxEditorHeight="300px" // Default maxHeight will be 250px
+                                    placeHolder="Message"
+                                    onBlur={handleEditTicket}
+                                />}
+                            </div>
+                        }
+
+                        {!editDescription && <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'description', topic?.current?.description) : () => { }}>{topic.current && parse(topic?.current?.description, options)}
+                            {checkPrevilegesForEdit() && <button className='iassist-edit-desc' onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditTicketOption(e, 'description', topic.current?.description)
+                            }}></button>}
+                        </div>}
 
                         <Detail topic={topic.current} type={type} allAccount={allAccount} allUser={allUser} />
 
@@ -1766,11 +2257,10 @@ const ChatRoom = ({
                             }
                             <div id='chat-list-wrapper' className={'iassist-chat-list-wrapper' + (confirmDelete ? ' delete-wrapper' : '')} ref={bodyRef}>
 
-
-
                                 {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages) => {
+
                                     return (
-                                        <div className={'chat-wrapper ' + ((messages.is_feedback || messages.is_reopen) && !messages.is_file ? 'chat-feedback-wrapper' : '')} key={messages.id} style={{ border: +borderChatId === +messages.id ? '1px solid #00BB5A' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
+                                        <div className={'chat-wrapper ' + ((messages.is_feedback || messages.is_reopen || messages.config_json?.is_request || messages.config_json?.is_denied) && !messages.is_file ? ' chat-feedback-wrapper' : '')} key={messages.id} style={{ border: +borderChatId === +messages.id ? '1px solid #00BB5A' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
 
                                             <div className='support-header'>
 
@@ -1779,7 +2269,7 @@ const ChatRoom = ({
 
                                                         <li onClick={(e) => reply(e, messages)}>Reply</li>
                                                         {
-                                                            editAccess && <li onClick={() => editMessageClick(messages)}>Edit</li>}
+                                                            validateEditChat(messages, true) && <li onClick={() => editMessageClick(messages)}>Edit</li>}
 
                                                     </ul>
 
@@ -1793,11 +2283,11 @@ const ChatRoom = ({
 
                                                         <div className='name'>
                                                             <h4>{getUserNameBasedOnId(messageUserDetails, messages.user_id, 'message_detail')}</h4>
-                                                            <span className='card-label'>{getUserCardLabel(messages.user_id)}</span>
+                                                            <span className='card-label'>{messages?.config_json?.client_support ? 'AGENT' : 'CLIENT'}</span>
                                                             <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)}</span>
                                                         </div>
 
-                                                        {editId !== messages.id && !messages.is_file && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"msg" + messages.id}>
+                                                        {editId !== messages.id && (!messages.is_file && !messages.is_feedback && !messages.is_reopen && !messages.config_json?.is_request && !messages.config_json?.is_denied) && <div className='content' id={"msg" + messages.id}>
 
                                                             {parse(messages.note, options)}
 
@@ -1868,11 +2358,43 @@ const ChatRoom = ({
 
                                                         </div>}
 
+                                                        {
+                                                            !messages.is_file && (messages.config_json?.is_request || messages.config_json?.is_denied) &&
+                                                            <div className='content'>
+                                                                {messages.config_json?.is_request && <>
+                                                                    <div className='change-status'>Request to change status of this ticket to  <span>Resolved</span></div>
+                                                                    <div className='change-status-footer-wrapper'>
+
+                                                                        {messages?.note?.status === 'open' && <>    <button className="btn-approve btn-small btn-with-icon" id="submit-button" name="submit-button" disabled={showFeedback} onClick={() => {
+                                                                            setCloseRequestChatId(messages.id);
+                                                                            setShowFeedback(true)
+                                                                        }
+                                                                        }>
+                                                                            <i></i><span>Approve</span>
+                                                                        </button>
+
+                                                                            <button className="btn-cancel-white btn-small btn-with-icon" id="revoke-button" name="revoke-button" disabled={showFeedback} onClick={() => handleRejectCloseTicketRequest(messages)}>
+                                                                                <i></i><span>Reject</span>
+                                                                            </button></>}
+
+                                                                    </div></>
+                                                                }
+                                                                {messages.config_json?.is_denied &&
+                                                                    <> <div className='change-status'>The request is denied</div>
+
+                                                                        <div className='text'>{messages.note?.decline_reason}</div>
+                                                                    </>
+                                                                }
+                                                            </div>
+
+                                                        }
+
                                                         {messages.is_file && !messages.is_feedback && <div className='content'>
 
                                                             {editId !== messages.id && parse(messages.note.message, options)}
 
                                                             <div className='content-video'>
+
 
                                                                 {messages.note.file.map((files, index) => {
 
@@ -1880,51 +2402,52 @@ const ChatRoom = ({
 
                                                                         <div className='content-wrapper-media' key={index}>
 
-                                                                            {/* {
-
-                                                                                checkVideo(files, 'video') && <div className='wrapper-media'>
-                                                                                    <video src={files.file} onClick={() => {
-                                                                                        videoClick(files.file)
-                                                                                    }} onLoad={(e) => loadFile()}></video>
-                                                                                    {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
-                                                                                    <div className='media-id'>{files?.name}</div>
-                                                                                </div>
-                                                                            }
-
                                                                             {
-                                                                                checkImage(files) &&
-                                                                                <div className='wrapper-media'><img alt="" src={files.file} onClick={() => {
-                                                                                    playerType = 'image';
-                                                                                    setOpenPopupPlayer(true)
-                                                                                    setPlayerUrl(files.file)
-                                                                                }}
-                                                                                    onLoad={(e) => loadFile()}></img><div className='media-id'>{files?.name}</div>
-                                                                                </div>
-                                                                            } */}
+                                                                                files?.is_delete ? <div className='delete-file-message'>
+                                                                                    <span className='iassist-deleted-file-icon'></span>
+                                                                                    <span>File is Deleted</span></div> :
+                                                                                    <>
 
-                                                                            {
-                                                                                checkFileExtension(files).type === 'video' &&
-                                                                                <div className='wrapper-media'>
-                                                                                    <video src={files.file} onClick={() => {
-                                                                                        videoClick(files.file)
-                                                                                    }} onLoad={(e) => loadFile()}></video>
-                                                                                    {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
-                                                                                    <div className='media-id'>{files?.name}</div>
-                                                                                </div>
-                                                                            }
-                                                                            {
-                                                                                checkFileExtension(files).type === 'image' &&
-                                                                                <div className='wrapper-media'><img alt="" src={files.file} onClick={() => {
-                                                                                    playerType = 'image';
-                                                                                    setOpenPopupPlayer(true)
-                                                                                    setPlayerUrl(files.file)
-                                                                                }}
-                                                                                    onLoad={(e) => loadFile()}></img><div className='media-id'>{files?.name}</div>
-                                                                                </div>
-                                                                            }
-                                                                            {
-                                                                                checkFileExtension(files).type === 'other' && getOtherFileExtensionsDiv({ ...checkFileExtension(files), file: files })
+                                                                                        {
+                                                                                            checkFileExtension(files).type === 'video' &&
+                                                                                            <div className='wrapper-media'>
+                                                                                                <video src={files.file} onClick={() => {
+                                                                                                    videoClick(files.file)
+                                                                                                }} onLoad={(e) => loadFile()}></video>
+                                                                                                {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
 
+                                                                                                <div className='wrapper-media-footer'>
+
+                                                                                                    <div className='media-id'>{files?.name?.substring(0, 10)}
+                                                                                                    </div>
+                                                                                                    <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button>
+                                                                                                    {+currentLoggedInUserId === +messages.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, messages, files)}></button>}
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        }
+                                                                                        {
+                                                                                            checkFileExtension(files).type === 'image' &&
+                                                                                            <div className='wrapper-media-doc'>
+
+                                                                                                <img alt="" src={files.file} onClick={() => {
+                                                                                                    playerType = 'image';
+                                                                                                    setOpenPopupPlayer(true)
+                                                                                                    setPlayerUrl(files.file)
+                                                                                                }}
+                                                                                                    onLoad={(e) => loadFile()}></img>
+                                                                                                <div className='wrapper-media-doc-footer'>
+                                                                                                    <div className='media-id'>{files?.name?.substring(0, 10)}</div>
+                                                                                                    <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button>
+                                                                                                    {+currentLoggedInUserId === +messages.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, messages, files)}></button>}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        }
+                                                                                        {
+                                                                                            checkFileExtension(files).type === 'other' &&
+                                                                                            getOtherFileExtensionsDiv({ ...checkFileExtension(files), file: files }, messages)
+
+                                                                                        }</>
                                                                             }
                                                                         </div>)
 
@@ -1939,7 +2462,7 @@ const ChatRoom = ({
 
                                                             <button className={'reply-arrow' + (hideReply && chatId === messages.id ? ' reply-rotate' : '')}>Reply</button>
 
-                                                            {draftReplyId.current.includes(messages.id) && <span style={{color:'red', fontWeight:500}}><sup>1 draft</sup></span>}
+                                                            {draftReplyId.current.includes(messages.id) && <span style={{ color: 'red', fontWeight: 500 }}><sup>1 draft</sup></span>}
 
                                                         </span>}
 
@@ -1947,13 +2470,14 @@ const ChatRoom = ({
                                                             messages.replies.map((msg) => { //eslint-disable-line
                                                                 if (messages.id === msg.parent_note_id) {
 
+
                                                                     return (<div className='reply-wrapper' key={msg.id} style={{ border: borderChatId === msg.id ? '2px solid green' : '', cursor: showSearch ? 'pointer' : 'auto' }}>
                                                                         <div className='header-reply'>
 
                                                                             {showMainMenu && currentSelectId.current === msg.id &&
                                                                                 <ul id='menu' className='panes'>
 
-                                                                                    {editAccess && <li onClick={() => editMessageClick(msg)}>Edit</li>}
+                                                                                    {validateEditChat(msg, true) && <li onClick={() => editMessageClick(msg)}>Edit</li>}
 
                                                                                 </ul>
                                                                             }
@@ -1964,7 +2488,7 @@ const ChatRoom = ({
                                                                                 <div className='reply-sub-wrapper'>
                                                                                     <div className='name'>
                                                                                         <h4>{getUserNameBasedOnId(messageUserDetails, msg.user_id, 'message_detail')}</h4>
-                                                                                        <span className='card-label'>{getUserCardLabel(msg.user_id)}</span>
+                                                                                        <span className='card-label'>{msg?.config_json?.client_support ? 'AGENT' : 'CLIENT'}</span>
                                                                                         <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
                                                                                     </div>
 
@@ -2014,47 +2538,70 @@ const ChatRoom = ({
                                                                                         </div>
                                                                                     </div>}
 
-                                                                                    {msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
+                                                                                    {
+                                                                                        msg?.is_file && !msg?.is_feedback && <div className='content-reply'>
 
-                                                                                        {editId !== msg.id && parse(msg?.note?.message, options)}
+                                                                                            {editId !== msg.id && parse(msg?.note?.message, options)}
 
-                                                                                        <div className='content-video'>
+                                                                                            <div className='content-video'>
 
-                                                                                            {msg.note.file.map((files, index) => {
-                                                                                                return (<div className='content-wrapper-media' key={index}>
+                                                                                                {msg.note.file.map((files, index) => {
+                                                                                                    return (
+                                                                                                        <div className='content-wrapper-media' key={index}>
+                                                                                                            {
+                                                                                                                files?.is_delete ? <div className='delete-file-message'>
+                                                                                                                    <span className='iassist-deleted-file-icon'></span>
+                                                                                                                    <span>File is Deleted</span></div> :
+                                                                                                                    <>
+                                                                                                                        {
+                                                                                                                            checkFileExtension(files, 'video').type === 'video' && <div className='wrapper-media'> <video src={files.file} onClick={() => {
 
-                                                                                                    {checkFileExtension(files, 'video').type === 'video' && <div className='wrapper-media'> <video src={files.file} onClick={() => {
+                                                                                                                                videoClick(files.file)
 
-                                                                                                        videoClick(files.file)
+                                                                                                                            }}>
 
-                                                                                                    }}>
+                                                                                                                            </video>
 
-                                                                                                    </video>
+                                                                                                                                {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
+                                                                                                                                <div className='wrapper-media-footer'>
+                                                                                                                                    <div className='media-id'>{files?.name?.substring(0,10)}</div>
+                                                                                                                                    <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button>
+                                                                                                                                    {+currentLoggedInUserId === +messages?.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, msg, files)}></button>}
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        }
 
-                                                                                                        {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
+                                                                                                                        {
+                                                                                                                            checkFileExtension(files).type === 'image' && <div className='wrapper-media'>
+                                                                                                                                <img alt="" src={files.file}
+                                                                                                                                    onClick={() => {
+                                                                                                                                        playerType = 'image';
+                                                                                                                                        setOpenPopupPlayer(true);
+                                                                                                                                        setPlayerUrl(files.file);
+                                                                                                                                    }}></img>
+                                                                                                                                <div className='wrapper-media-footer'>
+                                                                                                                                    <div className='media-id'>{files?.name?.substring(0,10)}</div>
+                                                                                                                                    <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button>
+                                                                                                                                    {+currentLoggedInUserId === +messages?.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, msg, files)}></button>}
+                                                                                                                                </div>
 
-                                                                                                        <div className='media-id'>{files?.name}</div>
+                                                                                                                            </div>
+                                                                                                                        }
 
-                                                                                                    </div>}
+                                                                                                                        {
+                                                                                                                            checkFileExtension(files).type === 'other' &&
+                                                                                                                            getOtherFileExtensionsDiv({ ...checkFileExtension(files), file: files }, msg)
 
-                                                                                                    {checkFileExtension(files).type === 'image' && <div className='wrapper-media'><img alt="" src={files.file}
-                                                                                                        onClick={() => {
-                                                                                                            playerType = 'image';
-                                                                                                            setOpenPopupPlayer(true);
-                                                                                                            setPlayerUrl(files.file);
-                                                                                                        }}></img>
+                                                                                                                        }
+                                                                                                                    </>}
 
-                                                                                                        <div className='media-id'>{files?.name}</div>
+                                                                                                        </div>)
 
-                                                                                                    </div>}
+                                                                                                })}
 
-                                                                                                </div>)
+                                                                                            </div>
 
-                                                                                            })}
-
-                                                                                        </div>
-
-                                                                                    </div>}
+                                                                                        </div>}
 
                                                                                 </div>
 
@@ -2086,7 +2633,6 @@ const ChatRoom = ({
                                                                             html={replyMessage}
                                                                             disable={false} //indicate that the editor has to be in edit mode
                                                                             onChange={(val) => {
-                                                                                console.log(messages.id)
                                                                                 if (replyEditorRef.current.textContent) storeChatDataInMemory(undefined, 'reply', messages.id, val)
                                                                                 else removeChatDataInMemory();
                                                                                 setReplyMessage(val);
@@ -2106,20 +2652,38 @@ const ChatRoom = ({
                                                                             // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
                                                                             // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
                                                                             sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                                                            onEnterClickLogic={(e) => sendMessage(e, 'reply', messages.id)} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                                                            onEnterClickLogic={disableReplyButton ? () => { } : (e) => sendMessage(e, 'reply', messages.id)} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
                                                                             autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                                                             minEditorHeight='20px' // Default will be 100px
                                                                             maxEditorHeight="300px" // Default maxHeight will be 250px
                                                                             placeHolder="Reply"
                                                                         />
 
-                                                                        <button className='rply-btn' onClick={(e) => sendMessage(e, 'reply', messages.id)} disabled={showVideoLoader}></button>
+                                                                        <button className='rply-btn' disabled={showVideoLoader || disableReplyButton || (!replyMessage && !saveDataUrlForReply.length)} onClick={(e) => sendMessage(e, 'reply', messages.id)} ></button>
 
                                                                     </div>
 
-                                                                    <RecordOption showScreenButton={showReplyScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'reply'} videoUrl={replyVideoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader}></RecordOption>
+                                                                    <RecordOption
+                                                                        handleDeleteFile={handleDeleteFile}
+                                                                        fileExtentsionClassName={fileExtentsionClassName}
+                                                                        handleFileChange={handleFileChange}
+                                                                        selectedFile={selectedFilesForUploadInReply}
+                                                                        showScreenButton={showReplyScreenButton}
+                                                                        setShowVideo={setShowVideo}
+                                                                        setDisplayMessage={setDisplayMessage}
+                                                                        type={'reply'}
+                                                                        videoUrl={replyVideoUrl}
+                                                                        setDeleteSavedItem={setDeleteSavedItem}
+                                                                        deleteSavedItem={deleteSavedItem}
+                                                                        loader={showVideoLoader} dataUrl={saveDataUrl}
+                                                                        disableSendButton={disableReplyButton}
+                                                                        fileInputRef={fileInputRefForReply}
+                                                                    ></RecordOption>
 
-                                                                    <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}></button></div>
+                                                                    <div className='add-btn-chat'>
+                                                                        <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}>
+
+                                                                        </button></div>
 
                                                                 </div>
                                                             </div>}
@@ -2131,7 +2695,7 @@ const ChatRoom = ({
                                                 </div>
 
 
-                                                {!showSearch && editId !== messages.id && ((!messages.is_feedback && !messages.is_reopen) || messages.is_file) && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>
+                                                {!showSearch && editId !== messages.id && ((!messages.is_feedback && !messages.is_reopen) || messages.is_file) && !messages.config_json?.is_denied && !messages.config_json?.is_request && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>
                                                 }
                                             </div>
 
@@ -2146,70 +2710,104 @@ const ChatRoom = ({
                             </div>
                         </div>
 
-                        {!showSearch && !confirmDelete && <div className='iassist-message' id='message'>
-                            {showFeedback && <FeedBack closePane={closeFeedbackPane} id={chatIds} className={' feedback-wrapper chat-wrapper '} disabledButton={setShowFeedback} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' getTopicsBasedOnFilter={getTopicsBasedOnFilter} />}
-
-                            {/* Reopen Msg */}
-
-                            {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' getTopicsBasedOnFilter={getTopicsBasedOnFilter} />}
-
-                            {!showFeedback && !showReopen && <div className='topic-filter-search-iassist'>
-
-                                {<div className='search'>
-
-                                    <Steno
-                                        html={message}
-                                        disable={false} //indicate that the editor has to be in edit mode
-                                        onChange={(val) => {
-                                            if (editorRef.current.textContent) storeChatDataInMemory(val, 'message',)
-                                            else removeChatDataInMemory();
-                                            setMessage(val)
-                                        }}
-                                        innerRef={editorRef} //ref attached to the editor
-                                        backgroundColor={'#000'}
-                                        onChangeBackgroundColor={() => { }}
-                                        fontColor={'#fff'}
-                                        onChangeFontColor={() => { }}
-                                        functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
-                                        isToolBarVisible={false} //to show/hide the toolbar options
-                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                        fileList={[]} //List of file object to track the files selected by user
-                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                        sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                        onEnterClickLogic={sendMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                        minEditorHeight='20px' // Default will be 100px
-                                        maxEditorHeight="300px" // Default maxHeight will be 250px
-                                        placeHolder={topic.current.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
-                                        onClick={() => onClickSteno()}
+                        {!showSearch && !confirmDelete &&
+                            <div className='iassist-message' id='message'>
+                                {showFeedback &&
+                                    <FeedBack
+                                        closePane={closeFeedbackPane}
+                                        id={chatIds}
+                                        className={' feedback-wrapper chat-wrapper '}
+                                        disabledButton={setShowFeedback}
+                                        topic={topic.current}
+                                        setLoader={setShowLoader}
+                                        placeHolders='Message'
+                                        getTopicsBasedOnFilter={getTopicsBasedOnFilter}
+                                        rejectRequestActive={rejectRequestActive}
+                                        rejectRequest={rejectRequest}
+                                        setRejectRequestActive={setRejectRequestActive}
+                                        closeChatId={closeRequestChatId}
                                     />
+                                }
 
-                                    <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')} disabled={showVideoLoader || (!message && !videoUrl.length)}></button>
+                                {/* Reopen Msg */}
+
+                                {showReopen && <TicketReopen closePane={closeFeedbackPane} id={chatIds} className={' reopen-wrapper chat-wrapper'} topic={topic.current} setLoader={setShowLoader} placeHolders='Message' getTopicsBasedOnFilter={getTopicsBasedOnFilter} />}
+
+                                {!showFeedback && !showReopen && <div className='topic-filter-search-iassist'>
+
+                                    {<div className='search'>
+
+                                        <Steno
+                                            html={message}
+                                            disable={false} //indicate that the editor has to be in edit mode
+                                            onChange={(val) => {
+                                                if (editorRef.current.textContent) storeChatDataInMemory(val, 'message',)
+                                                else removeChatDataInMemory();
+                                                setMessage(val)
+                                            }}
+                                            innerRef={editorRef} //ref attached to the editor
+                                            backgroundColor={'#000'}
+                                            onChangeBackgroundColor={() => { }}
+                                            fontColor={'#fff'}
+                                            onChangeFontColor={() => { }}
+                                            functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
+                                            isToolBarVisible={false} //to show/hide the toolbar options
+                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                            fileList={[]} //List of file object to track the files selected by user
+                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                            sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                            onEnterClickLogic={disableSendButton ? () => { } : sendMessage} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
+                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                            minEditorHeight='20px' // Default will be 100px
+                                            maxEditorHeight="300px" // Default maxHeight will be 250px
+                                            placeHolder={topic.current.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
+                                            onClick={() => onClickSteno()}
+                                        />
+
+                                        <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')}
+
+                                            disabled={showVideoLoader || (!message && !videoUrl.length && !saveDataUrlForMessage.length) || disableSendButton}></button>
+
+                                    </div>}
+
+                                </div>}
+
+                                {!showFeedback && !showReopen && <div className='wrap-record'>
+
+                                    <RecordOption
+                                        handleDeleteFile={handleDeleteFile}
+                                        fileExtentsionClassName={fileExtentsionClassName}
+                                        handleFileChange={handleFileChange}
+                                        selectedFile={selectedFile}
+                                        showScreenButton={showScreenButton}
+                                        setShowVideo={setShowVideo}
+                                        setDisplayMessage={setDisplayMessage}
+                                        type={'message'}
+                                        videoUrl={videoUrl}
+                                        setDeleteSavedItem={setDeleteSavedItem}
+                                        deleteSavedItem={deleteSavedItem}
+                                        loader={showVideoLoader}
+                                        dataUrl={saveDataUrl}
+                                        disableSendButton={disableSendButton}
+                                        fileInputRef={fileInputRef}
+                                    ></RecordOption>
+
+                                </div>}
+                                {!showFeedback && !showReopen && <div className='bottom-wrapper'>
+
+                                    <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
+
+                                    {((!activity || chatActivity.current) && topic.current && topic.current.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
+
+                                    {activity && !chatActivity.current && topic.current.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
 
                                 </div>}
 
                             </div>}
-
-                            {!showFeedback && !showReopen && <div className='wrap-record'>
-
-                                <RecordOption showScreenButton={showScreenButton} setShowVideo={setShowVideo} setDisplayMessage={setDisplayMessage} type={'message'} videoUrl={videoUrl} setDeleteSavedItem={setDeleteSavedItem} deleteSavedItem={deleteSavedItem} loader={showVideoLoader} dataUrl={saveDataUrl}></RecordOption>
-
-                            </div>}
-                            {!showFeedback && !showReopen && <div className='bottom-wrapper'>
-
-                                <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
-
-                                {((!activity || chatActivity.current) && topic.current && topic.current.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
-
-                                {activity && !chatActivity.current && topic.current.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
-
-                            </div>}
-
-                        </div>}
                     </div>
                 </div>
 
@@ -2220,8 +2818,8 @@ const ChatRoom = ({
         </>
 
     )
-    //: (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} platformId={platformId} />)
 
 }
 
+//: (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} platformId={platformId} />)
 export default memo(ChatRoom);
