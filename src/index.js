@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
 
-window.IASSIST_SITE_VERSION='3.0.0';
+window.IASSIST_SITE_VERSION='3.0.1';
 
 const bodyElement = document.getElementsByTagName('body')[0];
 const div = document.createElement('div')

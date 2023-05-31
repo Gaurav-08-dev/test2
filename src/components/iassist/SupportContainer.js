@@ -227,8 +227,24 @@ const SupportContainer = ({logOut, setLoader}) => {
         }
     }, []) // eslint-disable-line 
 
+    const checkOnClick = async(url) => {
+
+        await fetch(url, {
+            headers: {
+                Pragma: 'no-cache',
+                Expires: '-1',
+                'Cache-Control': 'no-cache',
+            },
+        });
+        window.location.href = url;
+        // This is to ensure reload with url's having '#'
+        window.location.reload();
+
+    }
+
     return (
         <>
+        <button onClick={() => checkOnClick(window?.location?.href)}>test</button>
             {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
             {openSupport && 
