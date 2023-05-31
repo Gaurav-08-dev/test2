@@ -5,7 +5,16 @@ import { getTokenClient } from '../../../utils/Common';
 import './Feedback.scss'
 import * as Constants from '../../Constants';
 
-const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, topic, setLoader, placeHolders, getTopicsBasedOnFilter }) => {
+const FeedBack = ({ closePane, 
+    id, 
+    ticket, 
+    className, 
+    disabledButton, 
+    allTopic, 
+    topic, 
+    setLoader, placeHolders, getTopicsBasedOnFilter,rejectRequestActive,rejectRequest,setRejectRequestActive,
+    closeChatId
+ }) => {
 
     const [feedbackValue, setFeedBackValue] = useState('');
 
@@ -27,6 +36,9 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
         disabledButton(false);
 
         closePane();
+        setRejectRequestActive(false)
+
+
 
     }
 
@@ -40,13 +52,31 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
     const submitFeedback = () => {
 
+        setDisableButton(true);
+
+        setDisableCancel(true);
+
+
+        if(rejectRequestActive && suggestion !== ''){
+
+
+            const topicId=id;
+            const declineReason=suggestion;
+            rejectRequest(topicId,declineReason);
+            return;
+        }
+        else if(rejectRequestActive && suggestion === ''){
+            setDisableButton(false)
+            setDisableCancel(false)
+            alertService.showToast("warn", "Select appropriate reason to reject this request");
+        }
+
+
         if (feedbackValue !== '') {
 
             setLoader(true);
 
-            setDisableButton(true);
-
-            setDisableCancel(true);
+            
 
             let data = {
                 topic_id: id,
@@ -56,12 +86,14 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
             const jwt_token = getTokenClient();
 
+            const isCloseTicketRequest = closeChatId?`?request_chat_id=${closeChatId}`:'';
+
             const token = `Bearer ${jwt_token}`;
 
             const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
 
             if (token) {
-                APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/feedback/`, data, false, 'POST', null, token)
+                APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `${platform}/feedback/${isCloseTicketRequest}`, data, false, 'POST', null, token)
                     .then(response => {
 
                         if (response) {
@@ -129,11 +161,10 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
         } else {
 
+            setDisableButton(false)
+            setDisableCancel(false)
+
             alertService.showToast("warn", "Select appropriate feedback to close this ticket");
-
-            //setDisableButton(true);
-
-            // validateRequiredDetails('create', false, suggestion);
 
         }
 
@@ -151,11 +182,13 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
 
                 <div className='description'>
 
-                    Before you mark this ticket as <span>Resolved</span>, please provide your feedback on our customer service.
+                {!rejectRequestActive && <>Before you mark this ticket as <span>Resolved</span>, please provide your feedback on our customer service.</>}
+
+                {rejectRequestActive &&   <> You are about to decline a request for resolution of a ticket, please submit a reason.</>}
 
                 </div>
 
-                <div className='feedback'>
+                {!rejectRequestActive && <div className='feedback'>
                     
                     <span style={{ background: feedbackValue === 'Amazing' ? '#FFFFFF' : '', color: feedbackValue === 'Amazing' ? '#000000' : '', borderColor: feedbackValue === 'Amazing' ? '#fff' : '#b1b2b3' }} onClick={(e) => feedBackClick(e, 'Amazing')}>
                         Amazing</span>
@@ -169,7 +202,7 @@ const FeedBack = ({ closePane, id, ticket, className, disabledButton, allTopic, 
                     <span style={{ background: feedbackValue === 'Unsatisfied' ? '#FFFFFF' : '', color: feedbackValue === 'Unsatisfied' ? '#000000' : '', borderColor: feedbackValue === 'Unsatisfied' ? '#fff' : '#b1b2b3' }} onClick={(e) => feedBackClick(e, 'Unsatisfied')}>
                         Unsatisfied</span>
 
-                </div>
+                </div>}
                 <textarea className='textarea' value={suggestion} placeholder={placeHolders} onChange={(e) => {
                     setSuggestion(e.target.value)
                 }

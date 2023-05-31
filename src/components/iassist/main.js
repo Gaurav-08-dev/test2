@@ -14,12 +14,6 @@ const Main = () => {
     const [loader, setLoader] = useState(true);
 
     useEffect(() => {
-        const bodyElement = document.getElementsByTagName('body')[0];
-        const linkTag = document.createElement("link");
-        linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
-        linkTag.rel = "stylesheet";
-        linkTag.id = "iassist-css";
-        bodyElement.append(linkTag);
         
         const checkIsElectron = isElectron();
         if (checkIsElectron && getDesktopToken()) {
@@ -27,6 +21,12 @@ const Main = () => {
             setIsLoggedIn(true);
         }
         setIsElectronApp(checkIsElectron);
+
+            // caches.keys().then((names) => {
+            //     names.forEach((name) => {
+            //         caches.delete(name);
+            //     });
+            // });
     }, []) //eslint-disable-line
 
     const logout = () => {

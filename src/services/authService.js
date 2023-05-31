@@ -1,6 +1,7 @@
 import AuthHeader from '../utils/AuthHeader';
-import { getLocalStorageVal } from '../utils/Common';
+// import { getLocalStorageVal } from '../utils/Common';
 import AlertSevice from './alertService';
+import * as Constants from '../components/Constants.js';
 
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
@@ -13,7 +14,7 @@ const APIService = {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': headerAuthHeader,
-                'App-Version': window.SITE_VERSION || '0.0.0'
+                'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
                 // 'Unique-Id': getLocalStorageVal('sessionid')
             },
             redirect: 'follow', // manual, *follow, error

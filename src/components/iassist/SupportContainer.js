@@ -68,7 +68,8 @@ const SupportContainer = ({logOut, setLoader}) => {
             const res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': tokens
+                    'Authorization': tokens,
+                    'App-Version': Constants.IASSIST_SITE_VERSION
                 }
             })
             const result = await res.json();
@@ -116,6 +117,7 @@ const SupportContainer = ({logOut, setLoader}) => {
             };
 
             webSocket.onclose = function () {
+                connectSocket();
                 console.log("connection listen Closed");
             };
         }
@@ -153,6 +155,7 @@ const SupportContainer = ({logOut, setLoader}) => {
         } else {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
+                console.log("here4")
                 // getConfigDetails('onButtonClick');
                 if (!configLoader) getConfigDetails();
                 alertService.showToast('process', 'Loading...');
@@ -163,8 +166,8 @@ const SupportContainer = ({logOut, setLoader}) => {
     useEffect(() => {
 
 
-        const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
+        // const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
+        // const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
         // if (prevAppId !== AppId.current || !configDetails) {
         if (localStorage.length) {
@@ -234,8 +237,6 @@ const SupportContainer = ({logOut, setLoader}) => {
                 webSocket={webSocket}
                 panelPosition={panelPosition.current}
                 platformId={platformId}
-                // storedData={storedTicket}
-                // setStoredData={setStoredTicket}
                 logOut={logOut}
             />}
         </>

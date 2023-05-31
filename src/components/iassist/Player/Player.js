@@ -51,7 +51,7 @@ const Player = ({ url, id, type, close }) => {
 
                 <div className='close-btn'><button onClick={() => close(false)}>close</button></div>
 
-                {type === 'image' && <img src={url}></img>}
+                {type === 'image' && <img src={url} alt='not loaded'></img>}
 
                 {type === 'video' && <video src={url} id='vid-player' preload='auto'></video>}
 
