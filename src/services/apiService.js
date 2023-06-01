@@ -72,6 +72,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
             'Authorization': headerAuthHeader,
             'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
         },
+        'Clear-Site-Data': '"cache", "cookies" ,"storage"',
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer' // no-referrer, *client
     }
