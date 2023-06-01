@@ -85,10 +85,9 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
     return options;
 }
 
- async function handleSitesListToggle() {
+ async function handleSitesListToggle(url) {
     // if (this.user.organization_id > 1) return;
     // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
-    let url=window.location.href;
     await fetch(url, {
       headers: {
           Pragma: 'no-cache',
@@ -229,7 +228,7 @@ const APIService = {
                     if (response.status === 207) {
                         // Special check - 207 indicates that a New version of app is available 
                         // so in this case, force reload the browser so that user gets the latest version of app
-                        handleSitesListToggle()
+                        handleSitesListToggle(window.location.href)
                         // window.location.reload();
                         return {};
                     }
