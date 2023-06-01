@@ -94,7 +94,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
             background-color: #fff
           };
         }
-        .iassist-header-3-dot-option {
+        .iassist-header-three-dot-option {
           position: absolute;
           right: 4px;
           transform: rotate(90deg);
@@ -561,11 +561,12 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           display: flex;
           flex-direction: column;
           gap: 3px;
-          word-break: break-all;
+          word-break: break-word;
           .topic-header-inner {
             display: flex;
             width: 100%;
             justify-content: space-between;
+            word-break: break-word;
             .topic-name {
               padding-right: 20px;
               margin: 0;

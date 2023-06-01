@@ -360,7 +360,7 @@ p {
   textarea:focus {
     outline: none;
     font-size: 11px;
-    font-family: "Open Sans";
+    font-family: sans-serif;
   }
 
   .btn-with-icon {
@@ -705,6 +705,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     border-radius: 2px 0px 0px 2px;
     text-align: left;
     z-index: 100000;
+    // font-family: Poppins,sans-serif;
 
     .iassist-panel-inner {
       position: relative;
@@ -837,6 +838,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
               line-height: 18px;
               width: 100%;
               color: #fff;
+              font-family: sans-serif;
             }
           }
 
@@ -993,6 +995,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     margin: 0 0 15px 0;
     width: 100%;
 
+
     > label {
       color: #b1b2b3;
       font-weight: 500;
@@ -1072,6 +1075,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           color: #fff;
           line-height: 20px;
           min-height: 0px !important;
+          font-family: sans-serif;
 
           ::-webkit-input-placeholder {
             /* Chrome/Opera/Safari */

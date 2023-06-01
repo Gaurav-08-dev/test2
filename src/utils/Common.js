@@ -343,7 +343,7 @@ export const convertJSONToCSV = (objArray) => {
   for (var i = 0; i < results.length; i++) {
     var line = '';
     for (var index in results[i]) {
-      if (line != '') line += ','
+      if (line !== '') line += ','
       if (typeof results[i][index] === 'object') {
         line += (results[i][index].data.includes(',')) ? '"' + results[i][index].data + '"' : results[i][index].data; //wrap string to double quotes if values contians comma
 
@@ -459,7 +459,7 @@ export const giveFormattedString = (str) => {
     if (StrVal.includes('_')) {
       let valArr = StrVal.split('_');
       StrVal = '';
-      valArr.map((value, index) => {
+      valArr.map((value, index) => { // eslint-disable-line
         if (index === 0) {
           StrVal += value[0].toUpperCase() + value.substring(1);
         } else {
@@ -549,7 +549,7 @@ Math.easeInOutQuad = function (t, b, c, d) {
  *************************************************/
 export const isDecimal = (num) => {
   if(isNaN(Number(num))) return false;
-  return num % 1 != 0;
+  return num % 1 !== 0;
 }
 
 
@@ -606,7 +606,7 @@ export const isDescendant = (ele, parentNode) => {
     isChild = true
   }
 
-  while (ele = ele.parentNode) {
+  while (ele === ele.parentNode) {
     if (ele.isEqualNode(parentNode)) {
       isChild = true
     }

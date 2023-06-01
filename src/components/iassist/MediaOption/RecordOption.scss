@@ -1,126 +1,325 @@
-$image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
+$image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
 
 #iassist-panel-wrapper {
   .screen-wrapper {
-      position: absolute;
-      left: 10px;
-      background: #f4f4f4;
-      color: #000;
-      font-size: 11px;
-      width: 170px;
+    position: absolute;
+    left: 10px;
+    background: #f4f4f4;
+    color: #000;
+    font-size: 11px;
+    width: 170px;
+    padding: 0 5px;
+    border-radius: 2px;
+    z-index: 1;
+    cursor: pointer;
+    .screen-record {
+      background: transparent;
       padding: 0 5px;
-      border-radius: 2px;
-      z-index: 1;
-      cursor: pointer;
-      .screen-record {
-        background: transparent;
-        padding: 0 5px;
-        display: flex;
-        align-items: center;
-        border-bottom: 0.1px #00000040 solid;
-        line-height: 22px;
+      display: flex;
+      align-items: center;
+      border-bottom: 0.1px #00000040 solid;
+      line-height: 22px;
 
-        &::before {
-          content: "";
-          mask: url($image-prefix + "icon-record-filled.svg") no-repeat center center;
-          mask-size: 10px;
-          -webkit-mask: url($image-prefix + "icon-record-filled.svg") no-repeat center center;
-          -webkit-mask-size: 10px;
-          width: 10px;
-          height: 10px;
-          background-color: #000;
-          margin-right: 5px;
-        }
-      }
-
-      .screen-shot {
-        background: transparent;
-        display: flex;
-        align-items: center;
-        padding: 0 5px;
-        line-height: 22px;
-
-        &::before {
-          content: "";
-          mask: url($image-prefix + "icon-screenshot-filled.svg") no-repeat center center;
-          mask-size: 10px;
-          -webkit-mask: url($image-prefix + "icon-screenshot-filled.svg") no-repeat center center;
-          -webkit-mask-size: 10px;
-          width: 10px;
-          height: 10px;
-          background-color: #000;
-          margin-right: 5px;
-        }
+      &::before {
+        content: "";
+        mask: url($image-prefix + "icon-record-filled.svg") no-repeat center
+          center;
+        mask-size: 10px;
+        -webkit-mask: url($image-prefix + "icon-record-filled.svg") no-repeat
+          center center;
+        -webkit-mask-size: 10px;
+        width: 10px;
+        height: 10px;
+        background-color: #000;
+        margin-right: 5px;
       }
     }
 
-    .add-btn {
-      width: 80%;
-      margin-top: 10px;
-      button {
-        cursor: pointer;
+    .screen-shot {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+      line-height: 22px;
+
+      &::before {
         content: "";
-        mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
-        -webkit-mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
-        min-width: 12px;
-        width: 17px;
-        height: 17px;
-        background-color: #b1b2b3;
+        mask: url($image-prefix + "icon-screenshot-filled.svg") no-repeat center
+          center;
+        mask-size: 10px;
+        -webkit-mask: url($image-prefix + "icon-screenshot-filled.svg")
+          no-repeat center center;
+        -webkit-mask-size: 10px;
+        width: 10px;
+        height: 10px;
+        background-color: #000;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .add-btn {
+    width: 80%;
+    margin-top: 10px;
+    button {
+      cursor: pointer;
+      content: "";
+      mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
+      -webkit-mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
+      min-width: 12px;
+      width: 17px;
+      height: 17px;
+      background-color: #b1b2b3;
+      display: block;
+      margin: 0 7px;
+      border-radius: 50%;
+    }
+  }
+
+  .video-url {
+    // grid-template-columns: 30% 30% 30% !important;
+    gap: 5px;
+    padding-bottom: 10px;
+  }
+
+  #video-content-wrapper {
+    display: grid;
+    grid-template-columns: 33.33% 33.33% 33.33%;
+    // padding-top: 10px;
+    padding: 15px;
+    grid-row-gap: 10px;
+    .vid-content {
+      margin-left: 10px;
+      position: relative;
+      #video {
+        width: 100px;
+        height: 60px;
+        object-fit: initial;
+        border-radius: 0;
+      }
+      #img {
+        width: 100%;
+        object-fit: initial;
+        border-radius: 0;
+        margin: 0;
+      }
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #232931;
+        padding: 2px 3px;
+        width: 100%;
+        .id {
+          font-size: 9px;
+        }
+        button {
+          content: "Delete";
+          mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+          -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center
+            center;
+
+          mask-size: 10px;
+          -webkit-mask-size: 10px;
+
+          width: 10px;
+          height: 10px;
+          background-color: #fff;
+          margin-left: -3px;
+        }
+      }
+    }
+  }
+
+  .wrapper-media {
+    padding: 6px;
+    display: flex;
+    background-color: #1a1f26;
+    border-radius: 2px;
+    height: 50px;
+    width: 252px;
+    // gap: 9px;
+    border-radius: 8px;
+    position: relative;
+    align-items: center;
+    // margin-left: 30px;
+    // margin-bottom: 10px;
+
+
+    video {
+      height: 72px;
+      width: 130px;
+    }
+    img {
+      height: 41px;
+      width: 40px;
+    }
+    //margin-bottom: 10px;
+    img,
+    video {
+      // max-width: 133px;
+
+      //height: 78px;
+      //padding-right: 11px;
+      border-radius: 1px;
+      object-fit: fill;
+      cursor: pointer;
+    }
+    .iassist-icon-wrapper {
+
+
+      .iassist-file {
+        content: "";
+        mask-size: 12px;
+        -webkit-mask-size: 12px;
+        width: 40px;
+        height: 54px;
+        // background-color: #777777;
         display: block;
         margin: 0 7px;
-        border-radius: 50%;
+      }
+
+      .iassist-file-icon-pdf {
+        mask: url($image-prefix + "icon-pdf.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-pdf.svg") no-repeat center
+          center;
+        mask-size: 24px;
+        -webkit-mask-size: 24px;
+      }
+      .iassist-file-icon-code {
+        mask: url($image-prefix + "icon-code.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-code.svg") no-repeat center
+          center;
+        mask-size: 24px;
+        -webkit-mask-size: 24px;
+      }
+
+      .iassist-file-icon-css {
+        mask: url($image-prefix + "icon-css.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-css.svg") no-repeat center
+          center;
+        mask-size: 24px;
+        -webkit-mask-size: 24px;
+      }
+
+      .iassist-file-icon-doc {
+        mask: url($image-prefix + "icon-doc.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-doc.svg") no-repeat center
+          center;
+        mask-size: 24px;
+        -webkit-mask-size: 24px;
+      }
+
+      .iassist-file-icon-img {
+        mask: url($image-prefix + "icon-img.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-img.svg") no-repeat center
+          center;
+        mask-size: 24px;
+        -webkit-mask-size: 24px;
+      }
+      .iassist-file-icon-archive {
+        mask: url($image-prefix + "icon-zip.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-zip.svg") no-repeat center
+          center;
+        mask-size: 24px;
+        -webkit-mask-size: 24px;
       }
     }
+    
+  }
 
-    .video-url {
-      // grid-template-columns: 30% 30% 30% !important;
-      gap: 10px;
-      padding-bottom: 10px;
+  .wrapper-media-video,
+  .wrapper-media {
+    .wrapper-media-footer {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      // gap: 34px;
+      .media-id {
+        padding-inline-start: 5px;
+        line-height: 22px;
+        color: #b1b2b3;
+        width: 120px;
+        font-weight: 500;
+        font-size: 12px;
+      }
+      .iassist-icon-delete {
+        display: none;
+        content: "Delete";
+        width: 24px;
+        height: 15px;
+        background-color: #b1b2b3;
+        transition: 300ms all;
+        &:hover {
+          background-color: #fff;
+        }
+        mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+        -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center
+          center;
+        mask-size: 17px;
+        -webkit-mask-size: 12px;
+      }
     }
-    #video-content-wrapper {
-      display: grid;
-      grid-template-columns: 33.33% 33.33% 33.33%;
-      padding-top: 10px;
-      grid-row-gap: 10px;
-      .vid-content {
+    &:hover {
+      .wrapper-media-footer .iassist-icon-download , .iassist-icon-delete {
+        display: block;
+      }
+    }
+  }
+
+  .file-input-parent-wrapper {
+    position: relative;
+    width: 100%;
+    height: 31px;
+    margin-bottom: 3px;
+    border-top: 0.1px solid rgba(0, 0, 0, 0.2509803922);
+    .file-input-wrapper {
+      position: absolute;
+      display: inline-block;
+      overflow: hidden;
+      border-radius: 4px;
+      border: 1px solid #87929d;
+      cursor: pointer;
+      z-index: 1;
+      top: 7.5px;
+      left: 4px;
+
+      .iassist-file-input::-webkit-file-upload-button {
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+      }
+
+      label {
+        display: inline-block;
+        padding: 0 9px;
+        color: #000;
+        border-radius: 4px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      /* Optional: Show selected file name */
+
+      .file-input-wrapper::after {
+        content: "No file selected";
+        display: inline-block;
         margin-left: 10px;
-        position: relative;
-        #video {
-          width: 100px;
-          height: 60px;
-          object-fit: initial;
-          border-radius: 0;
-        }
-        #img {
-          width: 100%;
-          object-fit: initial;
-          border-radius: 0;
-          margin: 0;
-        }
-        .footer {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: #232931;
-          padding: 2px 3px;
-          width: 100%;
-          .id {
-            font-size: 9px;
-          }
-          button {
-            content: "Delete";
-            mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
-            -webkit-mask: url($image-prefix + "icon-delete.svg") no-repeat center center;
+        color: #333;
+      }
 
-            mask-size: 10px;
-            -webkit-mask-size: 10px;
-
-            width: 10px;
-            height: 10px;
-            background-color: #fff;
-            margin-left: -3px;
-          }
-        }
+      input[type="file"]:valid + label::after {
+        content: attr(data-file-name);
       }
     }
+  }
 }

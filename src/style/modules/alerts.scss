@@ -16,6 +16,7 @@
     font-size: .875rem;
     line-height: 1.2;
     max-width: 100%;
+    text-transform: capitalize;
 
     &.info{
       background: theme-color('alert', 'info');

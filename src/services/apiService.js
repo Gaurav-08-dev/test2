@@ -70,7 +70,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
         headers: {
             'Content-Type': 'application/json',
             'Authorization': headerAuthHeader,
-            'App-Version': window.SITE_VERSION || '0.0.0'
+            'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
         },
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer' // no-referrer, *client
@@ -84,6 +84,22 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
     }
     return options;
 }
+
+ async function handleSitesListToggle() {
+    // if (this.user.organization_id > 1) return;
+    // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
+    let url=window.location.href;
+    await fetch(url, {
+      headers: {
+          Pragma: 'no-cache',
+          Expires: '-1',
+          'Cache-Control': 'no-cache',
+      },
+  });
+  window.location.href = url;
+  // This is to ensure reload with url's having '#'
+  window.location.reload();
+  }
 
 
 const APIService = {
@@ -112,7 +128,7 @@ const APIService = {
                                 mode: 'cors', // no-cors, *cors, same-origin
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'App-Version': window.SITE_VERSION || '0.0.0'
+                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
                                 },
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client
@@ -197,6 +213,7 @@ const APIService = {
 
                 //handle when it is ok
                 if (showProgress) {
+
                     if (!response.ok) { throw Error(response.status + ' ' + response.statusText) }
 
                     // ensure ReadableStream is supported
@@ -212,7 +229,8 @@ const APIService = {
                     if (response.status === 207) {
                         // Special check - 207 indicates that a New version of app is available 
                         // so in this case, force reload the browser so that user gets the latest version of app
-                        window.location.reload();
+                        handleSitesListToggle()
+                        // window.location.reload();
                         return {};
                     }
 

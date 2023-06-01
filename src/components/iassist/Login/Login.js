@@ -7,12 +7,10 @@ import Base64 from 'crypto-js/enc-base64';
 import { getUserDetailsFromToken, setDesktopUserSession } from '../../../utils/Common';
 import * as Constants from '../../Constants';
 
-const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
+const LoginPage = ({setAuthentication,setIsLoggedIn, setLoader}) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errMsg, setErrMsg] = useState('');
-  const [inProgress, setInProgress] = useState('');
 
 
   const handleEmailChange = (event) => {
@@ -23,14 +21,9 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
     setPassword(event.target.value);
   };
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   setAuthentication(true)
-  //   setIsLoggedIn(true)
-  // };
-
   const handleSubmit = (evt) => {
     evt.preventDefault();
+    setLoader(true);
     let error_msg = '';
 
     //Input Validations
@@ -41,12 +34,12 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
     //if there is error return after giving message
     if (error_msg !== '') {
       alertService.showToast('error', error_msg);
-      setErrMsg(error_msg)
+
       return false;
     }
 
-    setErrMsg(error_msg);
-    setInProgress(true);
+
+
 
     //Send Login Request
     const hashPassword = SHA512(password);
@@ -57,40 +50,49 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
     };
 
   
-    // https://support-dev-api.bydata.com/
+
     APIService.apiRequest(Constants.API_IASSIST_BASE_URL + 'iassist/login/', loginPayLoad, false, 'POST', null, false)
       .then(response => {
-        console.log('response', response);
         if (response.access_token && response.access_token !== '') {
           //Redirect to home page after succcessful login
            let user_details = getUserDetailsFromToken(response.access_token);
-          // let user_details = getUserDetailsFromToken(access_token);
-          // let user_info = user_details.identity;
-          // user_info.default_home_url = "/";
-          // this.getSmallToken(response.access_token);
+
           setDesktopUserSession(response.access_token, user_details); //Set token and user details in session
           
           setTimeout(()=>{
             setAuthentication(true)
-            setIsLoggedIn(true)
+            setIsLoggedIn(true);
             console.log('Successfully Login');
-            
           });
           
         } else {
-            setErrMsg(response.msg);
-            setInProgress(false);
+alertService.showToast('error', 'Invalid Username/Password');
         }
       })
       .catch(err => {
-        setErrMsg(err.msg);
-        setInProgress(false);
+        alertService.showToast('error', err.msg);
+
       });
   }
-
+  // width: 450px;
+  // position: fixed;
+  // top: 0px;
+  // bottom: 5px;
+  // right: 0;
+  // overflow: hidden;
+  // background: #232931;
+  // color: #fff;
+  // border-radius: 2px 0px 0px 2px;
+  // text-align: left;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+  // // margin-top: 50px;
+  // justify-content: center;
 
   return (
-    <div className='login-page'>
+    <div className='iassist-end-user-login-page' style={{width: '450px', position: 'fixed', top:'0px', bottom: '5px', right: '0px', overflow: 'hidden', background: '#232931',
+    color: '#fff', borderRadius: '2px 0px 0px 2px', textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <label>

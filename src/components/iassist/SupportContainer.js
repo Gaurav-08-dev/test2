@@ -8,8 +8,8 @@ import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 let webSocket;
 
-const SupportContainer = ({logOut}) => {
-    console.log('check');
+const SupportContainer = ({logOut, setLoader}) => {
+
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
@@ -18,13 +18,15 @@ const SupportContainer = ({logOut}) => {
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
+    // const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     const checkApptype = useRef(isElectron());
     // const [configData, setConfigData] = useState('');
+    const [configLoader, setConfigLoader] = useState(false);
 
     const getConfigDetails = async (type) => {
 
         // app_id=${AppId.current}
+        setConfigLoader(true);
 
         if (AppId.current) {
             const tokens = `Bearer ${AppId.current}`;
@@ -42,11 +44,13 @@ const SupportContainer = ({logOut}) => {
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'platform', response?.application_parameters?.platform);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'config_app_id', response?.id);
-                        simplifyToken()
+                        simplifyToken();
+                        setConfigLoader(false);
                         // if (type === 'onButtonClick') setOpenSupport(true)
                     }
                 })
                 .catch(err => {
+                    setConfigLoader(false);
                     alertService.showToast('error', err.msg);
                 });
         }
@@ -64,7 +68,8 @@ const SupportContainer = ({logOut}) => {
             const res = await fetch(Constants.API_IASSIST_BASE_URL + `auth/client/`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': tokens
+                    'Authorization': tokens,
+                    'App-Version': Constants.IASSIST_SITE_VERSION
                 }
             })
             const result = await res.json();
@@ -105,12 +110,14 @@ const SupportContainer = ({logOut}) => {
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
                 if (checkApptype.current) {
-                    console.log(checkApptype);
+
                     setOpenSupport(true);
+                    setLoader(false);
                 }
             };
 
             webSocket.onclose = function () {
+                connectSocket();
                 console.log("connection listen Closed");
             };
         }
@@ -140,7 +147,6 @@ const SupportContainer = ({logOut}) => {
 
     const supportButtonClick = (e) => {
 
-
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
@@ -149,28 +155,26 @@ const SupportContainer = ({logOut}) => {
         } else {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
+                console.log("here4")
                 // getConfigDetails('onButtonClick');
+                if (!configLoader) getConfigDetails();
                 alertService.showToast('process', 'Loading...');
             }
         }
     }
 
     useEffect(() => {
-        console.log('useeffect in suppcon1')
 
-        const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
-        if (prevAppId !== AppId.current || !configDetails) {
+        // const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
+        // const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
+
+        // if (prevAppId !== AppId.current || !configDetails) {
+        if (localStorage.length) {
             getConfigDetails();
         }
 
-        const bodyElement = document.getElementsByTagName('body')[0];
-        const linkTag = document.createElement("link");
-        linkTag.href = 'https://gaurav-08-dev.github.io/test2/index.css';
-        linkTag.rel = "stylesheet";
-        linkTag.id = "iassist-css";
-        bodyElement.append(linkTag);
+        
 
         return (() => {
 
@@ -178,10 +182,9 @@ const SupportContainer = ({logOut}) => {
             setOpenSupport(false)
         })
 
-    }, []) //eslint-disable-line 
+    }, []) //eslint-disable-line
 
     useEffect(() => {
-        console.log('useeffect in suppcon1 btnid')
 
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
@@ -216,7 +219,7 @@ const SupportContainer = ({logOut}) => {
     }, [btnId.current, tokenConstant.current]) // eslint-disable-line 
 
     useEffect(() => {
-        console.log('useeffect in suppcon3')
+
         document.addEventListener('click', supportButtonClick);
 
         return () => {
@@ -224,9 +227,24 @@ const SupportContainer = ({logOut}) => {
         }
     }, []) // eslint-disable-line 
 
+    const checkOnClick = async(url) => {
+
+        await fetch(url, {
+            headers: {
+                Pragma: 'no-cache',
+                Expires: '-1',
+                'Cache-Control': 'no-cache',
+            },
+        });
+        window.location.href = url;
+        // This is to ensure reload with url's having '#'
+        window.location.reload();
+
+    }
+
     return (
         <>
-            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
             {openSupport && 
             <Support
@@ -234,8 +252,6 @@ const SupportContainer = ({logOut}) => {
                 webSocket={webSocket}
                 panelPosition={panelPosition.current}
                 platformId={platformId}
-                storedData={storedTicket}
-                setStoredData={setStoredTicket}
                 logOut={logOut}
             />}
         </>
