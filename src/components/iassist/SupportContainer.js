@@ -244,8 +244,8 @@ const SupportContainer = ({logOut, setLoader}) => {
 
     return (
         <>
-        <button onClick={() => checkOnClick(window?.location?.href)}>test</button>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
+        {/* <button onClick={() => checkOnClick(window?.location?.href)}>test</button> */}
+            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
 
             {openSupport && 
             <Support
