@@ -89,7 +89,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
  async function handleSitesListToggle(url) {
     // if (this.user.organization_id > 1) return;
     // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
-    console.log("here after 207")
+
     await fetch(url, {
       headers: {
           Pragma: 'no-cache',
