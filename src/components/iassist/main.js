@@ -7,14 +7,12 @@ import { isElectron } from "./Utilityfunction";
 import './Main.scss';
 
 const Main = () => {
+
     const [isLoggedIn,setIsLoggedIn]=useState(false);
     const [isElectronApp,setIsElectronApp] = useState(false);
     const [isAuthenticationSuccess, setIsAuthenticationSuccess] = useState(false);
 
-
-
     useEffect(() => {
-        console.log('useeffe')
         const checkIsElectron = isElectron();
         if (checkIsElectron && getDesktopToken()) {
             setIsAuthenticationSuccess(true);
@@ -47,6 +45,9 @@ const Main = () => {
 }
 
 export default Main;
+
+
+
 
 
 

@@ -10,8 +10,5 @@ div.id = 'iassist-panel-wrapper';
 bodyElement.append(div);
 const root = ReactDOM.createRoot(document.getElementById('iassist-panel-wrapper'));
 root.render(
-    // <React.StrictMode>
     <App />
-    // </React.StrictMode>
-
 );

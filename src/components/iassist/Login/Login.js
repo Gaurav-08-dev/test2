@@ -30,7 +30,6 @@ const LoginPage = ({setAuthentication,setIsLoggedIn}) => {
   // };
 
   const handleSubmit = (evt) => {
-    console.log('submit')
     evt.preventDefault();
     let error_msg = '';
 

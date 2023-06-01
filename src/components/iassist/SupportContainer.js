@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
@@ -226,7 +226,7 @@ const SupportContainer = ({logOut}) => {
 
     return (
         <>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
+            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
 
             {openSupport && 
             <Support
