@@ -128,7 +128,7 @@ const APIService = {
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0',
-                                    'Clear-Site-Data': "cache"| "cookies"| "storage"| "executionContexts"
+                                    'Clear-Site-Data': "cache" | "cookies"| "storage"| "executionContexts"
 
                                 },
                                 redirect: 'follow', // manual, *follow, error
