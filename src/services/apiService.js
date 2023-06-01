@@ -127,7 +127,9 @@ const APIService = {
                                 mode: 'cors', // no-cors, *cors, same-origin
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
+                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0',
+                                    'Clear-Site-Data': "cache"| "cookies"| "storage"| "executionContexts"
+
                                 },
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client
