@@ -107,6 +107,7 @@ const RecordOption = (
                     <div className='file-input-parent-wrapper'>
 
                         <div className="file-input-wrapper">
+                        <button className='file-upload-button'></button>
                             <input
                         
                             ref={fileInputRef}
@@ -132,7 +133,7 @@ const RecordOption = (
                         application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.presentation,application/zip,application/x-7z-compressed,application/x-rar-compressed,application/x-tar,application/x-bzip,application/x-bzip2,application/x-zip,application/x-zip-compressed,.icns,
                         text/html,application/xhtml+xml,application/xml,text/plain,application/json,application/javascript,image/svg+xml'
                                 multiple />
-                            <label htmlFor="myFileInput">Choose a file</label>
+                            <label htmlFor="myFileInput">File Upload</label>
                         </div>
                     </div>
 

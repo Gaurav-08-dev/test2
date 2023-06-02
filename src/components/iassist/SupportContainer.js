@@ -51,6 +51,7 @@ const SupportContainer = ({logOut, setLoader}) => {
                 })
                 .catch(err => {
                     setConfigLoader(false);
+                    if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('error', err.msg);
                 });
         }
@@ -103,6 +104,7 @@ const SupportContainer = ({logOut, setLoader}) => {
                     changeValue(isUnread);
                 } if (received_msg.type === 'chat') {
                     changeValue(true);
+                    if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('info', `New Message Arrived on topic id: ${received_msg.topic_id}`);
                 }
             };
@@ -158,6 +160,7 @@ const SupportContainer = ({logOut, setLoader}) => {
                 console.log("here4")
                 // getConfigDetails('onButtonClick');
                 if (!configLoader) getConfigDetails();
+                if (document.getElementsByClassName('toast-wrapper')[0]) return;
                 alertService.showToast('process', 'Loading...');
             }
         }
@@ -226,21 +229,6 @@ const SupportContainer = ({logOut, setLoader}) => {
             document.removeEventListener('click', supportButtonClick);
         }
     }, []) // eslint-disable-line 
-
-    const checkOnClick = async(url) => {
-
-        await fetch(url, {
-            headers: {
-                Pragma: 'no-cache',
-                Expires: '-1',
-                'Cache-Control': 'no-cache',
-            },
-        });
-        window.location.href = url;
-        // This is to ensure reload with url's having '#'
-        window.location.reload();
-
-    }
 
     return (
         <>

@@ -38,6 +38,7 @@ let singleScroll = false;
 let currentPlatform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
 const currentLoggedInUserId = getUser()?.id;
 const nameMaxChar = 45;
+let prevDetail = { name: '', description: '' };
 
 
 const ChatRoom = ({
@@ -72,6 +73,7 @@ const ChatRoom = ({
     const editFnRef = useRef()
     const fnReplyRef = useRef();
     const editTicketRef = useRef();
+    const editDivRef = useRef();
     const editTicketFnRef = useRef();
     const getMessageHeight = useRef();
     const editTitleRef = useRef();
@@ -124,7 +126,7 @@ const ChatRoom = ({
 
     const [editId, setEditId] = useState('');
 
-    const [editAccess, setEditAccess] = useState(false);
+    // const [editAccess, setEditAccess] = useState(false);
 
     const [showUserPane, setShowUserPane] = useState(false);
 
@@ -177,13 +179,9 @@ const ChatRoom = ({
     const [rejectRequestActive, setRejectRequestActive] = useState(false);
     const [currentChatId, setCurrentChatId] = useState('');
 
-    const [editName, setEditName] = useState(false);
+    
 
-    const [editDescription, setEditDescription] = useState(false);
-
-    const [updateTicketDetails, setUpdateTicketDetails] = useState('');
-
-    const [prevDetail, setPrevDetail] = useState({ name: '', description: '' });
+    // const [prevDetail, setPrevDetail] = useState({ name: '', description: '' });
 
     const [editPrevMsg, setEditPrevMessage] = useState('');
 
@@ -196,8 +194,14 @@ const ChatRoom = ({
     const [disableSendButton, setDisableSendButton] = useState(false);
     const [disableReplyButton, setDisableReplyButton] = useState(false);
 
+    const [topicDescription, setTopicDescription] = useState('');
+
+    const [topicName, setTopicName] = useState('');
+
+    const [isEditTicket, setIsEditTicket] = useState(false);
+
     const fileInputRef = useRef(null);
-    const fileInputRefForReply = useRef(null)
+    const fileInputRefForReply = useRef(null);
 
 
 
@@ -677,6 +681,8 @@ const ChatRoom = ({
 
         })
 
+        document.addEventListener("mousedown", handleMouseDown)
+
         window.addEventListener('online', onOnline)
 
         window.addEventListener('offline', onOffline)
@@ -705,13 +711,22 @@ const ChatRoom = ({
             setSelectedFilesForUploadInReply([]);
         }
 
-    }, []) // eslint-disable-line 
+    }, []) // eslint-disable-line
+
+    const handleMouseDown = (event) => {
+        const edit = document.getElementById('iassist-edit-ticket');
+        if (edit && !(edit.contains(event.target))) {
+            handleEditTicket();
+        }
+    }
 
     const onOffline = () => {
 
         if (ws !== undefined) {
 
-            alertService.showToast('error', 'your connection got disconnected');
+            // const toast = document.getElementsByClassName('toast-wrapper');
+
+            // if (!(toast && toast.length > 0 && toast[0].childNodes[1]?.innerText.toLowerCase() === 'your connection got disconnected')) alertService.showToast('error', 'Your connection got disconnected');
 
             ws.close();
 
@@ -723,9 +738,12 @@ const ChatRoom = ({
 
         const jwt_token = getTokenClient();
 
+        fetchData();
+
         ws = new WebSocket(Constants.API_WEBSOCKET_URL + `chat/${chatIds}/`, jwt_token)
 
-        alertService.showToast('alert', 'Back to Online');
+        // const toast = document.getElementsByClassName('toast-wrapper');
+        // if (!( toast && toast.length > 0 && toast[0].childNodes[1]?.innerText.toLowerCase() === 'back online')) alertService.showToast('alert', 'Back Online');
 
     }
     ws.onmessage = function (evt) {
@@ -1852,26 +1870,21 @@ const ChatRoom = ({
 
     const handleEditTicketOption = (e, type, value) => {
         e.preventDefault();
-        if (type === 'name') {
-            setEditDescription(false);
-            setEditName(true);
-            setPrevDetail({ name: value })
-            setUpdateTicketDetails(value);
-        } else if (type === 'description') {
-
-            setEditName(false);
-            setPrevDetail({ description: value })
-            setUpdateTicketDetails(value);
-            setEditDescription(true);
-        }
+            // setEditDescription(false);
+            // setEditName(true);
+            setIsEditTicket(true)
+            setTopicName(topic?.current?.name);
+            prevDetail = { name: topic?.current?.name, description: topic?.current?.description };
+            setTopicDescription(topic?.current?.description)
+            // setUpdateTicketDetails(value);
+            // setEditDescription(true);
     }
 
     useEffect(() => {
-        if (editDescription) {
-            if (editTicketRef.current) applyFocusAtEnd(editTicketRef.current) //editTicketRef.current.focus();
-        }
-
-    }, [editName, editDescription])
+            // if (editTicketRef.current) applyFocusAtEnd(editTicketRef.current) //editTicketRef.current.focus();
+            if (editTitleRef.current) editTitleRef.current.focus();
+ 
+    }, [isEditTicket])
 
     const applyFocusAtEnd = (element) => {
         if (element) {
@@ -1886,47 +1899,48 @@ const ChatRoom = ({
     }
 
     const handleEditTicket = () => {
-        let prevData = editName ? prevDetail.name : (editDescription ? prevDetail.description : '');
-        let details = editName ? updateTicketDetails : (editDescription ? editTicketRef.current.textContent : '')
+        const descDetails = editTicketRef.current.textContent;
+        const title = editTitleRef.current.value;
 
-        if (prevData !== details && details.length > 0) {
+        if ((prevDetail.name !== title && title.length > 0) || (prevDetail.description !== descDetails && descDetails.length > 0)) {
 
             const jwt_token = getTokenClient();
 
             setShowLoader(true);
 
             let token = `Bearer ${jwt_token}`;
-            let data = {};
-            if (editName) {
-                data = {
-                    "name": updateTicketDetails
-                }
-            } else if (editDescription) {
-                data = {
-                    "description": details
-                }
-            }
+            let data = {
+                "name": title,
+                "description": descDetails
+            };
+            // if (editName) {
+            //     data = {
+            //         "name": updateTicketDetails,
+            //         "description": details
+            //     }
+            // } else if (editDescription) {
+            //     data = {
+            //         "description": details
+            //     }
+            // }
 
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `support/topic/?topic_id=${chatIds}`, data, false, 'PUT', controller, token)
                 .then(response => {
-
+// debugger;
                     if (response) {
-                        if (editName) {
-                            topic.current.name = response?.data?.name;
-                            setEditName(false);
-                            setUpdateTicketDetails('');
-                            setEditDescription(false);
-                        } else if (editDescription) {
-                            topic.current.description = response?.data?.description;
-                            setEditName(false);
-                            setUpdateTicketDetails('');
-                            setEditDescription(false);
+
+                        if (response?.detail?.msg === 'topic already exists') {
+                            if (document.getElementsByClassName('toast-wrapper')[0]) return;
+                            alertService.showToast('warn', response?.detail?.msg);
+                            setShowLoader(false);
+                            return;
+
                         }
+                            topic.current = response?.data;
+                            setIsEditTicket(false);
+                            prevDetail = { name: '', description: '' };
                     }
                     setShowLoader(false);
-
-                    setPrevDetail({ name: '', description: '' });
-
                 })
                 .catch(err => {
                     setShowLoader(false);
@@ -1934,16 +1948,14 @@ const ChatRoom = ({
 
                 });
         } else {
-            setEditName(false);
-            setUpdateTicketDetails('');
-            setEditDescription(false);
+            setIsEditTicket(false);
         }
     }
 
-    const handleOnKeyDownEvent = (e) => {
-        e.persist();
-        if (e.key === 'Enter') handleEditTicket();
-    }
+    // const handleOnKeyDownEvent = (e) => {
+    //     e.persist();
+    //     if (e.key === 'Enter') handleEditTicket();
+    // }
 
     const updateCurrentFileList = (fileList, item) => {
 
@@ -2073,6 +2085,29 @@ const ChatRoom = ({
         return currentUser?.id === topic.current?.user_id && !topic.current?.activity_collaborate && !agentActivity;
     }
 
+    const handleEditChange = (e, type) => {
+        if (type === 'topicName') {
+
+            if (e.target.value.length > 45) {
+    
+    
+                if (document.getElementsByClassName('toast-wrapper')[0]) return;
+                alertService.showToast('warn', 'Topic name should not exceed 45 characters');
+    
+            }
+            if (e.target.value.length <= 45) {
+    
+                setTopicName(e.target.value);
+                // setFormDataToSessionStorage(e.target.value, 'topic');
+    
+            }
+        } else if (type === 'description') {
+    
+            setTopicDescription(e.target.value.replace(/\n/g, ''));
+    
+        }
+    }
+
     return (
 
         <>
@@ -2169,68 +2204,85 @@ const ChatRoom = ({
 
                     <div className='iassist-title-widget'>
 
-                        {!editName && <div className={'name'} onClick={() => setShowExpand(!showExpand)} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'name', topic.current?.name) : () => { }}>{topic.current && parse(topic.current.name, options)}
+                        {!isEditTicket && <div className={'name'} onClick={() => setShowExpand(!showExpand)} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'name', topic.current?.name) : () => { }}>{topic.current && parse(topic.current.name, options)}
 
                             <button className={'button' + (showExpand && getTextWidth(topic.current?.description) ? ' full-button' : '')} title='expand'></button>
 
                             {checkPrevilegesForEdit() && <button className='iassist-edit-desc' onClick={(e) => {
                                 e.stopPropagation();
-                                handleEditTicketOption(e, 'name', topic.current?.name)
+                                handleEditTicketOption(e)
                             }}></button>}
 
                         </div>}
 
                         {
-                            (editDescription || editName) && checkPrevilegesForEdit() && <div id='iassist-edit-ticket'>
-                                {editName && <div className='iassist-field' onClick={() => editTitleRef.current.focus()}>
-                                    <input ref={editTitleRef} value={updateTicketDetails} autoFocus onChange={(e) => {
+                            (isEditTicket) && checkPrevilegesForEdit() && 
+                            <div id='iassist-edit-ticket' ref={editDivRef}>
+                                <div className='iassist-field-w-label'>
+                                    <label>Topic
+                                        {/* <span className='mandatory-mark'>*</span> */}
+                                    </label>
+                                    <div className='field' onClick={() => editTitleRef.current.focus()}>
+                                        <input ref={editTitleRef} value={topicName} onChange={(e) => handleEditChange(e, 'topicName')} ></input>
+                                        <span className={'max-length'}> {topicName !== '' ? topicName.length : 0}/{nameMaxChar}</span>
+                                    </div>
+                                </div>
 
-                                        if (e.target.value.length <= nameMaxChar) {
-                                            setUpdateTicketDetails(e.target.value)
-                                        } else {
-                                            if (document.getElementsByClassName('toast-wrapper')[0]) return;
-                                            alertService.showToast('warn', 'Topic name should not exceed 45 characters');
-                                        }
-                                    }} onKeyUp={handleOnKeyDownEvent} onBlur={handleEditTicket}></input>
-                                    <span className={'iassist-max-length'}> {updateTicketDetails !== '' ? updateTicketDetails.length : 0}/{nameMaxChar}</span>
+                                <div className='field-w-label'>
+                                    <label>Description
+                                    </label>
+                                    <div className='field textarea' onClick={() => applyFocusAtEnd(editTicketRef.current)}>
+                                    <Steno
+                                        html={topicDescription}
+                                        disable={false} //indicate that the editor has to be in edit mode
+                                        onChange={(val) => {
+                                            setTopicDescription(val)
+                                        }}
+                                        innerRef={editTicketRef} //ref attached to the editor
+                                        onChangeBackgroundColor={() => { }}
+                                        fontColor={'#fff'}
+                                        onChangeFontColor={() => { }}
+                                        functionRef={editTicketFnRef} //Ref which let parent component to access the methods inside of editor component
+                                        isToolBarVisible={false} //to show/hide the toolbar options
+                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                        fileList={[]} //List of file object to track the files selected by user
+                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                        sendMsgOnEnter={false} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                        minEditorHeight='60px' // Default will be 100px
+                                        maxEditorHeight="60px" // Default maxHeight will be 250px
+                                    />
+                                </div>
+                            </div>
+
+                                {(isEditTicket) &&
+                                <div className='iassist-edit-btn'>
+                                    <button className='iassist-save' onMouseDown={(e) => {
+                            
+                                        e.stopPropagation();
+                                        handleEditTicket();
+                                    }} disabled={showLoader}>
+                                    <span className='iassist-save-icon'></span>
+                                    save</button>
+                                    <button className='iassist-cancel' onMouseDown={(e) => {
+                                 
+                                        e.stopPropagation();
+                                        prevDetail = { name: '', description: '' };
+                                        setIsEditTicket(false);
+
+                                    }} disabled={showLoader}>
+                                    <span className='iassist-cancel-icon'></span>
+                                    cancel</button>
                                 </div>}
-                                {/* {editName && <input className='iassist-text-box' autoFocus type='text' value={updateTicketDetails} onChange={(e) => setUpdateTicketDetails(e.target.value)} onKeyUp={handleOnKeyDownEvent} onBlur={handleEditTicket}/>} */}
-                                {editDescription && <Steno
-                                    html={updateTicketDetails}
-                                    disable={false} //indicate that the editor has to be in edit mode
-                                    onChange={(val) => {
-                                        setUpdateTicketDetails(val)
-                                    }}
-                                    innerRef={editTicketRef} //ref attached to the editor
-                                    backgroundColor={'#000'}
-                                    onChangeBackgroundColor={() => { }}
-                                    fontColor={'#fff'}
-                                    onChangeFontColor={() => { }}
-                                    functionRef={editTicketFnRef} //Ref which let parent component to access the methods inside of editor component
-                                    isToolBarVisible={false} //to show/hide the toolbar options
-                                    toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                    formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                    onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                    showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                    fileList={[]} //List of file object to track the files selected by user
-                                    // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                    // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                    sendMsgOnEnter={true} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                    onEnterClickLogic={handleEditTicket} //If user selects sendMsgOnEnter as true, then he/she has to provide the onEnter logic
-                                    autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                    minEditorHeight='20px' // Default will be 100px
-                                    maxEditorHeight="300px" // Default maxHeight will be 250px
-                                    placeHolder="Message"
-                                    onBlur={handleEditTicket}
-                                />}
                             </div>
                         }
 
-                        {!editDescription && <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'description', topic?.current?.description) : () => { }}>{topic.current && parse(topic?.current?.description, options)}
-                            {checkPrevilegesForEdit() && <button className='iassist-edit-desc' onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditTicketOption(e, 'description', topic.current?.description)
-                            }}></button>}
+                        {!isEditTicket && <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'description', topic?.current?.description) : () => { }}>{topic.current && parse(topic?.current?.description, options)}
+                        
                         </div>}
 
                         <Detail topic={topic.current} type={type} allAccount={allAccount} allUser={allUser} />
