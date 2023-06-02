@@ -160,7 +160,6 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     } else if (type === 'description') {
 
         setTopicDescriptions(e.target.value.replace(/\n/g, ''));
-        // setFormDataToSessionStorage(e.target.value.replace(/\n/g, ''), 'description');
 
     }
 
@@ -823,6 +822,7 @@ return (
 
 
                                         <div className="file-input-wrapper">
+                                            <button className='file-upload-button'></button>
                                             <input
                                                 type="file"
                                                 id="myFileInput"
@@ -845,7 +845,7 @@ return (
                                                     application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.presentation,application/zip,application/x-7z-compressed,application/x-rar-compressed,application/x-tar,application/x-bzip,application/x-bzip2,application/x-zip,application/x-zip-compressed,.icns,
                                                     text/html,application/xhtml+xml,application/xml,text/plain,application/json,application/javascript,image/svg+xml'
                                                 multiple />
-                                            <label htmlFor="myFileInput">Choose a file</label>
+                                            <label htmlFor="myFileInput">File Upload</label>
                                         </div>
 
 

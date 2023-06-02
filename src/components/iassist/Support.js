@@ -177,8 +177,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     const [openDesktopMenu, setOpenDesktopMenu] = useState(false);
     const [isApiCallActive, setIsApiCallActive] = useState(false);
     const [searchStringState, setSearchStringState] = useState('');
+    const [disableStatusButton, setDisableStatusButton] = useState(false);
 
-    const [updateApi, setUpdateApi] = useState(false);
+    // const [updateApi, setUpdateApi] = useState(false); 
 
 
 
@@ -300,26 +301,27 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
             }
 
-            if(filterValue?.search){
+            if (filterValue?.search) {
                 setSearchStringState(filterValue.search);
-                searchString.current=filterValue.search;
-                prevSearchValue.current=filterValue.search;
+                searchString.current = filterValue.search;
+                prevSearchValue.current = filterValue.search;
             }
 
         }
     }
     const checkDataInSessionStorageOnTabSwitch = (currentStatus) => {
 
+        let isDataExists = false;
         const existingDataInSession = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'ticketData');
         if (existingDataInSession && JSON.parse(existingDataInSession).hasOwnProperty(currentStatus)) {
             const existingData = JSON.parse(existingDataInSession);
             if (existingData[currentStatus].result) {
-
+                isDataExists = true;
                 setDataFetchedForRendering(existingData[currentStatus].result, existingData[currentStatus].current_page_number)
             }
         }
 
-        getTopicsBasedOnFilter();
+        getTopicsBasedOnFilter('', '', '', isDataExists);
     }
 
     const setDataFetchedForRendering = (result, currentPageNumber) => {
@@ -404,18 +406,18 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
 
     }
-    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber, filter) => {
+    const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber, filter, isDataExistsFlag) => {
 
-        setUpdateApi(prev => !prev);
+        // setUpdateApi(prev => !prev);
         updatedPageNumber = updatedPageNumber || 1;
 
         if (updatedPageNumber) { tabData === 'open' ? pageNumber = updatedPageNumber : pageNumber_resolved = updatedPageNumber; }
-        
-        setDisableButton(true);
-        
-        console.log()
-        if ((tabData === 'open' && (filter || searchQuery || allTopics.current.length === 0 || pageNumber > 1)) || (tabData === 'resolved' && (filter || searchQuery || allTopics_resolved.current.length === 0  || pageNumber_resolved > 1))) {
-            console.log("inside if",searchQuery)
+
+        !isDataExistsFlag && setDisableButton(true);
+        setDisableStatusButton(true);
+
+        if ((tabData === 'open' && (filter || searchQuery || allTopics.current.length === 0 || pageNumber > 1)) || (tabData === 'resolved' && (filter || searchQuery || allTopics_resolved.current.length === 0 || pageNumber_resolved > 1))) {
+            console.log("inside if", searchQuery)
 
             setShowLoader(true);
         }
@@ -487,11 +489,16 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                     setDisableButton(false);
                     setShowLoader(false);
                     setIsApiCallActive(false);
-                    setUpdateApi(prev => !prev);
+                    setDisableStatusButton(false);
+
+                    // setUpdateApi(prev => !prev);
 
                 }
                 else {
                     setIsApiCallActive(false);
+                    setDisableStatusButton(false);
+                    setDisableButton(false);
+
                 }
 
             })
@@ -499,8 +506,10 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                 setDisableButton(false)
                 setIsApiCallActive(false);
                 setShowLoader(false);
-                setUpdateApi(prev => !prev);
-                
+                setDisableStatusButton(false);
+
+                // setUpdateApi(prev => !prev);
+
 
                 alertService.showToast('error', err.msg);
 
@@ -865,7 +874,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     const handleKeyDown = (e) => {
 
 
-        if ((e.keyCode === 13 || e === 'click') && (searchString.current !== '' || searchStringState!=='' || prevSearchValue.current)) {
+        if ((e.keyCode === 13 || e === 'click') && (searchString.current !== '' || searchStringState !== '' || prevSearchValue.current)) {
 
             prevSearchValue.current = searchString.current;
             setSearchStringState(prevSearchValue.current);
@@ -917,7 +926,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         let updatedValue = null;
 
         if (range.largestRangeIndex !== null) {
-            setUpdateApi(true);
+            // setUpdateApi(true);
             let firstValue = getFormatedPeriod(range.ranges[0][0]);
             updatedValue = getFormatedPeriod(range.ranges[0][1]);
             dateRange = [firstValue, updatedValue];
@@ -930,7 +939,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     const onCheckboxClick = (e, type) => {
 
-        setUpdateApi(true);
+        // setUpdateApi(true);
         if (type === 'read') {
             readCheckBoxStatus.current = e.target.checked;
             dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, read: e.target.checked } })
@@ -1077,7 +1086,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             }
 
         })
+        window.addEventListener('online', onOnline)
 
+        window.addEventListener('offline', onOffline)
 
         return () => {
             // clearData();
@@ -1118,7 +1129,25 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     }, [state.showChat, state.topicClick, tabData]) // eslint-disable-line
 
+    const onOffline = () => {
 
+        if (webSocket !== undefined) {
+
+            webSocket.close();
+
+        }
+
+    }
+
+    const onOnline = () => {
+
+        const jwt_token = getTokenClient();
+
+        getTopicsBasedOnFilter(undefined, 1, true);
+
+        webSocket = new WebSocket(Constants.API_WEBSOCKET_URL + `listenreply/`, jwt_token)
+
+    }
 
     return (
 
@@ -1285,7 +1314,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                 <div className={'tab-wrapper'}>
 
                                     <button style={{ backgroundColor: state.statusTab === 'open' ? '#6C757D' : '' }}
-                                        disabled={disableButton}
+                                        disabled={disableStatusButton}
                                         onClick={() => {
                                             if (tabData !== 'open') {
                                                 // fetchTicketsController.abort();
@@ -1312,11 +1341,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                     </button>
 
                                     <button style={{ backgroundColor: state.statusTab === 'resolved' ? '#6C757D' : '' }}
-                                        disabled={disableButton}
+                                        disabled={disableStatusButton}
                                         onClick={() => {
 
                                             if (tabData !== 'resolved') {
-                                                
+
                                                 tabData = 'resolved';
                                                 dispatch({ type: actionType.status_tab, payload: 'resolved' })
                                                 checkDataInSessionStorageOnTabSwitch('resolved')
@@ -1344,109 +1373,109 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                             </div>
 
                             {state.statusTab === 'resolved' &&
-                             <div className={'iassist-topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef_resolved}>
+                                <div className={'iassist-topic-list' + (state.showMultipleFilters ? ' topic-list-test' : '')} id='topic-list' ref={bodyRef_resolved}>
 
-                                {!confirmDelete && allTopics_resolved.current.length > 0 && allTopics_resolved.current.map((topic, index) => {
+                                    {!confirmDelete && allTopics_resolved.current.length > 0 && allTopics_resolved.current.map((topic, index) => {
 
-                                    return (
-                                        <div className='iassist-topic' key={topic.id}>
+                                        return (
+                                            <div className='iassist-topic' key={topic.id}>
 
-                                            {<div className='iassist-topic-header' onClick={() => openChat(topic)}>
+                                                {<div className='iassist-topic-header' onClick={() => openChat(topic)}>
 
-                                                <div className='topic-header-inner'>
-                                                    <h4 className='topic-name'>{parse(topic?.name)}</h4>
-                                                    <div className='topic-chat-notify'></div>
-                                                    {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
-                                                </div>
+                                                    <div className='topic-header-inner'>
+                                                        <h4 className='topic-name'>{parse(topic?.name)}</h4>
+                                                        <div className='topic-chat-notify'></div>
+                                                        {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
+                                                    </div>
 
-                                                <div className='iassist-topic-description'>{parse(topic?.description.substr(0, 100), options)}{topic?.description?.length > 102 && '...'}</div>
+                                                    <div className='iassist-topic-description'>{parse(topic?.description.substr(0, 100), options)}{topic?.description?.length > 102 && '...'}</div>
 
-                                                <Detail topic={topic} type={ticketTypeList.current} allUser={allUser_resolved.current.length ? allUser_resolved.current : reportersList.current} allAccount={allAccount_resolved.current} />
-
-                                            </div>}
-
-
-                                            {<div className='iassist-topic-meta'>
-
-                                                {(state.statusTab !== 'resolved') && state.showFeedback && state.feedbackId === topic.id &&
-                                                    <FeedBack
-                                                        closePane={closeFeedbackandReopenPane}
-                                                        id={state.feedbackId}
-                                                        ticket={getTopicsBasedOnFilter}
-                                                        disabledButton={setDisableButton}
-                                                        allTopic={allTopics_resolved.current}
-                                                        setLoader={setShowLoader}
-                                                        placeHolders='Type here' />}
-
-
-                                                {state.feedbackId !== topic.id && (state.statusTab === 'open') ?
-                                                    <div className='topic-buttons'>
-
-                                                        <button className='btn-resolve icon-btn' disabled={disableButton} onClick={() => {
-                                                            setDisableButton(true);
-                                                            dispatch({ type: actionType.show_feedback, payload: true })
-                                                            dispatch({ type: actionType.feedBack_id, payload: topic.id })
-                                                        }}>
-                                                            <i></i>
-                                                            <span>Resolve</span>
-                                                        </button>
-
-                                                        {checkLastActivity(topic.id) && <button className='btn-delete icon-btn' disabled={disableButton} onClick={(e) => {
-                                                            isDeleteClick = true;
-                                                            setConfirmDelete(true)
-                                                            setDisableButton(true);
-                                                            dispatch({ type: actionType.delete_id, payload: topic.id })
-                                                        }
-                                                        }>
-                                                            <i></i>
-                                                            <span>Delete</span>
-                                                        </button>}
-
-                                                    </div> : ''}
-
-                                                {(state.statusTab === 'resolved') && state.showReopenPanel && state.getTopicId.id === topic.id &&
-                                                    <TicketReopen
-                                                        closePane={closeFeedbackandReopenPane}
-                                                        id={state.getTopicId.id}
-                                                        ticket={getTopicsBasedOnFilter}
-                                                        disableButton={setDisableButton}
-                                                        allTopic={allTopics_resolved.current}
-                                                        setLoader={setShowLoader}
-                                                        placeHolders='Type here'
-
-                                                    />}
-                                                {(state.statusTab === 'resolved') && (!state.showReopenPanel) && <div className='topic-buttons'>
-
-                                                    {state.getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
-                                                        setDisableButton(true);
-                                                        dispatch({ type: actionType.get_topic_id, payload: topic })
-                                                        dispatch({ type: actionType.show_reopen_panel, payload: true })
-                                                    }}>
-                                                        <i></i>
-                                                        <span>Re-Open</span>
-                                                    </button>}
+                                                    <Detail topic={topic} type={ticketTypeList.current} allUser={allUser_resolved.current.length ? allUser_resolved.current : reportersList.current} allAccount={allAccount_resolved.current} />
 
                                                 </div>}
 
-                                            </div>}
 
-                                        </div>
+                                                {<div className='iassist-topic-meta'>
 
-                                    )
-                                })}
-
-                                {confirmDelete && <Delete deleteTopic={deleteTopic}
-                                    topic={state.deleteId}
-                                    setConfirmDelete={setConfirmDelete}
-                                    disable={setDisableButton}
-                                    isScrollWhenDelete={disableScrollWhenDelete}
-                                />
-                                }
+                                                    {(state.statusTab !== 'resolved') && state.showFeedback && state.feedbackId === topic.id &&
+                                                        <FeedBack
+                                                            closePane={closeFeedbackandReopenPane}
+                                                            id={state.feedbackId}
+                                                            ticket={getTopicsBasedOnFilter}
+                                                            disabledButton={setDisableButton}
+                                                            allTopic={allTopics_resolved.current}
+                                                            setLoader={setShowLoader}
+                                                            placeHolders='Type here' />}
 
 
-                                {allTopics_resolved.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
+                                                    {state.feedbackId !== topic.id && (state.statusTab === 'open') ?
+                                                        <div className='topic-buttons'>
 
-                            </div>}
+                                                            <button className='btn-resolve icon-btn' disabled={disableButton} onClick={() => {
+                                                                setDisableButton(true);
+                                                                dispatch({ type: actionType.show_feedback, payload: true })
+                                                                dispatch({ type: actionType.feedBack_id, payload: topic.id })
+                                                            }}>
+                                                                <i></i>
+                                                                <span>Resolve</span>
+                                                            </button>
+
+                                                            {checkLastActivity(topic.id) && <button className='btn-delete icon-btn' disabled={disableButton} onClick={(e) => {
+                                                                isDeleteClick = true;
+                                                                setConfirmDelete(true)
+                                                                setDisableButton(true);
+                                                                dispatch({ type: actionType.delete_id, payload: topic.id })
+                                                            }
+                                                            }>
+                                                                <i></i>
+                                                                <span>Delete</span>
+                                                            </button>}
+
+                                                        </div> : ''}
+
+                                                    {(state.statusTab === 'resolved') && state.showReopenPanel && state.getTopicId.id === topic.id &&
+                                                        <TicketReopen
+                                                            closePane={closeFeedbackandReopenPane}
+                                                            id={state.getTopicId.id}
+                                                            ticket={getTopicsBasedOnFilter}
+                                                            disableButton={setDisableButton}
+                                                            allTopic={allTopics_resolved.current}
+                                                            setLoader={setShowLoader}
+                                                            placeHolders='Type here'
+
+                                                        />}
+                                                    {(state.statusTab === 'resolved') && (!state.showReopenPanel) && <div className='topic-buttons'>
+
+                                                        {state.getTopicId.id !== topic.id && <button className='btn-reopen icon-btn' disabled={disableButton} onClick={() => {
+                                                            setDisableButton(true);
+                                                            dispatch({ type: actionType.get_topic_id, payload: topic })
+                                                            dispatch({ type: actionType.show_reopen_panel, payload: true })
+                                                        }}>
+                                                            <i></i>
+                                                            <span>Re-Open</span>
+                                                        </button>}
+
+                                                    </div>}
+
+                                                </div>}
+
+                                            </div>
+
+                                        )
+                                    })}
+
+                                    {confirmDelete && <Delete deleteTopic={deleteTopic}
+                                        topic={state.deleteId}
+                                        setConfirmDelete={setConfirmDelete}
+                                        disable={setDisableButton}
+                                        isScrollWhenDelete={disableScrollWhenDelete}
+                                    />
+                                    }
+
+
+                                    {allTopics_resolved.current.length === 0 && !state.initialLoadStatus && !showLoader && <div className='no-record'>No Tickets Found </div>}
+
+                                </div>}
 
                             {
                                 state.statusTab === 'open' &&

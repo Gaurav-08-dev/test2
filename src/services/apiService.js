@@ -72,7 +72,6 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
             'Authorization': headerAuthHeader,
             'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
         },
-        'Clear-Site-Data': '"cache", "cookies" ,"storage"',
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer' // no-referrer, *client
     }
@@ -86,22 +85,18 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
     return options;
 }
 
- async function handleSitesListToggle(url) {
-    // if (this.user.organization_id > 1) return;
-    // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
-
+async function handleHardReload(url) {
     await fetch(url, {
-      headers: {
-          Pragma: 'no-cache',
-          Expires: '-1',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-  });
-  window.location.href = url;
-  // This is to ensure reload with url's having '#'
-  window.location.reload();
-  }
-
+        headers: {
+            Pragma: 'no-cache',
+            Expires: '-1',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+    });
+    window.location.href = url;
+    // This is to ensure reload with url's having '#'
+    window.location.reload();
+}
 
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
@@ -129,9 +124,7 @@ const APIService = {
                                 mode: 'cors', // no-cors, *cors, same-origin
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0',
-                                    'Clear-Site-Data': '"cache", "cookies" ,"storage"'
-
+                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
                                 },
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client
@@ -232,8 +225,10 @@ const APIService = {
                     if (response.status === 207) {
                         // Special check - 207 indicates that a New version of app is available 
                         // so in this case, force reload the browser so that user gets the latest version of app
-                        handleSitesListToggle(window.location.href)
                         // window.location.reload();
+                        
+                        
+                        handleHardReload(window.location.href);
                         return {};
                     }
 
