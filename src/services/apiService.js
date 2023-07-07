@@ -94,7 +94,7 @@ async function handleHardReload(url) {
         },
     });
     window.location.href = url;
-    // This is to ensure reload with url's having '#'
+    // // This is to ensure reload with url's having '#'
     window.location.reload();
 }
 
@@ -124,11 +124,12 @@ const APIService = {
                                 mode: 'cors', // no-cors, *cors, same-origin
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
+                                    'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0',
                                 },
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client
                                 body: JSON.stringify(refreshPayload)
+                                
                             }
 
                             return fetch(Constants.API_BASE_URL+'/auth/rt1', apiOptions).then((response) => {
@@ -228,7 +229,8 @@ const APIService = {
                         // window.location.reload();
                         
                         
-                        handleHardReload(window.location.href);
+                        handleHardReload(API_URL);
+                       
                         return {};
                     }
 

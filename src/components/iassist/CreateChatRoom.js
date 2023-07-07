@@ -8,7 +8,9 @@ import alertService from "../../services/alertService";
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
-import { isElectron, convertFileSizeToMB } from './Utilityfunction';
+import { 
+    // isElectron, 
+    convertFileSizeToMB } from './Utilityfunction';
 
 let suggestIndex = -1;
 let chatId;
@@ -49,7 +51,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [displayMessage, setDisplayMessage] = useState([]);
     const [deleteSavedItem, setDeleteSavedItem] = useState(false);
     const [openPopUp, setOpenPopUp] = useState(false);
-    const checkApptype = useRef(isElectron());
+    // const checkApptype = useRef(isElectron());
     const [selectedFile, setSelectedFile] = useState([]);
 
 
@@ -113,7 +115,7 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
             })
             .catch(err => {
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
     }
@@ -434,10 +436,11 @@ function onKeyDownEvent(e) {
 }
 
 const handleFocusOut = (e) => {
-
     if (e.target.value.length > 2) {
         let wordsLeft = e.target.value.replace(/\s{2,}/g, " ").split(" ");
-        wordsLeft = wordsLeft.filter((word) => word !== "");
+        wordsLeft = wordsLeft.filter((word) => word !== "" && !tagList.includes(word));
+
+
 
         // setFormDataToSessionStorage([...tagList, ...wordsLeft],'tagList')
 
@@ -464,6 +467,7 @@ const removeTag = (e, tag) => {
 const selectTag = (e, value) => {
 
     e.preventDefault();
+    e.stopPropagation();
     if (tagList.includes(value.name)) { alertService.showToast('warn', 'Tag is Already Added'); return; }
 
     setTagList([...tagList, value.name]);
@@ -650,13 +654,13 @@ useEffect(() => {
             suggestIndex = -1;
 
         }
-        const container = document.getElementById('iassist-panel');
+        // const container = document.getElementById('iassist-panel');
 
-        if ((container && !(container.contains(event.target))) && !checkApptype.current) {
+        // if ((container && !(container.contains(event.target))) && !checkApptype.current) {
 
-            closePanes()
+        //     closePanes()
 
-        }
+        // }
 
     })
 
@@ -742,7 +746,10 @@ return (
 
                                         <>
                                             {tagSuggestion.length > 0 && tagSuggestion.map((suggest, index) => {
-                                                return (<li id={`li-${suggest.name}`} style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onClick={(e) => selectTag(e, suggest)}>{suggest.name}</li>)
+                                                return (<li id={`li-${suggest.name}`} style={{ backgroundColor: suggestIndex === index ? 'green' : '', color: suggestIndex === index ? '#fff' : '' }} key={suggest.id} onMouseDown={(e) => {
+                                                    e.stopPropagation();
+                                                    selectTag(e, suggest)
+                                                }}>{suggest.name}</li>)
                                             })}
                                         </>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import debounce from "lodash.debounce";
 import './newRoom.scss';
 import * as Constants from '../Constants';
-import { getTokenClient, getUser } from '../../utils/Common';
+import { displayTextWidth, getTokenClient, getUser } from '../../utils/Common';
 import alertService from '../../services/alertService';
 import { iAssistOutsideClick } from './Support';
 import Avatar from '../Avatar/Avatar';
@@ -17,9 +17,20 @@ import Player from './Player/Player';
 import VideoRecord from './VideoRecord/VideoRecord';
 import PlayButton from './Player/PlayButton';
 import RecordOption from './MediaOption/RecordOption';
-import Steno from 'react-steno';
+import { Steno } from 'react-steno';
 import parse from 'html-react-parser';
-import { getUserNameBasedOnId, getUserNameImage, getTimeZone, isElectron, convertFileSizeToMB } from "./Utilityfunction";
+// import EmojiPicker from '../Emojipick';
+// import ClickOutsideListner from './ClickOutsideListener';
+
+import {
+    getUserNameBasedOnId, getUserNameImage, getTimeZone,
+    // isElectron, 
+    convertFileSizeToMB
+} from "./Utilityfunction";
+
+import AudioRecorder from "./RecordAudio"
+
+
 
 
 const pageNumber = 1;
@@ -39,10 +50,12 @@ let currentPlatform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'pla
 const currentLoggedInUserId = getUser()?.id;
 const nameMaxChar = 45;
 let prevDetail = { name: '', description: '' };
+let userIndex = 0;
+let userDataList = [];
 
 
 const ChatRoom = ({
-    closePane,
+    // closePane,
     chatIds,
     unRead,
     topicDetail,
@@ -85,7 +98,7 @@ const ChatRoom = ({
 
     const draftReplyId = useRef([]);
 
-    const checkApptype = useRef(isElectron());
+    // const checkApptype = useRef(isElectron());
 
     const [messageList, setMessageList] = useState([]);
 
@@ -179,7 +192,7 @@ const ChatRoom = ({
     const [rejectRequestActive, setRejectRequestActive] = useState(false);
     const [currentChatId, setCurrentChatId] = useState('');
 
-    
+
 
     // const [prevDetail, setPrevDetail] = useState({ name: '', description: '' });
 
@@ -200,8 +213,24 @@ const ChatRoom = ({
 
     const [isEditTicket, setIsEditTicket] = useState(false);
 
+    const [showUserSuggestion, setShowUserSuggestion] = useState(false);
+
+    const [showUserSuggestionForReply, setShowUserSuggestionForReply] = useState(false);
+
+    const [showUserSuggestionsForEdit, setShowUserSuggestionsForEdit] = useState(false);
+
+    const [showUserSuggestionsForEditReply, setShowUserSuggestionsForEditReply] = useState(false);
+
+    const [userSuggestionList, setUserSuggestionList] = useState([]);
+
     const fileInputRef = useRef(null);
     const fileInputRefForReply = useRef(null);
+
+    const getStenoSelection = useRef();
+    const getStenoRange = useRef();
+
+    const [userIndexUpdate, setUserIndexUpdate] = useState(false);
+    // const [openEmojiPicker, setOpenEmojiPicker] = useState({ message: false, reply: false });
 
 
 
@@ -267,7 +296,7 @@ const ChatRoom = ({
 
                 setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
 
@@ -300,6 +329,10 @@ const ChatRoom = ({
                     fetchedClientUsers.current = json.client_participants;
 
 
+                    setUserSuggestionList(json?.all_users);
+
+                    userDataList = json?.all_users;
+
                     setMessageUserDetails(json?.all_users);
 
                     json.client_participants.map(user => collabUser = [...collabUser, user.id]);
@@ -321,7 +354,7 @@ const ChatRoom = ({
 
                 setShowLoader(false);
                 setShowUserDataFetching(false);
-                alertService.showToast('error', err.msg, { autoClose: false });
+                // alertService.showToast('error', err.msg, { autoClose: false });
 
             });
     }
@@ -624,6 +657,34 @@ const ChatRoom = ({
 
             }
 
+            const messageContainer = document.getElementById('user-suggestion');
+            const replyContainer = document.getElementById('user-suggestion-reply');
+            const editContainer = document.getElementById('user-suggestion-edit');
+            const replyEdit = document.getElementById('user-suggestion-edit-reply');
+            const stenoEditor = document.getElementById('steno-editor');
+
+            if ((messageContainer && !(messageContainer.contains(event.target)) && (stenoEditor && !(stenoEditor.contains(event.target))))) {
+
+                setShowUserSuggestion(false);
+
+            }
+            if ((replyContainer && !(replyContainer.contains(event.target)) && (stenoEditor && !(stenoEditor.contains(event.target))))) {
+
+                setShowUserSuggestionForReply(false);
+
+            }
+            if ((editContainer && !(editContainer.contains(event.target)) && (stenoEditor && !(stenoEditor.contains(event.target))))) {
+
+                setShowUserSuggestionsForEdit(false);
+
+            }
+            if ((replyEdit && !(replyEdit.contains(event.target)) && (stenoEditor && !(stenoEditor.contains(event.target))))) {
+
+                setShowUserSuggestionsForEditReply(false);
+
+            }
+
+
             // const edit = document.getElementById('iassist-edit-ticket');
 
             // if (edit &&!(edit.contains(event.target))) {
@@ -669,15 +730,15 @@ const ChatRoom = ({
 
             }
 
-            const chatContainer = document.getElementById('iassist-panel');
+            // const chatContainer = document.getElementById('iassist-panel');
 
-            if (chatContainer && !(chatContainer.contains(event.target)) && !checkApptype.current) {
+            // if (chatContainer && !(chatContainer.contains(event.target)) && !checkApptype.current) {
 
-                Size.current = pageSize;
+            // Size.current = pageSize;
 
-                close();
+            // close();
 
-            }
+            // }
 
         })
 
@@ -749,6 +810,7 @@ const ChatRoom = ({
     ws.onmessage = function (evt) {
 
         const received_msg = JSON.parse(evt.data);
+
         if (received_msg.type === 'delete_file_chat' || received_msg.type === 'edit_chat') {
             let currentMessageList = [...messageList];
             const index = currentMessageList.findIndex(item => item.id === received_msg?.id);
@@ -765,7 +827,7 @@ const ChatRoom = ({
             if (received_msg.is_feedback) topic.current.status_id = 3;
             else if (received_msg.is_reopen) topic.current.status_id = 1;
 
-            if (received_msg?.note?.feedback || received_msg?.note?.decline_reason) {
+            if (received_msg?.note?.feedback || received_msg?.note?.decline_reason || received_msg?.config_json?.is_withdraw) {
                 messageList.forEach((ms) => {
                     if (ms?.note?.status) {
                         ms.note.status = 'close';
@@ -1069,13 +1131,13 @@ const ChatRoom = ({
 
     }
 
-    const close = () => {
+    // const close = () => {
 
-        ws.close();
+    //     ws.close();
 
-        closePane();
+    //     closePane();
 
-    }
+    // }
 
     const getChatSearch = async (e, query) => {
 
@@ -1129,7 +1191,7 @@ const ChatRoom = ({
 
                 setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
     }
@@ -1227,7 +1289,7 @@ const ChatRoom = ({
 
                     setShowLoader(false);
 
-                    alertService.showToast('error', err.msg);
+                    // alertService.showToast('error', err.msg);
 
                 });
 
@@ -1320,7 +1382,7 @@ const ChatRoom = ({
                 })
                 .catch(err => {
 
-                    alertService.showToast('error', err.msg);
+                    // alertService.showToast('error', err.msg);
 
                 });
         }
@@ -1387,7 +1449,7 @@ const ChatRoom = ({
 
                 setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
 
@@ -1417,23 +1479,19 @@ const ChatRoom = ({
                 if (response) {
 
                     let result = response;
-
                     getTopicsBasedOnFilter(undefined, 1);
-
                     alertService.showToast('success', result.message);
                     clickBackButton = true;
                     ws.close();
                     setConfirmDelete(false);
-
                 }
-
             })
             .catch(err => {
                 setConfirmDelete(false)
 
                 setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
     }
@@ -1491,7 +1549,7 @@ const ChatRoom = ({
 
     // }
 
-    const fileExtentsionClassName = (file) => {
+    const fileExtensionClassName = (file) => {
 
         if (Constants.imageExtensionsList.find(item => item === file)) {
             return 'iassist-file-icon-img';
@@ -1513,6 +1571,14 @@ const ChatRoom = ({
 
         if (Constants.cssExtensions.find(item => item === file)) {
             return 'iassist-file-icon-css';
+        }
+
+        if (Constants.audioExtensions.includes(file)) {
+            return 'iassist-file-icon-audio';
+        }
+
+        if (Constants.videoExtensions.includes(file)) {
+            return 'iassist-file-icon-video';
         }
     };
     function downloadFileBlob(url, name) {
@@ -1553,9 +1619,8 @@ const ChatRoom = ({
     }
     const getOtherFileExtensionsDiv = (item, msg) => {
 
-
         const currentFileExtension = item.extension.split('.').pop().toLowerCase();
-        const currentClass = fileExtentsionClassName(currentFileExtension);
+        const currentClass = fileExtensionClassName(currentFileExtension);
 
         return (
 
@@ -1575,10 +1640,11 @@ const ChatRoom = ({
     }
     const checkFileExtension = (file) => {
 
+        const extension = file?.file.split('.').pop().toLowerCase();
 
 
-        const extension = '.' + file?.file.split('.').pop();
-
+        if (!file.file) { return false };
+        if (Constants.audioExtensions.includes(extension)) return { type: 'audio', value: true }
         if (Constants.otherExtensions.includes(extension)) return { type: 'other', value: true, extension: extension }
         if (Constants.videoExtensions.includes(extension)) return { type: 'video', value: true }
         if (Constants.imageExtensions.includes(extension)) {
@@ -1662,7 +1728,7 @@ const ChatRoom = ({
             type === 'message' ? setDisableSendButton(false) : setDisableReplyButton(false)
             setShowVideoLoader(false);
 
-            alertService.showToast('error', err.message);
+            // alertService.showToast('error', err.message);
 
         }
     }
@@ -1817,6 +1883,8 @@ const ChatRoom = ({
     }
 
     const onClickSteno = () => {
+        const removeElement = document.getElementById("link-message-box");
+        if (removeElement) removeElement.remove();
         if (topic.current.status_id === 3) {
             setShowReopen(true);
         }
@@ -1854,7 +1922,7 @@ const ChatRoom = ({
             })
             .catch((err) => {
                 if (err) {
-                    alertService.showToast('error', err.message);
+                    // alertService.showToast('error', err.message);
                 }
             })
 
@@ -1870,20 +1938,20 @@ const ChatRoom = ({
 
     const handleEditTicketOption = (e, type, value) => {
         e.preventDefault();
-            // setEditDescription(false);
-            // setEditName(true);
-            setIsEditTicket(true)
-            setTopicName(topic?.current?.name);
-            prevDetail = { name: topic?.current?.name, description: topic?.current?.description };
-            setTopicDescription(topic?.current?.description)
-            // setUpdateTicketDetails(value);
-            // setEditDescription(true);
+        // setEditDescription(false);
+        // setEditName(true);
+        setIsEditTicket(true)
+        setTopicName(topic?.current?.name);
+        prevDetail = { name: topic?.current?.name, description: topic?.current?.description };
+        setTopicDescription(topic?.current?.description)
+        // setUpdateTicketDetails(value);
+        // setEditDescription(true);
     }
 
     useEffect(() => {
-            // if (editTicketRef.current) applyFocusAtEnd(editTicketRef.current) //editTicketRef.current.focus();
-            if (editTitleRef.current) editTitleRef.current.focus();
- 
+        // if (editTicketRef.current) applyFocusAtEnd(editTicketRef.current) //editTicketRef.current.focus();
+        if (editTitleRef.current) editTitleRef.current.focus();
+
     }, [isEditTicket])
 
     const applyFocusAtEnd = (element) => {
@@ -1926,7 +1994,7 @@ const ChatRoom = ({
 
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `support/topic/?topic_id=${chatIds}`, data, false, 'PUT', controller, token)
                 .then(response => {
-// debugger;
+                    // debugger;
                     if (response) {
 
                         if (response?.detail?.msg === 'topic already exists') {
@@ -1936,15 +2004,15 @@ const ChatRoom = ({
                             return;
 
                         }
-                            topic.current = response?.data;
-                            setIsEditTicket(false);
-                            prevDetail = { name: '', description: '' };
+                        topic.current = response?.data;
+                        setIsEditTicket(false);
+                        prevDetail = { name: '', description: '' };
                     }
                     setShowLoader(false);
                 })
                 .catch(err => {
                     setShowLoader(false);
-                    alertService.showToast('error', err.msg);
+                    // alertService.showToast('error', err.msg);
 
                 });
         } else {
@@ -2022,7 +2090,7 @@ const ChatRoom = ({
 
         APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `chats/file`, payLoad, false, 'DELETE', controller, token)
             .then((response) => {
-                // ! handle response to update current message list
+
                 let currentMessageList = [...messageList];
                 const result = response;
 
@@ -2035,19 +2103,19 @@ const ChatRoom = ({
             })
             .catch(err => {
                 setShowLoader(false);
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
             });
 
 
     }
 
 
-    const handleFileChange = (e, type) => {
+    const handleFileChange = (e, type, isAudio = false) => {
 
 
-        e.stopPropagation()
+        !isAudio && e.stopPropagation()
         type === 'message' ? setShowScreenButton(false) : setShowReplyScreenButton(false)
-        const selectedFilesList = Array.from(e.target.files);
+        const selectedFilesList = isAudio ? [e] : Array.from(e.target.files);
 
         const allFiles = type === 'reply' ? [...selectedFilesForUploadInReply, ...selectedFilesList] : [...selectedFile, ...selectedFilesList]
         const allFileWithRecording = type === 'reply' ? [...selectedFilesForUploadInReply, ...replyVideoUrl] : [...selectedFile, ...selectedFilesList, ...videoUrl]
@@ -2069,7 +2137,7 @@ const ChatRoom = ({
         }
 
         // console.log(...Array.from(e.target.files))
-        uploadFile(Array.from(e.target.files), type, 'local');
+        uploadFile(selectedFilesList, type, 'local');
         selectedFilesList.map((file) => (
             file.url = URL.createObjectURL(file)
         ))
@@ -2077,6 +2145,9 @@ const ChatRoom = ({
 
         type === 'reply' ? setSelectedFilesForUploadInReply([...allFiles]) : setSelectedFile([...allFiles])
 
+    }
+    const handleAudioFile = (audioFile, type) => {
+        handleFileChange(audioFile, type, true)
     }
     const checkPrevilegesForEdit = () => {
 
@@ -2089,24 +2160,316 @@ const ChatRoom = ({
         if (type === 'topicName') {
 
             if (e.target.value.length > 45) {
-    
-    
+
+
                 if (document.getElementsByClassName('toast-wrapper')[0]) return;
                 alertService.showToast('warn', 'Topic name should not exceed 45 characters');
-    
+
             }
             if (e.target.value.length <= 45) {
-    
+
                 setTopicName(e.target.value);
                 // setFormDataToSessionStorage(e.target.value, 'topic');
-    
+
             }
         } else if (type === 'description') {
-    
+
             setTopicDescription(e.target.value.replace(/\n/g, ''));
-    
+
         }
     }
+
+    const selectUserTag = (e, userData, type) => {
+        e.preventDefault();
+
+        const lastIndex = type === 'reply' ? replyEditorRef.current.innerHTML?.lastIndexOf('@') : (type === 'message') ? editorRef?.current?.innerHTML?.lastIndexOf('@') : editEditorRef?.current?.innerHTML?.lastIndexOf('@');
+        if (lastIndex === -1) {
+            return // If the searchValue is not found, return the original string
+        }
+
+        replaceUpdatedUserDetail(userData, type)
+        setShowUserSuggestion(false);
+    }
+
+    const getStartingPosition = (offset, text) => {
+        while (offset >= 0) {
+            if (text[offset - 1]?.trim() === '' || text[offset - 1] === undefined) {
+                return;
+            }
+
+            if (text[offset - 1] === '@') {
+                return offset;
+            } else {
+                return getStartingPosition(offset - 1, text);
+            }
+        }
+    }
+
+    const replaceUpdatedUserDetail = (userData, type) => {
+        // let getText = getStenoRange?.current?.commonAncestorContainer?.parentNode.innerText;
+        let parent = getStenoRange?.current?.commonAncestorContainer;
+        let getReplaceText = '';
+        let getEndOffset = getStenoRange?.current?.endOffset;
+        if (parent.nodeType !== 1) {
+            parent = parent.parentNode;
+        }
+        let stenoEditor = type === 'reply' ? replyEditorRef.current : (type === 'message') ? editorRef.current : editEditorRef.current;
+
+        if (parent.isEqualNode(editorRef.current) || parent.isEqualNode(replyEditorRef?.current) || parent.isEqualNode(editEditorRef?.current)) {
+            parent = parent.childNodes[0];
+        } else if (parent?.childNodes[0].isEqualNode(stenoEditor)) {
+            parent = parent.childNodes[0];
+        }
+        let getText = parent?.innerText;
+        let updateValue = '';
+        if (getText.length === 1) {
+            getEndOffset = 1;
+        }
+        let findTag = getStenoRange?.current?.commonAncestorContainer?.parentNode;
+
+        if (findTag?.children?.[0]?.tagName === 'A') {
+            getText = getStenoRange.current?.endContainer?.textContent;
+        }
+        let newOffset = getStartingPosition(getEndOffset, getText);
+
+        for (let i = 0; i < getText.length; i++) {
+
+            if (i >= newOffset - 1 && i <= getEndOffset - 1) {
+                if (getText[i] === '@') {
+                    updateValue += `<a href="#" style="color:#1f95c8; background-color: #141c48ba; padding: 1px 4px; border-radius: 2px;text-decoration: none;">` + getText[i] + userData?.first_name + ` </a>`;
+                    getReplaceText = getText[i] + userData?.first_name;
+                    // (type === 'reply')? setShowUserSuggestionForReply(false) : setShowUserSuggestion(false);
+                    setUserSuggestionPaneValue(false, type);
+                }
+            } else {
+                updateValue += getText[i];
+            }
+        }
+
+        if (getStenoRange.current.endContainer.nodeName === '#text') {
+            getStenoRange.current.endContainer.textContent = updateValue;
+        } else {
+            parent.innerHTML = updateValue;
+        }
+        if (type === 'message') {
+            let getUpdatedStenoHtmlData = editorRef.current.innerHTML;
+            getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll('&lt;a href', '<a href');
+            getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll(`&gt;${getReplaceText} &lt;/a&gt;`, `>${getReplaceText} </a>`);
+            setMessage(getUpdatedStenoHtmlData);
+            applyFocusAtEnd(editorRef.current);
+        } else if (type === 'reply') {
+            let getUpdatedStenoHtmlData = replyEditorRef.current.innerHTML;
+            getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll('&lt;a href', '<a href');
+            getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll(`&gt;${getReplaceText} &lt;/a&gt;`, `>${getReplaceText} </a>`);
+            setReplyMessage(getUpdatedStenoHtmlData);
+            applyFocusAtEnd(replyEditorRef.current);
+        } else if (type === 'edit' || type === 'replyedit') {
+            let getUpdatedStenoHtmlData = editEditorRef.current.innerHTML;
+            getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll('&lt;a href', '<a href');
+            getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll(`&gt;${getReplaceText} &lt;/a&gt;`, `>${getReplaceText} </a>`);
+            setEditedMessage(getUpdatedStenoHtmlData);
+            applyFocusAtEnd(editEditorRef.current);
+        }
+    }
+
+    const validationToGetUserList = (offset, text, storeStringDatas) => {
+        while (offset >= 0) {
+            if (text[offset - 1]?.trim() === '' || text[offset - 1] === undefined) {
+                return;
+            }
+
+            if (text[offset - 1] === '@') {
+                return storeStringDatas;
+            } else {
+                return validationToGetUserList(offset - 1, text, text[offset - 1] + storeStringDatas);
+            }
+        }
+
+    }
+
+    const setUserSuggestionPaneValue = (val, type) => {
+
+        //ensure to close the other panes
+        if (type === 'message') {
+            setShowUserSuggestionForReply(false);
+            setShowUserSuggestion(val);
+            setShowUserSuggestionsForEdit(false);
+            setShowUserSuggestionsForEditReply(false);
+
+        } else if (type === 'reply') {
+            setShowUserSuggestionForReply(val);
+            setShowUserSuggestion(false);
+            setShowUserSuggestionsForEdit(false);
+            setShowUserSuggestionsForEditReply(false);
+        } else if (type === 'edit') {
+            setShowUserSuggestionForReply(false);
+            setShowUserSuggestion(false);
+            setShowUserSuggestionsForEdit(val);
+            setShowUserSuggestionsForEditReply(false);
+        } else if (type === 'replyedit') {
+            setShowUserSuggestionForReply(false);
+            setShowUserSuggestion(false);
+            setShowUserSuggestionsForEdit(false);
+            setShowUserSuggestionsForEditReply(val);
+        }
+    }
+
+    const validateUserdataOpen = (type) => {
+
+        let getText = getStenoRange?.current?.commonAncestorContainer?.parentNode?.innerText;
+        const getEndOffset = getStenoRange?.current?.endOffset;
+        const getStartOffset = getStenoRange?.current?.startOffset;
+
+        let findTag = getStenoRange?.current?.commonAncestorContainer?.parentNode;
+
+        if (findTag?.children?.[0]?.tagName === 'A') {
+            getText = getStenoRange.current?.endContainer?.textContent;
+        }
+
+
+        if (!getText || !editorRef?.current?.innerHTML?.lastIndexOf('@') || !editEditorRef?.current?.innerHTML?.lastIndexOf('@') || !replyEditorRef?.current?.innerHTML?.lastIndexOf('@')) setUserSuggestionPaneValue(false, type);
+
+        if (getStartOffset !== getEndOffset || getEndOffset === 0) {
+            return;
+        }
+
+
+
+        let storeStringDatas = '';
+        let findStringAfterSymbol = validationToGetUserList(getEndOffset, getText, storeStringDatas);
+        let data = findStringAfterSymbol ? userDataList.filter((data) => data.first_name.toLowerCase().includes(findStringAfterSymbol.toLowerCase())) : userDataList;
+
+        setUserSuggestionList(data);
+        if (findStringAfterSymbol) {
+            // (type === 'reply')? setShowUserSuggestionForReply(true) : setShowUserSuggestion(true);
+            setUserSuggestionPaneValue(true, type);
+        }
+        else {
+            // (type === 'reply')? setShowUserSuggestionForReply(false) : setShowUserSuggestion(false);
+            setUserSuggestionPaneValue(false, type);
+        }
+
+
+        for (let i = 0; i < getText.length; i++) {
+            if (i === getEndOffset - 1) {
+                if (((getText[getEndOffset - 2] === undefined || getText[getEndOffset - 2] === ' ') && getText[getEndOffset - 1] === '@') || (getText[i] === '@' && (getText[i + 1] !== ' ' || getText[i + 1] === undefined) && (i === 0 || getText[i - 1] === ' '))) {
+                    // (type === 'reply')? setShowUserSuggestionForReply(true) : setShowUserSuggestion(true);
+                    setUserSuggestionPaneValue(true, type);
+                    break;
+                }
+            }
+        }
+    }
+
+    // const handleEmojiClicked = (e, type) => {
+
+    // }
+
+    // const handleEmojiButtonClick = (type) => {
+    //     setOpenEmojiPicker(type === 'message' ?
+    //         { ...openEmojiPicker, 'message': !(openEmojiPicker.message) } :
+    //         { ...openEmojiPicker, 'reply': !openEmojiPicker.reply })
+    // }
+
+    useEffect(() => {
+
+        if (showUserSuggestion && editorRef.current) editorRef.current.focus();
+        else if (showUserSuggestionForReply && replyEditorRef.current) replyEditorRef.current.focus();
+        else if ((showUserSuggestionsForEdit || showUserSuggestionsForEditReply) && editEditorRef.current) editEditorRef.current.focus();
+
+    }, [userIndex])
+
+    useEffect(() => {
+        let getText = getStenoRange?.current?.commonAncestorContainer?.parentNode?.innerText;
+        if (showUserSuggestion) {
+            const fontFamily = window.getComputedStyle(editorRef.current).fontFamily
+            let textWidth = displayTextWidth(getText, fontFamily);
+            const stenoWidth = 300;
+            const element = document.getElementById('user-suggestion');
+            textWidth %= stenoWidth;
+            element.style.left += textWidth + 'px';
+            // if (textWidth > 300) {
+            //     element.style.left += 300 + 'px';
+            // } else {
+            //     element.style.left += textWidth + 'px';
+            // }
+        } else if (showUserSuggestionForReply) {
+            const fontFamily = window.getComputedStyle(replyEditorRef.current).fontFamily
+            let textWidth = displayTextWidth(getText, fontFamily);
+            const element = document.getElementById('user-suggestion-reply');
+            const stenoWidth = 250;
+            textWidth %= stenoWidth;
+            element.style.left += textWidth + 'px';
+            // if (textWidth > 250) {
+            //     element.style.left += 250 + 'px';
+            // } else {
+            //     element.style.left += textWidth + 'px';
+            // }
+        } else if (showUserSuggestionsForEdit) {
+            const padding = 50;
+            const fontFamily = window.getComputedStyle(editEditorRef.current).fontFamily
+            let textWidth = displayTextWidth(getText, fontFamily);
+            const element = document.getElementById('user-suggestion-edit');
+            const stenoWidth = 200;
+            textWidth %= stenoWidth;
+            element.style.left += textWidth + padding + 'px';
+            // if (textWidth > 200) {
+            //     element.style.left += 200 + 'px';
+            // } else {
+            //     element.style.left += textWidth + padding + 'px';
+            // }
+        } else if (showUserSuggestionsForEditReply) {
+            const fontFamily = window.getComputedStyle(editEditorRef.current).fontFamily
+            let textWidth = displayTextWidth(getText, fontFamily);
+            const element = document.getElementById('user-suggestion-reply-edit');
+            const stenoWidth = 200;
+            textWidth %= stenoWidth;
+            element.style.left += textWidth + 'px';
+            // if (textWidth > 200) {
+            //     element.style.left += 200 + 'px';
+            // } else {
+            //     element.style.left += textWidth + 'px';
+            // }
+        }
+
+    }, [showUserSuggestion, showUserSuggestionForReply, showUserSuggestionsForEdit, showUserSuggestionsForEditReply])
+
+    const bringSelectedTagInView = (item) => {
+        document.getElementById(`li-${item}`).scrollIntoView()
+    }
+
+    useEffect(() => {
+        const range = getStenoSelection?.current?.getRangeAt(0)
+        const previousSibling = range?.commonAncestorContainer?.previousSibling;
+        const currentText = range?.endContainer;
+        if (previousSibling?.tagName === "A" && currentText?.length === 1) {
+            range.endContainer.textContent = ' ' + currentText.textContent;
+            // applyFocusAtEnd(editorRef.current);
+        }
+        applyFocusAtEnd(editorRef.current);
+    }, [message])
+
+    useEffect(() => {
+        const range = getStenoSelection?.current?.getRangeAt(0)
+        const previousSibling = range?.commonAncestorContainer?.previousSibling;
+        const currentText = range?.endContainer;
+        if (previousSibling?.tagName === "A" && currentText?.length === 1) {
+            range.endContainer.textContent = ' ' + currentText.textContent;
+            // applyFocusAtEnd(editorRef.current);
+        }
+        applyFocusAtEnd(replyEditorRef.current);
+    }, [replyMessage])
+
+    useEffect(() => {
+        const range = getStenoSelection?.current?.getRangeAt(0)
+        const previousSibling = range?.commonAncestorContainer?.previousSibling;
+        const currentText = range?.endContainer;
+        if (previousSibling?.tagName === "A" && currentText?.length === 1) {
+            range.endContainer.textContent = ' ' + currentText.textContent;
+            // applyFocusAtEnd(editEditorRef.current);
+        }
+        applyFocusAtEnd(editEditorRef.current);
+    }, [editedMessage])
 
     return (
 
@@ -2216,10 +2579,10 @@ const ChatRoom = ({
                         </div>}
 
                         {
-                            (isEditTicket) && checkPrevilegesForEdit() && 
+                            (isEditTicket) && checkPrevilegesForEdit() &&
                             <div id='iassist-edit-ticket' ref={editDivRef}>
                                 <div className='iassist-field-w-label'>
-                                    <label>Topic
+                                    <label>Topic*
                                         {/* <span className='mandatory-mark'>*</span> */}
                                     </label>
                                     <div className='field' onClick={() => editTitleRef.current.focus()}>
@@ -2229,60 +2592,62 @@ const ChatRoom = ({
                                 </div>
 
                                 <div className='field-w-label'>
-                                    <label>Description
+                                    <label>Description*
                                     </label>
                                     <div className='field textarea' onClick={() => applyFocusAtEnd(editTicketRef.current)}>
-                                    <Steno
-                                        html={topicDescription}
-                                        disable={false} //indicate that the editor has to be in edit mode
-                                        onChange={(val) => {
-                                            setTopicDescription(val)
-                                        }}
-                                        innerRef={editTicketRef} //ref attached to the editor
-                                        onChangeBackgroundColor={() => { }}
-                                        fontColor={'#fff'}
-                                        onChangeFontColor={() => { }}
-                                        functionRef={editTicketFnRef} //Ref which let parent component to access the methods inside of editor component
-                                        isToolBarVisible={false} //to show/hide the toolbar options
-                                        toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
-                                        formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
-                                        onChangeOfKeepStyle={() => { }} //handle to change the format style variable
-                                        showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
-                                        fileList={[]} //List of file object to track the files selected by user
-                                        // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
-                                        // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
-                                        sendMsgOnEnter={false} //This will be used in case of chat application, where user wants to send msg on enter click.
-                                        autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
-                                        minEditorHeight='60px' // Default will be 100px
-                                        maxEditorHeight="60px" // Default maxHeight will be 250px
-                                    />
+                                        <Steno
+                                            html={topicDescription}
+                                            disable={false} //indicate that the editor has to be in edit mode
+                                            onChange={(val) => {
+                                                setTopicDescription(val);
+                                            }}
+                                            innerRef={editTicketRef} //ref attached to the editor
+                                            onChangeBackgroundColor={() => { }}
+                                            fontColor={'#fff'}
+                                            onChangeFontColor={() => { }}
+                                            ref={editTicketFnRef} //Ref which let parent component to access the methods inside of editor component
+                                            isToolBarVisible={false} //to show/hide the toolbar options
+                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                            fileList={[]} //List of file object to track the files selected by user
+                                            // onFileChange={handleFileChange} //handler to update the filelist array, This function will receive a file event object as an argument, when user add a new file/files to the list.
+                                            // removeTheFile={removeTheFile} //handler to delete the file from the filelist array, This function will receive a file name to be deleted as an argument.
+                                            sendMsgOnEnter={false} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                            minEditorHeight='60px' // Default will be 100px
+                                            maxEditorHeight="60px" // Default maxHeight will be 250px
+                                            fontSize={11}
+                                            borderWidth={0}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
 
                                 {(isEditTicket) &&
-                                <div className='iassist-edit-btn'>
-                                    <button className='iassist-save' onMouseDown={(e) => {
-                            
-                                        e.stopPropagation();
-                                        handleEditTicket();
-                                    }} disabled={showLoader}>
-                                    <span className='iassist-save-icon'></span>
-                                    save</button>
-                                    <button className='iassist-cancel' onMouseDown={(e) => {
-                                 
-                                        e.stopPropagation();
-                                        prevDetail = { name: '', description: '' };
-                                        setIsEditTicket(false);
+                                    <div className='iassist-edit-btn'>
+                                        <button className='iassist-save' onMouseDown={(e) => {
 
-                                    }} disabled={showLoader}>
-                                    <span className='iassist-cancel-icon'></span>
-                                    cancel</button>
-                                </div>}
+                                            e.stopPropagation();
+                                            handleEditTicket();
+                                        }} disabled={(showLoader || topicName.trim().length === 0 || editTicketRef.current?.textContent.trim().length === 0) ? true : false}>
+                                            <span className='iassist-save-icon'></span>
+                                            save</button>
+                                        <button className='iassist-cancel' onMouseDown={(e) => {
+
+                                            e.stopPropagation();
+                                            prevDetail = { name: '', description: '' };
+                                            setIsEditTicket(false);
+
+                                        }} disabled={showLoader}>
+                                            <span className='iassist-cancel-icon'></span>
+                                            cancel</button>
+                                    </div>}
                             </div>
                         }
 
                         {!isEditTicket && <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'description', topic?.current?.description) : () => { }}>{topic.current && parse(topic?.current?.description, options)}
-                        
+
                         </div>}
 
                         <Detail topic={topic.current} type={type} allAccount={allAccount} allUser={allUser} />
@@ -2312,7 +2677,7 @@ const ChatRoom = ({
                                 {!confirmDelete && !showUserDataFetching && messageList.length > 0 && messageList.map((messages) => {
 
                                     return (
-                                        <div className={'chat-wrapper ' + ((messages.is_feedback || messages.is_reopen || messages.config_json?.is_request || messages.config_json?.is_denied) && !messages.is_file ? ' chat-feedback-wrapper' : '')} key={messages.id} style={{ border: +borderChatId === +messages.id ? '1px solid #00BB5A' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
+                                        <div className={'chat-wrapper ' + ((messages.is_feedback || messages.is_reopen || messages.config_json?.is_request || messages.config_json?.is_denied || messages.config_json?.is_withdraw) && !messages.is_file ? ' chat-feedback-wrapper' : '')} key={messages.id} style={{ border: +borderChatId === +messages.id ? '1px solid #00BB5A' : '', cursor: showSearch ? 'pointer' : 'auto' }} onClick={() => searchClick(messages)}>
 
                                             <div className='support-header'>
 
@@ -2339,19 +2704,33 @@ const ChatRoom = ({
                                                             <span className='time-zone'> &nbsp;{getTimeZone(messages.created_at, false)}</span>
                                                         </div>
 
-                                                        {editId !== messages.id && (!messages.is_file && !messages.is_feedback && !messages.is_reopen && !messages.config_json?.is_request && !messages.config_json?.is_denied) && <div className='content' id={"msg" + messages.id}>
+                                                        {editId !== messages.id && (!messages.is_file && !messages.is_feedback && !messages.is_reopen && !messages.config_json?.is_request && !messages.config_json?.is_denied) && <div className='content' id={"msg" + messages.id} onClick={(e) => {
+                                                            e.preventDefault();
+                                                        }}>
 
                                                             {parse(messages.note, options)}
 
                                                         </div>}
 
-                                                        {editId === messages.id && !messages.is_feedback && !messages.is_reopen && <div className='content' id={"container" + messages.id}>
 
+
+                                                        {editId === messages.id && !messages.is_feedback && !messages.is_reopen && <div className='content edit-sten' id={"container" + messages.id}>
+                                                            {showUserSuggestionsForEdit && <div className='iassist-user-suggestion-container-edit' id='user-suggestion-edit'>
+
+                                                                <>
+                                                                    {userSuggestionList.length > 0 && userSuggestionList.map((user, index) => {
+                                                                        return (<li id={`li-${user.first_name}`} style={{ backgroundColor: userIndex === index ? '#333333' : '', color: userIndex === index ? '#fff' : '' }} key={user.id} onClick={(e) => selectUserTag(e, user, 'edit')}>{user.first_name}</li>)
+                                                                    })}
+                                                                </>
+
+                                                            </div>}
                                                             <Steno
                                                                 html={editedMessage}
                                                                 disable={false} //indicate that the editor has to be in edit mode
                                                                 onChange={(val) => {
-
+                                                                    getStenoSelection.current = document.getSelection();
+                                                                    getStenoRange.current = getStenoSelection?.current?.getRangeAt(0);
+                                                                    validateUserdataOpen('edit')
                                                                     setEditedMessage(val)
                                                                 }}
                                                                 innerRef={editEditorRef} //ref attached to the editor
@@ -2359,7 +2738,7 @@ const ChatRoom = ({
                                                                 onChangeBackgroundColor={() => { }}
                                                                 fontColor={'#fff'}
                                                                 onChangeFontColor={() => { }}
-                                                                functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                                ref={editFnRef} //Ref which let parent component to access the methods inside of editor component
                                                                 isToolBarVisible={false} //to show/hide the toolbar options
                                                                 toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                                                 formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
@@ -2373,7 +2752,32 @@ const ChatRoom = ({
                                                                 autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                                                 minEditorHeight='20px' // Default will be 100px
                                                                 maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                                placeHolder="Message"
+                                                                fontSize={11}
+                                                                borderWidth={0}
+                                                                placeHolder={'Edit'}
+                                                                onClick={() => {
+                                                                    const removeElement = document.getElementById("link-message-box");
+                                                                    if (removeElement) removeElement.remove();
+                                                                }}
+                                                                handleUserSelection={showUserSuggestionsForEdit}
+                                                                onUserDropDownEnterLogic={(e) => {
+
+                                                                    if (showUserSuggestionsForEdit && userIndex >= 0 && userSuggestionList[userIndex]) {
+                                                                        selectUserTag(e, userSuggestionList[userIndex], 'edit')
+                                                                    }
+                                                                }}
+                                                                onUserDropDownArrowKeyLogic={(e) => {
+                                                                    editorRef.current.focus();
+                                                                    if (e.key === 'ArrowUp' && !!userSuggestionList.length) {
+                                                                        userIndex > 0 ? userIndex -= 1 : userIndex = userSuggestionList.length - 1;
+                                                                    } else if (e.key === 'ArrowDown' && !!userSuggestionList.length) {
+                                                                        (userSuggestionList.length - 1 > userIndex) ? userIndex += 1 : userIndex = 0;
+
+                                                                    }
+                                                                    editorRef.current.focus();
+                                                                    bringSelectedTagInView(userSuggestionList[userIndex]?.first_name)
+                                                                    setUserIndexUpdate(!userIndexUpdate)
+                                                                }}
                                                             />
                                                             <div className='edit-btn'>
                                                                 <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
@@ -2386,6 +2790,12 @@ const ChatRoom = ({
 
                                                             </div>
                                                         </div>}
+
+                                                        {
+                                                            messages?.config_json?.is_withdraw && <div className='content'>
+                                                                Request to close ticket has been withdrawn
+                                                            </div>
+                                                        }
 
                                                         {!messages.is_file && messages.is_feedback && !messages.is_reopen && <div className='content'>
 
@@ -2459,6 +2869,22 @@ const ChatRoom = ({
                                                                                     <span className='iassist-deleted-file-icon'></span>
                                                                                     <span>File is Deleted</span></div> :
                                                                                     <>
+                                                                                        {checkFileExtension(files).type === 'audio' &&
+                                                                                            <div className='wrapper-media-video'>
+                                                                                                <audio controls src={files.file} >
+                                                                                                </audio>
+
+                                                                                                {/* {files?.file && <PlayButton handleClick={videoClick} file={files.file} />} */}
+                                                                                                <div className='wrapper-media-video-footer'>
+                                                                                                    <div className='media-id'>{files?.name.substring(0, 10)}</div>
+                                                                                                    {/* <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button> */}
+                                                                                                    {
+                                                                                                        +currentLoggedInUserId === +messages.user_id &&
+                                                                                                        <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, messages, files)}></button>
+                                                                                                    }
+                                                                                                </div>
+
+                                                                                            </div>}
 
                                                                                         {
                                                                                             checkFileExtension(files).type === 'video' &&
@@ -2544,18 +2970,32 @@ const ChatRoom = ({
                                                                                         <span className='time-zone'> &nbsp;{getTimeZone(msg.created_at, false)} </span>
                                                                                     </div>
 
-                                                                                    {editId !== msg.id && !msg.is_file && <div className='content-reply'>
+                                                                                    {editId !== msg.id && !msg.is_file && <div className='content-reply' onClick={(e) => e.preventDefault()}>
 
                                                                                         {parse(msg.note, options)}
 
                                                                                     </div>}
 
+
                                                                                     {editId === msg.id && !msg.is_feedback && !msg.is_reopen && <div className='content'>
+
+                                                                                        {showUserSuggestionsForEditReply && <div className='iassist-user-suggestion-container-edit-reply' id='user-suggestion-reply-edit'>
+
+                                                                                            <>
+                                                                                                {userSuggestionList.length > 0 && userSuggestionList.map((user, index) => {
+                                                                                                    return (<li id={`li-${user.first_name}`} style={{ backgroundColor: userIndex === index ? '#333333' : '', color: userIndex === index ? '#fff' : '' }} key={user.id} onClick={(e) => selectUserTag(e, user, 'replyedit')}>{user.first_name}</li>)
+                                                                                                })}
+                                                                                            </>
+
+                                                                                        </div>}
 
                                                                                         <Steno
                                                                                             html={editedMessage}
                                                                                             disable={false} //indicate that the editor has to be in edit mode
                                                                                             onChange={(val) => {
+                                                                                                getStenoSelection.current = document.getSelection();
+                                                                                                getStenoRange.current = getStenoSelection?.current?.getRangeAt(0);
+                                                                                                validateUserdataOpen('replyedit')
                                                                                                 setEditedMessage(val)
                                                                                             }}
                                                                                             innerRef={editEditorRef} //ref attached to the editor
@@ -2563,7 +3003,7 @@ const ChatRoom = ({
                                                                                             onChangeBackgroundColor={() => { }}
                                                                                             fontColor={'#fff'}
                                                                                             onChangeFontColor={() => { }}
-                                                                                            functionRef={editFnRef} //Ref which let parent component to access the methods inside of editor component
+                                                                                            ref={editFnRef} //Ref which let parent component to access the methods inside of editor component
                                                                                             isToolBarVisible={false} //to show/hide the toolbar options
                                                                                             toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                                                                             formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
@@ -2577,7 +3017,32 @@ const ChatRoom = ({
                                                                                             autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
                                                                                             minEditorHeight='20px' // Default will be 100px
                                                                                             maxEditorHeight="300px" // Default maxHeight will be 250px
-                                                                                            placeHolder="Message"
+                                                                                            fontSize={11}
+                                                                                            borderWidth={0}
+                                                                                            placeHolder={'Edit'}
+                                                                                            onClick={() => {
+                                                                                                const removeElement = document.getElementById("link-message-box");
+                                                                                                if (removeElement) removeElement.remove();
+                                                                                            }}
+                                                                                            handleUserSelection={showUserSuggestionsForEditReply}
+                                                                                            onUserDropDownEnterLogic={(e) => {
+
+                                                                                                if (showUserSuggestionsForEditReply && userIndex >= 0 && userSuggestionList[userIndex]) {
+                                                                                                    selectUserTag(e, userSuggestionList[userIndex], 'replyedit')
+                                                                                                }
+                                                                                            }}
+                                                                                            onUserDropDownArrowKeyLogic={(e) => {
+                                                                                                editorRef.current.focus();
+                                                                                                if (e.key === 'ArrowUp' && !!userSuggestionList.length) {
+                                                                                                    userIndex > 0 ? userIndex -= 1 : userIndex = userSuggestionList.length - 1;
+                                                                                                } else if (e.key === 'ArrowDown' && !!userSuggestionList.length) {
+                                                                                                    (userSuggestionList.length - 1 > userIndex) ? userIndex += 1 : userIndex = 0;
+
+                                                                                                }
+                                                                                                editorRef.current.focus();
+                                                                                                bringSelectedTagInView(userSuggestionList[userIndex]?.first_name)
+                                                                                                setUserIndexUpdate(!userIndexUpdate)
+                                                                                            }}
                                                                                         />
                                                                                         <div className='edit-btn'>
                                                                                             <button type='button' className='save-btn' onClick={(e) => editMessage(e)}>
@@ -2604,7 +3069,26 @@ const ChatRoom = ({
                                                                                                                 files?.is_delete ? <div className='delete-file-message'>
                                                                                                                     <span className='iassist-deleted-file-icon'></span>
                                                                                                                     <span>File is Deleted</span></div> :
+
+
+
                                                                                                                     <>
+                                                                                                                        {checkFileExtension(files).type === 'audio' &&
+                                                                                                                            <div className='wrapper-media-video'>
+                                                                                                                                <audio controls src={files.file} >
+                                                                                                                                </audio>
+
+                                                                                                                                <div className='wrapper-media-video-footer'>
+                                                                                                                                    <div className='media-id'>{files?.name.substring(0, 10)}</div>
+
+                                                                                                                                    {
+                                                                                                                                        +currentLoggedInUserId === +msg.user_id &&
+                                                                                                                                        <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, msg, files)}></button>
+                                                                                                                                    }
+                                                                                                                                </div>
+
+                                                                                                                            </div>}
+
                                                                                                                         {
                                                                                                                             checkFileExtension(files, 'video').type === 'video' && <div className='wrapper-media'> <video src={files.file} onClick={() => {
 
@@ -2616,7 +3100,7 @@ const ChatRoom = ({
 
                                                                                                                                 {files?.file && <PlayButton handleClick={videoClick} file={files.file} />}
                                                                                                                                 <div className='wrapper-media-footer'>
-                                                                                                                                    <div className='media-id'>{files?.name?.substring(0,10)}</div>
+                                                                                                                                    <div className='media-id'>{files?.name?.substring(0, 10)}</div>
                                                                                                                                     <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button>
                                                                                                                                     {+currentLoggedInUserId === +messages?.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, msg, files)}></button>}
                                                                                                                                 </div>
@@ -2632,7 +3116,7 @@ const ChatRoom = ({
                                                                                                                                         setPlayerUrl(files.file);
                                                                                                                                     }}></img>
                                                                                                                                 <div className='wrapper-media-footer'>
-                                                                                                                                    <div className='media-id'>{files?.name?.substring(0,10)}</div>
+                                                                                                                                    <div className='media-id'>{files?.name?.substring(0, 10)}</div>
                                                                                                                                     <button type="button" className=' iassist-icon-download' onClick={(e) => downloadFile(e, files)}></button>
                                                                                                                                     {+currentLoggedInUserId === +messages?.user_id && <button type="button" className=' iassist-deleted-file-icon' onClick={(e) => handleDeleteFileFromChat(e, msg, files)}></button>}
                                                                                                                                 </div>
@@ -2678,6 +3162,15 @@ const ChatRoom = ({
 
                                                             {showReply && chatId === messages.id && <div className='reply-chat-wrapper'>
                                                                 <div className='topic-filter-search-iassist'>
+                                                                    {showUserSuggestionForReply && <div className='iassist-user-suggestion-container-reply' id='user-suggestion-reply'>
+
+                                                                        <>
+                                                                            {userSuggestionList.length > 0 && userSuggestionList.map((user, index) => {
+                                                                                return (<li id={`li-${user.first_name}`} style={{ backgroundColor: userIndex === index ? '#333333' : '', color: userIndex === index ? '#fff' : '' }} key={user.id} onClick={(e) => selectUserTag(e, user, 'reply')}>{user.first_name}</li>)
+                                                                            })}
+                                                                        </>
+
+                                                                    </div>}
 
                                                                     <div className='search'>
 
@@ -2685,6 +3178,9 @@ const ChatRoom = ({
                                                                             html={replyMessage}
                                                                             disable={false} //indicate that the editor has to be in edit mode
                                                                             onChange={(val) => {
+                                                                                getStenoSelection.current = document.getSelection();
+                                                                                getStenoRange.current = getStenoSelection?.current?.getRangeAt(0);
+                                                                                validateUserdataOpen('reply')
                                                                                 if (replyEditorRef.current.textContent) storeChatDataInMemory(undefined, 'reply', messages.id, val)
                                                                                 else removeChatDataInMemory();
                                                                                 setReplyMessage(val);
@@ -2694,7 +3190,7 @@ const ChatRoom = ({
                                                                             onChangeBackgroundColor={() => { }}
                                                                             fontColor={'#fff'}
                                                                             onChangeFontColor={() => { }}
-                                                                            functionRef={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
+                                                                            ref={fnReplyRef} //Ref which let parent component to access the methods inside of editor component
                                                                             isToolBarVisible={false} //to show/hide the toolbar options
                                                                             toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                                                             formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
@@ -2709,6 +3205,31 @@ const ChatRoom = ({
                                                                             minEditorHeight='20px' // Default will be 100px
                                                                             maxEditorHeight="300px" // Default maxHeight will be 250px
                                                                             placeHolder="Reply"
+                                                                            fontSize={11}
+                                                                            borderWidth={0}
+                                                                            onClick={() => {
+                                                                                const removeElement = document.getElementById("link-message-box");
+                                                                                if (removeElement) removeElement.remove();
+                                                                            }}
+                                                                            handleUserSelection={showUserSuggestionForReply}
+                                                                            onUserDropDownEnterLogic={(e) => {
+
+                                                                                if (showUserSuggestionForReply && userIndex >= 0 && userSuggestionList[userIndex]) {
+                                                                                    selectUserTag(e, userSuggestionList[userIndex], 'reply')
+                                                                                }
+                                                                            }}
+                                                                            onUserDropDownArrowKeyLogic={(e) => {
+                                                                                editorRef.current.focus();
+                                                                                if (e.key === 'ArrowUp' && !!userSuggestionList.length) {
+                                                                                    userIndex > 0 ? userIndex -= 1 : userIndex = userSuggestionList.length - 1;
+                                                                                } else if (e.key === 'ArrowDown' && !!userSuggestionList.length) {
+                                                                                    (userSuggestionList.length - 1 > userIndex) ? userIndex += 1 : userIndex = 0;
+
+                                                                                }
+                                                                                editorRef.current.focus();
+                                                                                bringSelectedTagInView(userSuggestionList[userIndex]?.first_name)
+                                                                                setUserIndexUpdate(!userIndexUpdate)
+                                                                            }}
                                                                         />
 
                                                                         <button className='rply-btn' disabled={showVideoLoader || disableReplyButton || (!replyMessage && !saveDataUrlForReply.length)} onClick={(e) => sendMessage(e, 'reply', messages.id)} ></button>
@@ -2717,7 +3238,7 @@ const ChatRoom = ({
 
                                                                     <RecordOption
                                                                         handleDeleteFile={handleDeleteFile}
-                                                                        fileExtentsionClassName={fileExtentsionClassName}
+                                                                        fileExtensionClassName={fileExtensionClassName}
                                                                         handleFileChange={handleFileChange}
                                                                         selectedFile={selectedFilesForUploadInReply}
                                                                         showScreenButton={showReplyScreenButton}
@@ -2735,8 +3256,9 @@ const ChatRoom = ({
                                                                     <div className='add-btn-chat'>
                                                                         <button title='plus' onClick={(e) => handleAddBtn(e, 'reply')}>
 
-                                                                        </button></div>
-
+                                                                        </button>
+                                                                    </div>
+                                                                    <AudioRecorder handleAudioFile={handleAudioFile} type='reply' />
                                                                 </div>
                                                             </div>}
 
@@ -2746,8 +3268,7 @@ const ChatRoom = ({
 
                                                 </div>
 
-
-                                                {!showSearch && editId !== messages.id && ((!messages.is_feedback && !messages.is_reopen) || messages.is_file) && !messages.config_json?.is_denied && !messages.config_json?.is_request && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>
+                                                {!showSearch && editId !== messages.id && ((!messages.is_feedback && !messages.is_reopen) || messages.is_file) && !messages.config_json?.is_denied && !messages.config_json?.is_request && !messages.config_json?.is_withdraw && <button className="action-menu" onClick={(e) => chatmenu(e, messages.id, messages)} title="option"></button>
                                                 }
                                             </div>
 
@@ -2764,6 +3285,15 @@ const ChatRoom = ({
 
                         {!showSearch && !confirmDelete &&
                             <div className='iassist-message' id='message'>
+                                {showUserSuggestion && <div className='iassist-user-suggestion-container' id='user-suggestion'>
+
+                                    <>
+                                        {userSuggestionList.length > 0 && userSuggestionList.map((user, index) => {
+                                            return (<li id={`li-${user.first_name}`} style={{ backgroundColor: userIndex === index ? '#333333' : '', color: userIndex === index ? '#fff' : '' }} key={user.id} onClick={(e) => selectUserTag(e, user, 'message')}>{user.first_name}</li>)
+                                        })}
+                                    </>
+
+                                </div>}
                                 {showFeedback &&
                                     <FeedBack
                                         closePane={closeFeedbackPane}
@@ -2793,16 +3323,23 @@ const ChatRoom = ({
                                             html={message}
                                             disable={false} //indicate that the editor has to be in edit mode
                                             onChange={(val) => {
+
+                                                getStenoSelection.current = document.getSelection();
+                                                const range = getStenoSelection?.current?.getRangeAt(0)
+                                                getStenoRange.current = range.cloneRange();
+                                                validateUserdataOpen('message')
                                                 if (editorRef.current.textContent) storeChatDataInMemory(val, 'message',)
                                                 else removeChatDataInMemory();
+
                                                 setMessage(val)
+
                                             }}
                                             innerRef={editorRef} //ref attached to the editor
                                             backgroundColor={'#000'}
                                             onChangeBackgroundColor={() => { }}
                                             fontColor={'#fff'}
                                             onChangeFontColor={() => { }}
-                                            functionRef={fnRef} //Ref which let parent component to access the methods inside of editor component
+                                            ref={fnRef} //Ref which let parent component to access the methods inside of editor component
                                             isToolBarVisible={false} //to show/hide the toolbar options
                                             toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
                                             formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
@@ -2817,7 +3354,34 @@ const ChatRoom = ({
                                             minEditorHeight='20px' // Default will be 100px
                                             maxEditorHeight="300px" // Default maxHeight will be 250px
                                             placeHolder={topic.current.status_id === 3 ? "Send message to re-open this ticket" : "Message"}
-                                            onClick={() => onClickSteno()}
+                                            onClick={() => {
+                                                // getStenoSelection.current = document.getSelection();
+                                                // getStenoRange.current = getStenoSelection?.current?.getRangeAt(0);
+                                                onClickSteno()
+                                            }}
+                                            fontSize={11}
+                                            borderWidth={0}
+                                            handleUserSelection={showUserSuggestion}
+                                            onUserDropDownEnterLogic={(e) => {
+
+                                                if (showUserSuggestion && userIndex >= 0 && userSuggestionList[userIndex]) {
+                                                    selectUserTag(e, userSuggestionList[userIndex], 'message')
+                                                }
+                                            }}
+                                            onUserDropDownArrowKeyLogic={(e) => {
+
+                                                editorRef.current.focus();
+                                                if (e.key === 'ArrowUp' && !!userSuggestionList.length) {
+                                                    userIndex > 0 ? userIndex -= 1 : userIndex = userSuggestionList.length - 1;
+                                                } else if (e.key === 'ArrowDown' && !!userSuggestionList.length) {
+                                                    (userSuggestionList.length - 1 > userIndex) ? userIndex += 1 : userIndex = 0;
+
+                                                }
+                                                editorRef.current.focus();
+                                                bringSelectedTagInView(userSuggestionList[userIndex]?.first_name)
+                                                setUserIndexUpdate(!userIndexUpdate)
+
+                                            }}
                                         />
 
                                         <button type='button' className='send' onClick={(e) => sendMessage(e, 'message')}
@@ -2832,7 +3396,7 @@ const ChatRoom = ({
 
                                     <RecordOption
                                         handleDeleteFile={handleDeleteFile}
-                                        fileExtentsionClassName={fileExtentsionClassName}
+                                        fileExtensionClassName={fileExtensionClassName}
                                         handleFileChange={handleFileChange}
                                         selectedFile={selectedFile}
                                         showScreenButton={showScreenButton}
@@ -2850,9 +3414,11 @@ const ChatRoom = ({
 
                                 </div>}
                                 {!showFeedback && !showReopen && <div className='bottom-wrapper'>
-
                                     <div className='add-btn-chat'> <button title='plus' onClick={(e) => handleAddBtn(e, 'message')}></button></div>
-
+                                    <AudioRecorder handleAudioFile={handleAudioFile} type='message' />
+                                    {/* <button className='iassist-emoji-picker-icon' onClick={() => handleEmojiButtonClick('message')} />
+                                    {openEmojiPicker.message &&
+                                        <EmojiPicker onEmojiClick={(e) => handleEmojiClicked(e, 'message')} theme='dark' />} */}
                                     {((!activity || chatActivity.current) && topic.current && topic.current.status_id !== 3) && <div className='close-btn' onClick={() => setShowFeedback(true)}><button title='close ticket'> </button>Close Ticket</div>}
 
                                     {activity && !chatActivity.current && topic.current.status_id !== 3 && <div className='delete-btn' onClick={() => setConfirmDelete(true)}><button> </button>Delete Ticket</div>}
@@ -2865,7 +3431,8 @@ const ChatRoom = ({
 
             </div>}
 
-            {showVideo && <VideoRecord save={saveAndClose} close={setShowVideo} message={displayMessage} />}
+            {showVideo && <VideoRecord
+                save={saveAndClose} close={setShowVideo} message={displayMessage} />}
 
         </>
 
@@ -2873,5 +3440,4 @@ const ChatRoom = ({
 
 }
 
-//: (<Support closePane={closePane} webSocket={socketDetail} panelPosition={panelPosition} platformId={platformId} />)
 export default memo(ChatRoom);

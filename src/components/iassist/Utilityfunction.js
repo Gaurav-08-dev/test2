@@ -1,6 +1,6 @@
 import Avatar from "../Avatar/Avatar";
 import React from 'react';
-import {APPLICATION_NAME} from '../Constants';
+
 
 
 
@@ -13,22 +13,19 @@ const formatShiftDate = new Intl.DateTimeFormat('en-US', {
 
 export function isElectron() {
 
-
-    const isIassist='iAssist-end-user'=== APPLICATION_NAME 
-
     // Renderer process
     if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-        return true && isIassist;
+        return true;
     }
 
     // Main process
     if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-        return true && isIassist;
+        return true;
     }
 
     // Detect the user agent when the `nodeIntegration` option is set to true
     if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-        return true && isIassist;
+        return true;
 
     }
     return false;

@@ -178,6 +178,25 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         display: block;
         margin: 0 7px;
       }
+      .iassist-file-icon-video {
+        mask: url($image-prefix + "iassist-icon-video.svg")
+          no-repeat center center;
+        -webkit-mask: url($image-prefix + "iassist-icon-video.svg")
+          no-repeat center center;
+
+          mask-size: 88px;
+        -webkit-mask-size: 88px;
+      }
+
+      .iassist-file-icon-audio {
+        mask: url($image-prefix + "icon-audio.svg") no-repeat
+          center center;
+        -webkit-mask: url($image-prefix + "icon-audio.svg")
+          no-repeat center center;
+
+          mask-size: 24px;
+        -webkit-mask-size: 24px;
+      }
 
       .iassist-file-icon-pdf {
         mask: url($image-prefix + "icon-pdf.svg") no-repeat center center;
@@ -239,7 +258,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         padding-inline-start: 5px;
         line-height: 22px;
         color: #b1b2b3;
-        width: 120px;
+        width: 120px !important;
         font-weight: 500;
         font-size: 12px;
       }
