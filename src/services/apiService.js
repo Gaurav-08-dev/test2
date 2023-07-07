@@ -96,13 +96,14 @@ async function handleHardReload(url) {
     // window.location.href = url;
     // // // This is to ensure reload with url's having '#'
     // window.location.reload();
-    // const headElement = document.getElementsByTagName('head')[0];
+    const headElement = document.getElementsByTagName('head')[0];
 
     const iAssistHmtl = document.getElementById("iassist-html")
     iAssistHmtl.src += `?t= ${new Date().getTime()}`;
-    window.location.reload();
+    
    
-    // headElement.append(scriptTag)}
+    headElement.append(iAssistHmtl)
+    window.location.reload();
 }
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
