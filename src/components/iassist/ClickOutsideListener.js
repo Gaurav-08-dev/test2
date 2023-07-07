@@ -18,6 +18,7 @@ export default class ClickOutsideListener extends React.Component {
 
 
     isClickedOutside(e) {
+
         if(!this.domRef.current.contains(e.target)){
             return true;
         }

@@ -205,6 +205,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
 
         const platform = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'platform');
+
         const unReadFlag = unRead.current ? '&unread=true' : '&unread=false'
         const readFlag = readCheckBoxStatus.current ? '&read=true' : '&read=false'
 
@@ -264,7 +265,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         sessionStorage.removeItem(Constants.SITE_PREFIX_CLIENT + 'filterValue');
     }
 
-    const getFilterValueFromSession = () => {
+    const  getFilterValueFromSession = async () => {
 
         const getFilterValue = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'filterValue');
 
@@ -298,6 +299,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                 dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, ...filterValue?.readUnreadStatus } })
                 retainedStatus = { ...filterValue.readUnreadStatus };
+
 
             }
 
@@ -417,7 +419,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         setDisableStatusButton(true);
 
         if ((tabData === 'open' && (filter || searchQuery || allTopics.current.length === 0 || pageNumber > 1)) || (tabData === 'resolved' && (filter || searchQuery || allTopics_resolved.current.length === 0 || pageNumber_resolved > 1))) {
-            console.log("inside if", searchQuery)
 
             setShowLoader(true);
         }
@@ -511,7 +512,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                 // setUpdateApi(prev => !prev);
 
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
 
@@ -634,7 +635,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                 setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
 
@@ -667,7 +668,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             })
             .catch(err => {
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
     }
@@ -733,7 +734,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     const showUnreadNotification = (id) => {
 
-        const unreadFlag = unReadList.current.filter(read => {
+        let unReadListTemp= state.statusTab === 'open'?unReadList.current:unReadList_resolved.current
+
+        const unreadFlag = unReadListTemp.filter(read => {
             return read.topic_id === id
 
         })
@@ -857,7 +860,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                 setShowLoader(false);
 
-                alertService.showToast('error', err.msg);
+                // alertService.showToast('error', err.msg);
 
             });
 
@@ -974,10 +977,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     }
 
     useEffect(() => {
+        getFilterValueFromSession()
 
         const TicketTypeInMemory = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'tickettype'))
 
         ticketTypeList.current = TicketTypeInMemory === null || undefined ? [] : TicketTypeInMemory;
+
 
         unRead.current = retainedStatus.unread;
         readCheckBoxStatus.current = retainedStatus.read;
@@ -1028,7 +1033,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             conatinerWrapper[0].style.maxHeight = '92.5%';
         }
 
-        getFilterValueFromSession()
 
         const data = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'ticketData'));
 
@@ -1050,7 +1054,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
 
             // if (!ticketResult || ticketResult.length === 0 || ticketResult?.message || JSON.stringify(ticketResult) === '{}') getTopicsBasedOnFilter('', 1);
-            else setDataFetchedForRendering(ticketResult, current_page_number);
+            // else 
+            setDataFetchedForRendering(ticketResult, current_page_number);
 
             getTopicsBasedOnFilter()
         }
@@ -1075,14 +1080,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
             const home = document.getElementById('iassist-panel');
 
+            // if (event.target.nodeName?.toLowerCase() === 'grammarly-popups') { // * handle grammarly plugin
+            //     return;
+            // }
+            
             if (state.topicClick) {
                 return;
             }
-            if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) {
+            if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) { 
                 iAssistOutsideClick = true;
-                closePanes();
-                clearData();
-
+            //     closePanes();
+            //     clearData();
             }
 
         })

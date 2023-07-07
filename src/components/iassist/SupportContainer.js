@@ -18,14 +18,12 @@ const SupportContainer = ({logOut, setLoader}) => {
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    // const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     const checkApptype = useRef(isElectron());
-    // const [configData, setConfigData] = useState('');
     const [configLoader, setConfigLoader] = useState(false);
 
-    const getConfigDetails = async (type) => {
+    const getConfigDetails = async () => {
 
-        // app_id=${AppId.current}
+
         setConfigLoader(true);
 
         if (AppId.current) {
@@ -112,7 +110,6 @@ const SupportContainer = ({logOut, setLoader}) => {
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
                 if (checkApptype.current) {
-
                     setOpenSupport(true);
                     setLoader(false);
                 }
@@ -168,16 +165,9 @@ const SupportContainer = ({logOut, setLoader}) => {
 
     useEffect(() => {
 
-
-        // const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        // const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
-
-        // if (prevAppId !== AppId.current || !configDetails) {
         if (localStorage.length) {
             getConfigDetails();
         }
-
-        
 
         return (() => {
 

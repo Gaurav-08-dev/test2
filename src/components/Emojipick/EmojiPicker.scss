@@ -1,0 +1,251 @@
+$analysis_image_path: "./Icons/";
+
+.emoji-picker-selector-container {
+  position: absolute;
+  bottom: 37px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 350px;
+  padding: 15px 10px;
+  overflow: auto;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  background-color: #ffffff;
+  z-index: 1;
+
+  &.dark {
+    background-color: #000000;
+
+    .emoji-search-skin {
+      input {
+        background-color: #515151;
+        color: #ffffff;
+      }
+    }
+
+  }
+
+  .emoji-search-skin {
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    input {
+      width: 100%;
+      height: 35px;
+      background: #f6f6f6;
+      outline: none;
+      border: none;
+      border-radius: 2px;
+      font-size: 1rem;
+      padding: 0 10px;
+      color: #858585;
+    }
+
+    .skin-tone-range-container {
+      transition: all 0.3s ease-in-out;
+      display: flex;
+      gap: 10px;
+      padding: 4px;
+      position: relative;
+
+      &.close {
+        width: 30px;
+      }
+
+      .skin {
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+
+        &.hide-tone {
+          display: none;
+        }
+      }
+      .skin0 {
+        background-color: #ffd225;
+
+        &.active-skin {
+          display: block !important;
+        }
+      }
+      .skin1 {
+        background-color: #fde8d2;
+
+        &.active-skin {
+          z-index: 1;
+          transition: all 0.3s ease-in-out;
+          display: block !important;
+        }
+      }
+      .skin2 {
+        background-color: #ffdfbd;
+
+        &.active-skin {
+          z-index: 1;
+          transition: all 0.3s ease-in-out;
+          display: block !important;
+        }
+      }
+      .skin3 {
+        background-color: #e9c197;
+
+        &.active-skin {
+          z-index: 1;
+          transition: all 0.3s ease-in-out;
+          display: block !important;
+        }
+      }
+      .skin4 {
+        background-color: #c88e62;
+
+        &.active-skin {
+          z-index: 1;
+          transition: all 0.3s ease-in-out;
+          display: block !important;
+        }
+      }
+      .skin5 {
+        background-color: #a86637;
+
+        &.active-skin {
+          z-index: 1;
+          transition: all 0.3s ease-in-out;
+          display: block !important;
+        }
+      }
+    }
+  }
+
+  .emoji-type-tab {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    width: 100%;
+
+    .btn-history {
+        display: block;
+        width: 1.5rem;
+        height: 1.5rem;
+        -webkit-mask: url($analysis_image_path + "history.svg") no-repeat center
+          center;
+        mask: url($analysis_image_path + "history.svg") no-repeat center center;
+        -webkit-mask-size: 1.5rem 1.5rem;
+        mask-size: 1.5rem 1.5rem;
+        background-color: #515151;
+    }
+
+    .btn-smiley {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      -webkit-mask: url($analysis_image_path + "smiley.svg") no-repeat center
+        center;
+      mask: url($analysis_image_path + "smiley.svg") no-repeat center center;
+      -webkit-mask-size: 1.5rem 1.5rem;
+      mask-size: 1.5rem 1.5rem;
+      background-color: #515151;
+    }
+
+    .btn-animal {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      -webkit-mask: url($analysis_image_path + "animal.svg") no-repeat center
+        center;
+      mask: url($analysis_image_path + "animal.svg") no-repeat center center;
+      -webkit-mask-size: 1.5rem 1.5rem;
+      mask-size: 1.5rem 1.5rem;
+      background-color: #9b9b9b;
+    }
+
+    .btn-travel {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      -webkit-mask: url($analysis_image_path + "travel.svg") no-repeat center
+        center;
+      mask: url($analysis_image_path + "travel.svg") no-repeat center center;
+      -webkit-mask-size: 1.5rem 1.5rem;
+      mask-size: 1.5rem 1.5rem;
+      background-color: #9b9b9b;
+    }
+
+    .btn-activity {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      -webkit-mask: url($analysis_image_path + "activities.svg") no-repeat
+        center center;
+      mask: url($analysis_image_path + "activities.svg") no-repeat center center;
+      -webkit-mask-size: 1.5rem 1.5rem;
+      mask-size: 1.5rem 1.5rem;
+      background-color: #9b9b9b;
+    }
+
+    .btn-object {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      -webkit-mask: url($analysis_image_path + "object.svg") no-repeat center
+        center;
+      mask: url($analysis_image_path + "object.svg") no-repeat center center;
+      -webkit-mask-size: 1.5rem 1.5rem;
+      mask-size: 1.5rem 1.5rem;
+      background-color: #9b9b9b;
+    }
+
+    .btn-symbol {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      -webkit-mask: url($analysis_image_path + "symbol.svg") no-repeat center
+        center;
+      mask: url($analysis_image_path + "symbol.svg") no-repeat center center;
+      -webkit-mask-size: 1.5rem 1.5rem;
+      mask-size: 1.5rem 1.5rem;
+      background-color: #9b9b9b;
+    }
+
+    .btn-active {
+      background-color: rgb(126, 126, 255);
+    }
+  }
+
+  .emoji-picker-selector {
+    width: 100%;
+    height: 300px;
+    overflow: auto;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
+    grid-gap: 8px;
+    justify-items: start;
+    grid-auto-rows: 2rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .emoji {
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      overflow: hidden;
+      -webkit-user-select: none; /* Safari */
+      -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard syntax */
+
+      &:hover {
+        background-color: #b7ced8c5;
+      }
+    }
+  }
+}
