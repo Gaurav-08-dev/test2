@@ -86,16 +86,27 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
 }
 
 async function handleHardReload(url) {
-    await fetch(url, {
-        headers: {
-            Pragma: 'no-cache',
-            Expires: '-1',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
-    });
-    window.location.href = url;
-    // // This is to ensure reload with url's having '#'
-    window.location.reload();
+    // await fetch(url, {
+    //     headers: {
+    //         Pragma: 'no-cache',
+    //         Expires: '-1',
+    //         'Cache-Control': 'no-cache, no-store, must-revalidate',
+    //     },
+    // });
+    // window.location.href = url;
+    // // // This is to ensure reload with url's having '#'
+    // window.location.reload();
+    const headElement = document.getElementsByTagName('head')[0];
+
+    const iAssistHmtl = document.getElementById("iassist-html")
+    const iAssistCss = document.getElementById("iassist-css")
+    headElement.removeChild(iAssistHmtl);
+    headElement.removeChild(iAssistCss);
+    const scriptTag = document.createElement("script")
+    scriptTag.id = "iassist-html";
+    scriptTag.src = 'https://gaurav-08-dev.github.io/test2/index.js';
+   
+    headElement.append(scriptTag)
 }
 
 const APIService = {
