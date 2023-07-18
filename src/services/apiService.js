@@ -115,7 +115,7 @@ const updateScriptTag=()=>{
     // const cssLink=document.getElementById("iassist-css")
 
     // if(cssLink) cssLink.parentNode.removeChild(cssLink)
-    oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
+    // oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
     // const headElement=document.getElementsByTagName("head")[0]
     // if(oldScriptTag) headElement.removeChild(oldScriptTag)
     // headElement.removeChild(cssLink)
