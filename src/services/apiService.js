@@ -124,8 +124,8 @@ const updateScriptTag = () => {
 
         const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
 
-        console.log("oldScript", oldScript)
         if (oldScript) {
+            console.log("oldScript", oldScript)
             document.head.removeChild(oldScript);
         }
 
