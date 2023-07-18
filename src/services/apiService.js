@@ -112,9 +112,9 @@ const updateScriptTag=()=>{
     newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
     // oldScriptTag.src + `?version=${Constants.IASSIST_SITE_VERSION}`;
     // if(oldScriptTag) oldScriptTag.id="no-use";
-    const cssLink=document.getElementById("iassist-css")
+    // const cssLink=document.getElementById("iassist-css")
 
-    if(cssLink) cssLink.parentNode.removeChild(cssLink)
+    // if(cssLink) cssLink.parentNode.removeChild(cssLink)
     oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
     // const headElement=document.getElementsByTagName("head")[0]
     // if(oldScriptTag) headElement.removeChild(oldScriptTag)
