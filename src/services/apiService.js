@@ -127,7 +127,7 @@ const updateScriptTag = () => {
 
         if (oldScript) {
             console.log("oldScript", oldScript)
-            document.head.removeChild(oldScript);
+            // document.head.removeChild(oldScript);
             console.log("oldScript --- after", oldScript)
         }
 
