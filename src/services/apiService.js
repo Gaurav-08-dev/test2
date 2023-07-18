@@ -118,8 +118,6 @@ const updateScriptTag = () => {
     newScript.id="iassist-html"
 
 
-    const linkTag=document.getElementById('iassist-css');
-    if(linkTag) document.head.removeChild(linkTag)
     
     // newScript.onload=()=>{
         
@@ -129,6 +127,8 @@ const updateScriptTag = () => {
             console.log("oldScript", oldScript)
             document.head.removeChild(oldScript);
             console.log("oldScript --- after", oldScript)
+            const linkTag=document.getElementById('iassist-css');
+            if(linkTag) document.head.removeChild(linkTag)
         }
         
         document.head.appendChild(newScript);
