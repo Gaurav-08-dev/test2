@@ -86,23 +86,39 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
     return options;
 }
 
- async function handleSitesListToggle(url) {
-    // if (this.user.organization_id > 1) return;
-    // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
+//  async function handleSitesListToggle(url) {
+//     // if (this.user.organization_id > 1) return;
+//     // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
 
-    await fetch(url, {
-      headers: {
-          Pragma: 'no-cache',
-          Expires: '-1',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-  });
-  window.location.href = url;
-  // This is to ensure reload with url's having '#'
-  window.location.reload();
-  }
+//     await fetch(url, {
+//       headers: {
+//           Pragma: 'no-cache',
+//           Expires: '-1',
+//           'Cache-Control': 'no-cache, no-store, must-revalidate',
+//       },
+//   });
+//   window.location.href = url;
+//   // This is to ensure reload with url's having '#'
+//   window.location.reload();
+//   }
 
+const updateScriptTag=()=>{
 
+    const oldScriptTag=document.getElementById("iassist-html");
+    const newScriptTag=document.createElement("script")
+    newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
+    newScriptTag.id='iassist-html'
+    // oldScriptTag.id;
+    newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
+    // oldScriptTag.src + `?version=${Constants.IASSIST_SITE_VERSION}`;
+    // if(oldScriptTag) oldScriptTag.id="no-use";
+    
+    // const cssLink=document.getElementById("iassist-css")
+    const headElement=document.getElementsByTagName("head")[0]
+    // headElement.removeChild(cssLink)
+    headElement.append(newScriptTag)
+    // if(oldScriptTag) headElement.removeChild(oldScriptTag)
+}
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
         let options = getAPIRequestOptions(req_method, authHeader, data, controller);
@@ -232,9 +248,11 @@ const APIService = {
                     if (response.status === 207) {
                         // Special check - 207 indicates that a New version of app is available 
                         // so in this case, force reload the browser so that user gets the latest version of app
-                        handleSitesListToggle(window.location.href)
+                        // handleSitesListToggle(window.location.href)
                         // window.location.reload();
-                        return {};
+                        // return {};
+
+                        updateScriptTag()
                     }
 
                     return response.json()
