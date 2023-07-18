@@ -115,9 +115,9 @@ const updateScriptTag=()=>{
     
     // const cssLink=document.getElementById("iassist-css")
     const headElement=document.getElementsByTagName("head")[0]
+    if(oldScriptTag) headElement.removeChild(oldScriptTag)
     // headElement.removeChild(cssLink)
     headElement.append(newScriptTag)
-    // if(oldScriptTag) headElement.removeChild(oldScriptTag)
 }
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
