@@ -119,19 +119,19 @@ const updateScriptTag = () => {
 
 
     const linkTag=document.getElementById('iassist-css');
-    document.head.removeChild(linkTag)
+    if(linkTag) document.head.removeChild(linkTag)
     
     // newScript.onload=()=>{
-        document.head.appendChild(newScript);
-
+        
         const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
-
+        
         if (oldScript) {
             console.log("oldScript", oldScript)
             document.head.removeChild(oldScript);
             console.log("oldScript --- after", oldScript)
         }
-
+        
+        document.head.appendChild(newScript);
     // }
     // const oldScriptTag=document.getElementById("iassist-html");
     
