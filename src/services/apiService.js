@@ -109,7 +109,7 @@ const updateScriptTag=()=>{
         console.log(oldScriptTag)
         const newScriptTag=document.createElement("script")
         newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
-        newScriptTag.id='iassist-html'
+        // newScriptTag.id='iassist-html'
         // oldScriptTag.id;
         newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
         newScriptTag.async=true;
