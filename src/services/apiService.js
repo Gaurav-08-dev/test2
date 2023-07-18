@@ -107,17 +107,19 @@ const updateScriptTag=()=>{
     console.log(oldScriptTag)
     const newScriptTag=document.createElement("script")
     newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
-    newScriptTag.id='iassist-html'
+    // newScriptTag.id='iassist-html'
     // oldScriptTag.id;
     newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
     // oldScriptTag.src + `?version=${Constants.IASSIST_SITE_VERSION}`;
     // if(oldScriptTag) oldScriptTag.id="no-use";
-    
-    // const cssLink=document.getElementById("iassist-css")
-    const headElement=document.getElementsByTagName("head")[0]
-    if(oldScriptTag) headElement.removeChild(oldScriptTag)
+    const cssLink=document.getElementById("iassist-css")
+
+    if(cssLink) cssLink.parentNode.removeChild(cssLink)
+    oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
+    // const headElement=document.getElementsByTagName("head")[0]
+    // if(oldScriptTag) headElement.removeChild(oldScriptTag)
     // headElement.removeChild(cssLink)
-    headElement.append(newScriptTag)
+    // headElement.append(newScriptTag)
 }
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
