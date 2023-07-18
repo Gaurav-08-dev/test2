@@ -102,13 +102,20 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
 //   }
 
 const updateScriptTag = () => {
-
+    
+    
     let new_version = Constants.IASSIST_SITE_VERSION.split('');
     new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1
     new_version = new_version.join('')
+
+    const newSrc='https://iassist-dev.bydata.com/script/sight-dev/index.js' + '?v=' + new_version;
+
+    console.log("query selector", document.querySelector(document.querySelector(`script[src=${newSrc}]`)))
+    if(document.querySelector(document.querySelector(`script[src=${newSrc}]`))) return;
     
     const newScript = document.createElement('script');
     newScript.src = 'https://iassist-dev.bydata.com/script/sight-dev/index.js' + '?v=' + new_version;
+
 
 
     const linkTag=document.getElementById('iassist-css');
