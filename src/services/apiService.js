@@ -101,32 +101,30 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
 //   window.location.reload();
 //   }
 
-const updateScriptTag=()=>{
+const updateScriptTag = () => {
 
-    try{
-
-        const oldScriptTag=document.getElementById("iassist-html");
-        console.log(oldScriptTag)
-        const newScriptTag=document.createElement("script")
-        newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
-        // newScriptTag.id='iassist-html'
-        // oldScriptTag.id;
-        newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
-        newScriptTag.async=true;
-        // oldScriptTag.src + `?version=${Constants.IASSIST_SITE_VERSION}`;
-        // if(oldScriptTag) oldScriptTag.id="no-use";
-        // const cssLink=document.getElementById("iassist-css")
+    let new_version = Constants.IASSIST_SITE_VERSION.split('');
+    new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1
+    new_version = new_version.join('')
     
-        // if(cssLink) cssLink.parentNode.removeChild(cssLink)
-        const headElement=document.getElementsByTagName("head")[0]
-        headElement.append(newScriptTag)
-        oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
-        // if(oldScriptTag) headElement.removeChild(oldScriptTag)
-        // headElement.removeChild(cssLink)
+    const newScript = document.createElement('script');
+    newScript.src = 'https://iassist-dev.bydata.com/script/sight-dev/index.js' + '?v=' + new_version;
+
+
+    const linkTag=document.getElementById('iassist-css');
+    document.head.removeChild(linkTag)
+    
+    newScript.onload=()=>{
+
+        const oldScript = document.querySelector('script[src="https://iassist-dev.bydata.com/script/sight-dev/index.js"]') || document.querySelector(`script[src="https://iassist-dev.bydata.com/script/sight-dev/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+        if (oldScript) {
+            document.head.removeChild(oldScript);
+        }
+
     }
-    catch(e){
-        console.log(e)
-    }
+    // const oldScriptTag=document.getElementById("iassist-html");
+    
+    document.head.appendChild(newScript);
 }
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
