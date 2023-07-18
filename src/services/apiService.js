@@ -103,24 +103,30 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
 
 const updateScriptTag=()=>{
 
-    const oldScriptTag=document.getElementById("iassist-html");
-    console.log(oldScriptTag)
-    const newScriptTag=document.createElement("script")
-    newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
-    newScriptTag.id='iassist-html'
-    // oldScriptTag.id;
-    newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
-    newScriptTag.async=true;
-    // oldScriptTag.src + `?version=${Constants.IASSIST_SITE_VERSION}`;
-    if(oldScriptTag) oldScriptTag.id="no-use";
-    // const cssLink=document.getElementById("iassist-css")
+    try{
 
-    // if(cssLink) cssLink.parentNode.removeChild(cssLink)
-    // oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
-    const headElement=document.getElementsByTagName("head")[0]
-    // if(oldScriptTag) headElement.removeChild(oldScriptTag)
-    // headElement.removeChild(cssLink)
-    headElement.append(newScriptTag)
+        const oldScriptTag=document.getElementById("iassist-html");
+        console.log(oldScriptTag)
+        const newScriptTag=document.createElement("script")
+        newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
+        newScriptTag.id='iassist-html'
+        // oldScriptTag.id;
+        newScriptTag.src="https://gaurav-08-dev.github.io/test2/index.js?version=1.1.6"
+        newScriptTag.async=true;
+        // oldScriptTag.src + `?version=${Constants.IASSIST_SITE_VERSION}`;
+        // if(oldScriptTag) oldScriptTag.id="no-use";
+        // const cssLink=document.getElementById("iassist-css")
+    
+        // if(cssLink) cssLink.parentNode.removeChild(cssLink)
+        // oldScriptTag.parentNode.replaceChild(newScriptTag,oldScriptTag)
+        const headElement=document.getElementsByTagName("head")[0]
+        headElement.append(newScriptTag)
+        if(oldScriptTag) headElement.removeChild(oldScriptTag)
+        // headElement.removeChild(cssLink)
+    }
+    catch(e){
+        console.log(e)
+    }
 }
 const APIService = {
     apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
