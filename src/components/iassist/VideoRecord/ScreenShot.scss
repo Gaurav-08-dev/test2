@@ -1,0 +1,116 @@
+.main-img-container {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+
+    .main-img {
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }
+
+    .container {
+        position: relative;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #00000099;
+        /* opacity: 0.6; */
+
+        .resizeable {
+            position: absolute;
+            border: 2px dashed #ffffff;
+            width: 200px;
+            height: 200px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 180px;
+            min-height: 180px;
+            background-color: transparent;
+
+            .screenshot-btn-container {
+                position: absolute;
+                display: flex;
+                gap: 20px;
+                min-width: 140px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .resizer {
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                border: 1px solid #ffffff;
+                background-color: transparent;
+
+            }
+
+            .resizer-r {
+                cursor: col-resize;
+                right: -6px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .resizer-t {
+                cursor: row-resize;
+                left: 50%;
+                top: -6px;
+                transform: translateX(-50%);
+            }
+
+            .resizer-b {
+                cursor: row-resize;
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: -6px;
+            }
+
+            .resizer-l {
+                cursor: col-resize;
+                left: -6px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .resizer-t-r {
+                cursor: ne-resize;
+                top: -6px;
+                right: -6px;
+            }
+
+            .resizer-t-l {
+                cursor: nw-resize;
+                top: -6px;
+                left: -6px;
+            }
+
+            .resizer-b-r {
+                cursor: nw-resize;
+                bottom: -6px;
+                right: -6px;
+            }
+
+            .resizer-b-l {
+                cursor: ne-resize;
+                bottom: -6px;
+                left: -6px;
+            }
+        }
+    }
+}

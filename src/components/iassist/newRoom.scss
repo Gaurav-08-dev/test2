@@ -70,7 +70,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     top: 30px;
     position: absolute;
   }
-
+  user-select: text !important;
   .iassist-title-widget {
     font-size: 11px;
     padding: 10px;
@@ -80,6 +80,134 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     z-index: 1;
     word-break: break-word;
 
+    // .iassist-edit-btn {
+    //   display: flex;
+    //   width: 100%;
+    //   position: relative;
+    //   right: 10px;
+    //   justify-content: flex-end;
+    //   height: 18px;
+    //   gap: 10px;
+    //   margin: 5px;
+
+    //   .iassist-save {
+    //     display: flex;
+    //     background: #23c968;
+    //     border-radius: 2px;
+    //     &::before {
+    //       content: "";
+    //       mask: url($image-prefix + "icon-run.svg") no-repeat center
+    //         center;
+    //       -webkit-mask: url($image-prefix + "icon-run.svg") no-repeat
+    //         center center;
+    //       mask-size: 10px;
+    //       -webkit-mask-size: 10px;
+    //       background: #000;
+    //       width: 10px;
+    //       height: 10px;
+    //       margin-left: -5px;
+    //       padding: 4px;
+
+    //     }
+    //   }
+
+    //   .iassist-cancel {
+    //     display: flex;
+    //     background-color: #fff;
+    //     border-radius: 2px;
+    //     &::before {
+    //       content: "";
+    //       mask: url($image-prefix + "icon-close.svg") no-repeat center
+    //         center;
+    //       -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat
+    //         center center;
+    //       mask-size: 10px;
+    //       -webkit-mask-size: 10px;
+
+    //       width: 10px;
+    //       height: 10px;
+    //       background-color: #000;
+    //       margin-left: -5px;
+    //       padding: 4px;
+    //     }
+    //   }
+    // }
+    .iassist-edit-btn {
+      display: flex;
+      align-items: end;
+      width: 100%;
+      justify-content: end;
+      gap: 10px;
+      margin-top: 10px;
+      .iassist-save {
+        background-color: #02bb5b !important;
+      }
+
+      .iassist-cancel {
+        background-color: #fff !important;
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        width: fit-content;
+        height: 16px;
+        position: relative;
+        cursor: pointer;
+        border: none;
+        // background: #ffffff 0% 0% no-repeat padding-box;
+        border-radius: 2px;
+        padding: 0 5px 0 0;
+
+        span {
+          display: flex;
+          margin-right: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 16px;
+          height: 16px;
+          background: #00000033;
+        }
+        .iassist-save-icon {
+          &::before {
+            content: "";
+            mask: url($image-prefix + "icon-save.svg") no-repeat center center;
+            -webkit-mask: url($image-prefix + "icon-save.svg") no-repeat center
+              center;
+            mask-size: 10px;
+            -webkit-mask-size: 10px;
+
+            width: 10px;
+            height: 10px;
+            background-color: #000;
+            // margin: 3px 0;
+            // margin-right: 3px;
+          }
+        }
+
+        .iassist-cancel-icon {
+          // display: flex;
+
+          &::before {
+            content: "";
+            mask: url($image-prefix + "icon-close-lite.svg") no-repeat center
+              center;
+            -webkit-mask: url($image-prefix + "icon-close-lite.svg") no-repeat
+              center center;
+            mask-size: 9px;
+            -webkit-mask-size: 9px;
+
+            width: 9px;
+            height: 9px;
+            background-color: #000;
+            // margin: 4px 0;
+            // margin-right: 3px;
+          }
+        }
+      }
+    }
+
     .iassist-text-box {
       width: 100%;
       background: #000;
@@ -88,30 +216,103 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       color: #fff;
     }
     #iassist-edit-ticket {
-      .iassist-field {
-        // border: 1px solid #87929d;
-        border-radius: 2px;
-        display: flex;
-        align-items: center;
-        background-color: #000;
+      padding-bottom: 5px;
 
-        input {
-          padding: 0 10px;
-          line-height: 28px;
-          width: 87%;
-          background-color: transparent;
-          border: none;
-          box-shadow: none;
-          color: #fff;
-          font-size: 11px;
+      .iassist-field-w-label {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 0 0 15px 0;
+        width: 100%;
+
+        > label {
+          color: #b1b2b3;
+          font-weight: 500;
+          margin-bottom: 5px;
+
+          .mandatory-mark {
+            color: #b1b2b3;
+          }
+        }
+        .field {
+          border: 1px solid #87929d;
+          border-radius: 2px;
+          display: flex;
+          align-items: center;
+
+          input {
+            padding: 0 10px;
+            // line-height: 28px;
+            width: 87%;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            color: #fff;
+            font-size: 11px;
+          }
+
+          .max-length {
+            line-height: 28px;
+            padding: 0 10px;
+            color: rgba(255, 255, 255, 0.3);
+          }
+
+          &.textarea {
+            height: 60px;
+            textarea {
+              background: transparent;
+              width: 100%;
+              height: 60px;
+              padding: 6px 10px 20px;
+              resize: none;
+              border: none;
+              border-radius: 2px;
+              color: #fff;
+              line-height: 20px;
+              min-height: 0px !important;
+              font-family: sans-serif;
+
+              ::-webkit-input-placeholder {
+                /* Chrome/Opera/Safari */
+                padding: 10px;
+              }
+            }
+            .max-length {
+              position: absolute;
+              bottom: 5px;
+              right: 0;
+              line-height: 14px;
+            }
+          }
         }
 
-        .iassist-max-length {
-          line-height: 28px;
-          padding: 0 10px;
-          color: rgba(255, 255, 255, 0.3);
+        .field-block {
+          .field-control {
+            width: 100%;
+            padding: 0;
+            line-height: 28px;
+            color: #fff;
+            border-radius: 2px;
+            background: transparent;
+            border: none;
+
+            :focus {
+              outline: none;
+            }
+          }
+        }
+
+        textarea.field-control {
+          height: 80px;
+          line-height: 1.5;
+          display: block;
+          padding: 8px;
+          :focus {
+            outline: none;
+          }
         }
       }
+
       .steno-wrapper {
         .editor-fileList-wrapper,
         .steno-editor-main-wrapper {
@@ -137,6 +338,9 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       transition: 300ms all;
       background: #fff;
       margin: 1px 6px;
+      position: absolute;
+      right: 5px;
+      cursor: pointer;
     }
     .name {
       padding: 4px 0;
@@ -174,6 +378,55 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     flex-direction: column;
     justify-content: flex-end;
     position: relative;
+
+    .iassist-user-suggestion-container-edit {
+      position: absolute;
+      background: #222222 0% 0% no-repeat padding-box;
+      color: #fff;
+      border-radius: 5px;
+      // padding: 10px 0;
+      left: 12px;
+      border: 1px solid #2f3741;
+      max-height: 100px;
+      overflow-y: scroll;
+      z-index: 1;
+      bottom: 90px;
+      left: 75px;
+      li {
+        list-style-type: none;
+        font-size: 12px;
+        padding: 4px 10px;
+        &:hover {
+          border-radius: 3px;
+          background: #333333 0% 0% no-repeat padding-box;
+        }
+      }
+    }
+
+    .iassist-user-suggestion-container-edit-reply {
+      position: absolute;
+      background: #222222 0% 0% no-repeat padding-box;
+      color: #fff;
+      border-radius: 5px;
+      // padding: 10px 0;
+      left: 12px;
+      border: 1px solid #2f3741;
+      max-height: 65px;
+      overflow-y: scroll;
+      z-index: 1;
+      bottom: 44px;
+      left: 20px;
+      margin: 43px 0;
+      li {
+        list-style-type: none;
+        font-size: 12px;
+        padding: 4px 10px;
+        &:hover {
+          border-radius: 3px;
+          background: #333333 0% 0% no-repeat padding-box;
+        }
+      }
+    }
 
     .no-message-notification {
       position: absolute;
@@ -377,6 +630,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                 .steno-editor-main-wrapper {
                   #steno-editor {
                     width: 100% !important;
+                    padding: 8px 10px !important;
                   }
                 }
               }
@@ -435,6 +689,51 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                     font-weight: 500;
                     font-size: 12px;
                   }
+                  .wrapper-media-video {
+                    position: relative;
+                    max-width: 130px;
+                    max-height: 102px;
+                    audio {
+                      height: 28px;
+                    }
+                    video {
+                      width: 130px;
+                      height: 72px;
+                    }
+                    .wrapper-media-video-footer {
+                      display: flex;
+                      align-items: center;
+
+                      .iassist-deleted-file-icon {
+                        display: none;
+
+                        content: "Delete";
+                        width: 24px;
+                        height: 12px;
+                        background-color: #b1b2b3;
+                        transition: 300ms all;
+                        &:hover {
+                          background-color: #fff;
+                        }
+
+                        mask: url($image-prefix + "icon-delete.svg") no-repeat
+                          center center;
+                        -webkit-mask: url($image-prefix + "icon-delete.svg")
+                          no-repeat center center;
+                        mask-size: 11px;
+                        -webkit-mask-size: 11px;
+                      }
+                      .media-id {
+                        width: 110px;
+                      }
+                    }
+                    &:hover {
+                      .wrapper-media-video .iassist-icon-download,
+                      .iassist-deleted-file-icon {
+                        display: block;
+                      }
+                    }
+                  }
                   .wrapper-media {
                     position: relative;
                     height: 70px;
@@ -474,6 +773,19 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                         // background-color: #777777;
                         display: block;
                         margin: 0 7px;
+                      }
+                      .iassist-file-icon-video {
+                        mask: url($image-prefix + "iassist-icon-video.svg")
+                          no-repeat center center;
+                        -webkit-mask: url($image-prefix + "iassist-icon-video.svg")
+                          no-repeat center center;
+                      }
+
+                      .iassist-file-icon-audio {
+                        mask: url($image-prefix + "icon-audio.svg") no-repeat
+                          center center;
+                        -webkit-mask: url($image-prefix + "icon-audio.svg")
+                          no-repeat center center;
                       }
 
                       .iassist-file-icon-pdf {
@@ -786,6 +1098,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           min-width: 70px;
           border-radius: 2px;
           z-index: 1;
+          cursor: pointer;
 
           &:hover {
             cursor: pointer;
@@ -864,6 +1177,11 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
             }
             .reply-sub-wrapper {
               width: 100%;
+              position: relative;
+
+              .edit-sten {
+                position: relative;
+              }
               .content-reply {
                 font-size: 11px;
                 overflow-y: auto;
@@ -888,7 +1206,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                       }
                       video {
                         height: 36px;
-                        width: 82px;
+                        width: 47px;
                       }
 
                       video,
@@ -956,6 +1274,51 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                       }
                     }
 
+                    .wrapper-media-video {
+                      position: relative;
+                      max-width: 130px;
+                      max-height: 102px;
+                      video {
+                        width: 130px;
+                        height: 72px;
+                      }
+                      audio {
+                        height: 25px;
+                        width: 250px;
+                      }
+                      .wrapper-media-video-footer {
+                        display: flex;
+                        align-items: center;
+
+                        .media-id {
+                          width: 110px;
+                        }
+                        .iassist-deleted-file-icon {
+                          display: none;
+                          content: "Delete";
+                          width: 24px;
+                          height: 15px;
+                          background-color: #b1b2b3;
+                          transition: 300ms all;
+                          &:hover {
+                            background-color: #fff;
+                          }
+
+                          mask: url($image-prefix + "icon-delete.svg") no-repeat
+                            center center;
+                          -webkit-mask: url($image-prefix + "icon-delete.svg")
+                            no-repeat center center;
+                          mask-size: 11px;
+                          -webkit-mask-size: 11px;
+                        }
+                      }
+                      &:hover {
+                        .wrapper-media-video-footer .iassist-icon-download,
+                        .iassist-deleted-file-icon {
+                          display: block;
+                        }
+                      }
+                    }
                     .wrapper-media-doc {
                       // position: relative;
                       // height: 90px;
@@ -990,6 +1353,26 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                           content: "";
                           width: 40px;
                           height: 54px;
+                        }
+
+                        .iassist-file-icon-video {
+                          mask: url($image-prefix + "iassist-icon-video.svg")
+                            no-repeat center center;
+                          -webkit-mask: url($image-prefix + "iassist-icon-video.svg")
+                            no-repeat center center;
+
+                          mask-size: 24px;
+                          -webkit-mask-size: 24px;
+                        }
+
+                        .iassist-file-icon-audio {
+                          mask: url($image-prefix + "icon-audio.svg") no-repeat
+                            center center;
+                          -webkit-mask: url($image-prefix + "icon-audio.svg")
+                            no-repeat center center;
+
+                          mask-size: 24px;
+                          -webkit-mask-size: 24px;
                         }
 
                         .iassist-file-icon-pdf {
@@ -1093,7 +1476,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                         height: 24px;
                         background-color: #b1b2b3;
                         transition: 300ms all;
-  
+
                         mask: url($image-prefix + "icon-delete.svg") no-repeat
                           center center;
                         -webkit-mask: url($image-prefix + "icon-delete.svg")
@@ -1112,7 +1495,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                       align-items: center;
                       line-height: 15px;
                       color: #b1b2b3;
-  
+
                       font-weight: 500;
                       font-size: 12px;
                     }
@@ -1130,6 +1513,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
             background: #ffffff;
             font-size: 11px;
             border-radius: 3px;
+            cursor: pointer;
             li {
               list-style: none;
               color: #000;
@@ -1188,18 +1572,48 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
                 center center;
               mask: url($image-prefix + "icon-plus.svg") no-repeat center center;
               min-width: 12px;
-              width: 17px;
-              height: 17px;
+              width: 15px;
+              height: 15px;
               background-color: #b1b2b3;
               display: block;
               border-radius: 50%;
+              margin-bottom: 2px;
             }
+          }
+          .audio-controls {
+            position: absolute;
+            z-index: 1;
+            top: 7px;
+            left: 21px;
           }
         }
         .reply-chat-wrapper {
           background-color: #000;
           border-radius: 2px;
           width: 100%;
+
+          .iassist-user-suggestion-container-reply {
+            position: absolute;
+            background: #222222 0% 0% no-repeat padding-box;
+            color: #fff;
+            border-radius: 5px;
+            border: 1px solid #2f3741;
+            // padding: 10px 0;
+            left: 12px;
+            max-height: 120px;
+            overflow-y: scroll;
+            z-index: 1;
+            bottom: 35px;
+            li {
+              list-style-type: none;
+              font-size: 12px;
+              padding: 4px 10px;
+              &:hover {
+                border-radius: 3px;
+                background: #333333 0% 0% no-repeat padding-box;
+              }
+            }
+          }
 
           .steno-wrapper {
             .editor-fileList-wrapper,
@@ -1209,8 +1623,8 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
               #steno-editor {
                 width: 305px !important;
                 border-radius: 2px;
-                padding-left: 10px !important;
-                padding-right: 10px !important;
+                padding: 6px 10px 6px 30px !important;
+                // padding: 6px 10px !important;
               }
             }
           }
@@ -1222,8 +1636,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
           #play {
             top: 41% !important;
             left: 46% !important;
-           }
-
+          }
         }
       }
       .topic-filter-search-iassist {
@@ -1290,6 +1703,29 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
     align-items: center;
     justify-content: center;
     top: 15%;
+  }
+
+  .iassist-user-suggestion-container {
+    position: absolute;
+    background: #222222 0% 0% no-repeat padding-box;
+    color: #fff;
+    border-radius: 5px;
+    // padding: 10px 0;
+    left: 12px;
+    max-height: 120px;
+    border: 1px solid #2f3741;
+    overflow-y: scroll;
+    z-index: 1;
+    bottom: 75px;
+    li {
+      list-style-type: none;
+      font-size: 12px;
+      padding: 4px 10px;
+      &:hover {
+        border-radius: 3px;
+        background: #333333 0% 0% no-repeat padding-box;
+      }
+    }
   }
 
   .iassist-message {
@@ -1374,6 +1810,34 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       align-items: center;
       padding: 5px 10px 6px;
       position: relative;
+
+      .iassist-emoji-picker-icon {
+        position: absolute;
+        display: block;
+        content: "";
+        width: 24px;
+        height: 16px;
+        transition: 300ms all;
+        background-color: #b1b2b3;
+        mask: url("../Emojipick/Icons/smiley.svg") no-repeat center center;
+        -webkit-mask: url("../Emojipick/Icons/smiley.svg") no-repeat center
+          center;
+        mask-size: 14px;
+        -webkit-mask-size: 16px;
+        z-index: 1;
+        top: 6px;
+        left: 56px;
+
+        &:hover {
+          background-color: #fff;
+        }
+      }
+      .audio-controls {
+        position: absolute;
+        z-index: 1;
+        top: 5px;
+        left: 32px;
+      }
       .screen-wrapper {
         background: #f4f4f4;
         color: #000;
@@ -1524,15 +1988,21 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
       }
     }
 
-    .wrap-record{
-      .wrapper-media{
+    .wrap-record {
+      .wrapper-media {
         margin-left: 30px !important;
         margin-bottom: 10px !important;
+
+        .iassist-icon-wrapper {
+          audio {
+            height: 28px;
+          }
+        }
       }
-       #play {
+      #play {
         top: 41% !important;
         left: 46% !important;
-       }
+      }
     }
   }
 }

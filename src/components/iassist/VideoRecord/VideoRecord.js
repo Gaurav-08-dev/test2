@@ -6,9 +6,10 @@ import './VideoRecord.scss';
 import APIService from "../../../services/apiService";
 import * as Constants from '../../Constants';
 import { getTokenClient } from "../../../utils/Common";
+import ScreenshotComponent from "./ScreenShotSomponent";
 
 
-let  ctx, startX, startY, endX, endY, offsetX, offsetY, down = false;
+let  ctx, startX, startY, endX, endY, offsetX, offsetY, down = false, selectedText = -1;
 let undoStack = [], redoStack = [];
 let selectMedia;
 let backspace = false;
@@ -46,13 +47,45 @@ const VideoRecord = ({ save, close, message }) => {
 
     const [drawArrow, setDrawArrow] = useState(false);
 
+    const drawArrowTest = useRef(false)
+
     const [getDataURL, setGetDataURL] = useState('');
 
     const [textBoxValue, setTextBoxValue] = useState('');
 
-    // const [videoText, setVideoText] = useState('');
+    const [isDragging, setIsDragging] = useState(false);
 
-    // const [recordedVidUrl, setRecordedVidUrl] = useState('');
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+    const [isCapturing, setIsCapturing] = useState(false);
+
+    const [isMinimize, setIsMinimize] = useState(false);
+
+    const [recording, setRecording] = useState(false); 
+
+    const [isPause, setIsPause] = useState(false);
+
+    const [elapsedTime, setElapsedTime] = useState(0);
+    
+    const [isActionDragging, setIsActionDragging] = useState(false);
+    const [actionPosition, setActionPosition] = useState({ x: 0, y: 0 });
+    const [actionOffset, setActionOffset] = useState({ x: 0, y: 0 });
+
+    const [audioStream, setAudioStream] = useState(null);
+
+    const [isMuted, setMuted] = useState(true);
+
+    const intervalRef = useRef(null);
+
+    const videoRef = useRef();
+    const mediaStreamRef = useRef(null);
+
+    const [enableCrop, setEnableCrop] = useState(false);
+
+    const [selectedImage, setSelectedImage] = useState('')
+
 
 
     const startCountDown = () => {
@@ -202,22 +235,50 @@ const VideoRecord = ({ save, close, message }) => {
 
     async function recordScreen() {
 
-        let a = null;
+        // let a = null;
 
-        let combine = null;
+        // let combine = null;
 
         try {
 
-            a = await navigator.mediaDevices.getDisplayMedia({
+            // a = await navigator.mediaDevices.getDisplayMedia({
+            //     audio: true,
+            //     video: { mediaSource: 'screen' }
+            // }).then(async (e) => {
+            //     let audio = await navigator.mediaDevices.getUserMedia({
+            //         audio: true, video: false
+            //     })
+            //     //video.srcObject = e;
+            //     combine = new MediaStream([...e.getTracks(), ...audio.getTracks()])
+            // });
+            setIsPause(false);
+            const displayMediaStream = await navigator.mediaDevices.getDisplayMedia({
+                video:  { mediaSource: 'screen' },
                 audio: true,
-                video: { mediaSource: 'screen' }
-            }).then(async (e) => {
-                let audio = await navigator.mediaDevices.getUserMedia({
-                    audio: true, video: false
-                })
-                //video.srcObject = e;
-                combine = new MediaStream([...e.getTracks(), ...audio.getTracks()])
             });
+            const audioMediaStream = await navigator.mediaDevices.getUserMedia({
+                audio: { echoCancellation: true },
+                video: false,
+            });
+            isCapturing && startCaptureVideo();
+            // Combine video and audio streams
+            const mediaStream = new MediaStream();
+            displayMediaStream
+                .getVideoTracks()
+                .forEach((track) => mediaStream.addTrack(track));
+            audioMediaStream
+                .getAudioTracks()
+                .forEach((track) => mediaStream.addTrack(track));
+
+            const audioTracks = audioMediaStream.getAudioTracks();
+            audioTracks.forEach((track) => {
+                track.enabled = !isMuted;
+            });
+
+            // Store the combined stream in state
+            setAudioStream(audioMediaStream);
+            return mediaStream;
+
 
         } catch (err) {
 
@@ -227,8 +288,6 @@ const VideoRecord = ({ save, close, message }) => {
             close(false);
 
         }
-
-        return combine;
 
     }
 
@@ -273,16 +332,22 @@ const VideoRecord = ({ save, close, message }) => {
             stream.getTracks() // get all tracks from the MediaStream
                 .forEach(track => track.stop()); // stop each of them
 
+            stopCaptureVideo();
+
             recordedChunks = [];
 
             setEmpty(false);
 
             removeRecordIconFromBrowser();
 
+            setRecording(false);
+
         };
 
         mediaRecorder.start(20); // For every 200ms the stream data will be stored in a separate chunk.
 
+        setRecording(true);
+        startWatchTimer();
 
         return mediaRecorder;
 
@@ -327,7 +392,6 @@ const VideoRecord = ({ save, close, message }) => {
 
     }
 
-
     const takeScreenshot = async () => {
 
         try {
@@ -363,6 +427,10 @@ const VideoRecord = ({ save, close, message }) => {
 
                 img.current = image;
 
+                setSelectedImage(image);
+
+                setEnableCrop(true);
+
                 setShowLoadData(true);
 
                 setGetDataURL(image)
@@ -370,9 +438,9 @@ const VideoRecord = ({ save, close, message }) => {
                 setEmpty(false);
 
                 
-                setTimeout(() => {
-                    renderCanvasText('', 0, 0, []);
-                }, 100);
+                // setTimeout(() => {
+                //     renderCanvasText('', 0, 0, []);
+                // }, 100);
 
             }, 200);
         } catch (err) {
@@ -384,10 +452,6 @@ const VideoRecord = ({ save, close, message }) => {
         }
 
     }
-
-
-
-
 
     const start = async () => {
 
@@ -453,6 +517,15 @@ const VideoRecord = ({ save, close, message }) => {
         return firstChild;
     }
 
+    useEffect(() => {
+        if (canvas.current) {
+            canvas.current.addEventListener('mousedown', onMouseDown)
+            canvas.current.addEventListener('mousemove', handleMouseMove)
+            canvas.current.addEventListener('mouseup', handleMouseUp)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvas.current])
+
     const onKeyDown = (e) => {
 
         e.persist();
@@ -481,29 +554,18 @@ const VideoRecord = ({ save, close, message }) => {
 
         setTextBoxValue(e.target.value);
 
-        if (!backspace) {
 
-            // let event = e;
-
-            backspace = false;
-
-            // console.log(e);
-
-            handleTextAddOnCanvas(e, backspace)
-
-        }
 
     }
-
-    const handleTextAddOnCanvas = (e, backspace) => {
+    const handleTextAddOnCanvasTest = (text, backspace) => {
 
         if (!backspace) {
 
             let stack = {
                 type: 'text',
-                text: e.target.value !== '' ? e.target.value[e.target.value.length - 1] : '',
-                x: undoStack.length === 0 ? 50 : 50 + 18,
-                y: 100
+                text: textBoxValue,
+                x: 50,
+                y: (undoStack.length === 0 || undoStack[undoStack.length - 1].type !== 'text') ? 100 : undoStack[undoStack.length - 1].y + 40
             }
 
             undoStack.push(stack);
@@ -512,15 +574,8 @@ const VideoRecord = ({ save, close, message }) => {
 
         let textContent = getTextFromList(undoStack);
 
-        renderCanvasText(textContent.texts, 50, 100, textContent.arrow);
 
-        let txt;
-
-        if (e.target.value.length > 1) {
-
-            txt = ctx.measureText(e.target.value[e.target.value.length - 2])
-
-        }
+            renderCanvasText(undoStack, undoStack[0].x, undoStack[0].y, textContent.arrow);
 
     }
 
@@ -553,9 +608,9 @@ const VideoRecord = ({ save, close, message }) => {
 
             imgData.onload = function () {
 
-                canvas.current.height = 620;
+                canvas.current.height = 500;
 
-                canvas.current.width = 1240;
+                canvas.current.width = 1000;
 
                 ctx.drawImage(imgData, 0, 0, canvas.current.width, canvas.current.height);
 
@@ -564,8 +619,15 @@ const VideoRecord = ({ save, close, message }) => {
 
                 ctx.fillStyle = "red";
 
-                //ctx.scale(2, 2);
-                ctx.fillText(text, x, y);
+                // ctx.scale(1,1);
+         
+                 for (let i = 0; i < undoStack.length; i++) {
+
+                    const texts = undoStack[i]
+
+                    if (texts.type  === 'text') ctx.fillText(texts.text, texts.x, texts.y);
+                    else toDrawArrow(ctx, texts.sx, texts.sy, texts.ex, texts.ey, 5, 'red')
+                }
 
 
                 if (arrows && arrows.length > 0) {
@@ -576,7 +638,7 @@ const VideoRecord = ({ save, close, message }) => {
 
                 }
 
-                if (drawArrow) {
+                if (drawArrow || drawArrowTest.current) {
 
                     toDrawArrow(ctx, startX, startY, endX, endY, 5, 'red')
 
@@ -671,42 +733,49 @@ const VideoRecord = ({ save, close, message }) => {
         renderCanvasText(textContent.texts, firstChild?.x, firstChild?.y, textContent.arrow);
 
     }
-
     const onMouseDown = (event) => {
 
         let rect = canvas.current.getBoundingClientRect();
 
         offsetX = rect.left;
-
         offsetY = rect.top;
 
-        startX = event.clientX - rect.left
+        startX = event.clientX - offsetX
 
-        startY = event.clientY - rect.top;
+        startY = event.clientY - offsetY
 
-        let totalText = getTextFromList(undoStack);
 
-        if (isTextHit(startX, startY) || drawArrow) {
 
+        if ((drawArrow || drawArrowTest.current)) {
             down = true;
+            return
+        }
 
+        for (let i = 0; i < undoStack.length; i++) {
+
+            if (isTextHit(startX, startY, i) || drawArrowTest.current) {
+
+                down = true;
+                selectedText = i;
+
+            }
         }
 
     }
 
-    const isTextHit = (x, y) => {
+    const isTextHit = (x, y, textIndex) => {
 
-        let text = undoStack[0]?.x;
+        let text = undoStack[textIndex];
 
-        if (text) {
+        if (text.type === 'text') {
 
-            let totalText = getTextFromList(undoStack);
 
-            let texts = ctx.measureText(totalText.texts);
 
-            if (x >= 50 && x <= text + texts.width) {
+            let texts = ctx.measureText(undoStack[textIndex].text);
 
-                if (y + 30 >= undoStack[0].y && y + 30 < undoStack[0].y + 20) {
+            if (x >= text.x && x <= text.x + texts.width) {
+
+                if (y >= text.y - 30 && y < text.y) {
 
                     return true;
 
@@ -714,19 +783,33 @@ const VideoRecord = ({ save, close, message }) => {
 
             }
 
+        } else {
+            let width = Math.abs(text.ex - text.sx) ;
+            let height = Math.abs(text.ey - text.sy);
+            if ((x >= text.sx || x >= text.ex) && ((x <= text.sx + width) || (x <= text.ex + width))) {
+
+                if (((y >= text.sy - height) || (y >= text.ey - height)) && (y < text.sy || y < text.ey)) {
+
+                    return true;
+
+                }
+
+            }
         }
 
         return false;
 
     }
 
+
     function handleMouseUp(e) {
 
         e.preventDefault();
 
         down = false;
+        selectedText = -1;
 
-        if (drawArrow) {
+        if (drawArrow || drawArrowTest.current) {
 
             let stack = {
                 type: 'arrow',
@@ -739,7 +822,7 @@ const VideoRecord = ({ save, close, message }) => {
             undoStack.push(stack)
 
         }
-
+        drawArrowTest.current = false
         setDrawArrow(false);
 
     }
@@ -751,6 +834,8 @@ const VideoRecord = ({ save, close, message }) => {
 
         down = false;
 
+        selectedText = -1;
+        drawArrowTest.current = false
         setDrawArrow(false);
 
 
@@ -760,7 +845,7 @@ const VideoRecord = ({ save, close, message }) => {
 
         if (down) {
 
-            if (!drawArrow) {
+            if (!drawArrow && !drawArrowTest.current && undoStack[selectedText].type !== 'arrow') {
 
                 e.preventDefault();
 
@@ -773,17 +858,49 @@ const VideoRecord = ({ save, close, message }) => {
 
                 // var dy = mouseY - startY;
 
+                var dx = mouseX - startX;
+                var dy = mouseY - startY;
                 startX = mouseX;
-
                 startY = mouseY;
 
-                undoStack[0].x = startX;
+                undoStack[selectedText].x += dx;
 
-                undoStack[0].y = startY;
+                undoStack[selectedText].y += dy;
 
                 let totalText = getTextFromList(undoStack);
 
-                renderCanvasText(totalText.texts, startX, startY, totalText.arrow);
+                renderCanvasText(undoStack, undoStack[0].x, undoStack[0].y, totalText.arrow);
+
+            } else if (undoStack[selectedText]?.type === 'arrow') {
+
+                e.preventDefault();
+
+                let mouseX = parseInt(e.clientX - offsetX);
+
+                let mouseY = parseInt(e.clientY - offsetY);
+
+                // Put your mousemove stuff here
+                // let dx = mouseX - startX;
+
+                // let dy = mouseY - startY;
+
+                endX = mouseX;
+
+                endY = mouseY;
+
+                let getX = mouseX -  undoStack[selectedText].ex;
+                let getY = mouseY -  undoStack[selectedText].ey;
+
+                undoStack[selectedText].sx += getX;
+
+                undoStack[selectedText].sy += getY;
+                undoStack[selectedText].ex += getX;
+
+                undoStack[selectedText].ey += getY;
+
+                let totalText = getTextFromList(undoStack);
+
+                renderCanvasText(undoStack, 0, 0, totalText.arrow);
 
             } else {
 
@@ -802,13 +919,13 @@ const VideoRecord = ({ save, close, message }) => {
 
                 endY = mouseY;
 
-                let x = undoStack[0]?.x;
+                let x = undoStack[selectedText]?.sx;
 
-                let y = undoStack[0]?.y;
+                let y = undoStack[selectedText]?.sy;
 
                 let totalText = getTextFromList(undoStack);
 
-                renderCanvasText(totalText.texts, x, y, totalText.arrow);
+                renderCanvasText(undoStack, x, y, totalText.arrow);
 
             }
 
@@ -865,13 +982,224 @@ const VideoRecord = ({ save, close, message }) => {
 
     }
 
+    const handleMouseDownForVideo = (event) => {
+        // if(!event.target?.id?.includes("actionMove"))  return;
+    
+        setIsDragging(true);
+        setOffset({
+          x: event.clientX - position.x,
+          y: event.clientY - position.y,
+        });
+      };
+    
+      const handleMouseUpForVideo = (event) => {
+        setIsDragging(false);
+      };
+    
+      const handleMouseMoveForVideo = (event) => {
+        // if(!event.target?.id?.includes("actionMove"))  return;
+        if (isDragging) {
+          setPosition({
+            x: event.clientX - offset.x,
+            y: event.clientY - offset.y,
+          });
+        }
+      };
+
+      const handleMinimizeVideo = () => {
+        setIsMinimize(!isMinimize);
+      };
+
+      const handleCloseVideo = () => {
+        stopCaptureVideo();
+      };
+
+      const stopCaptureVideo = () => {
+        setIsCapturing(false);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+          mediaStreamRef.current = null;
+        }
+      };
+
+      // Helper function to format the elapsed time
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+
+        return `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
+      // Function to resume capturing the screen
+  const handleResumeRecording = () => {
+    if (mediaStreamRecord && isPause) {
+        mediaStreamRecord.resume();
+      setIsPause(false);
+      startWatchTimer();
+    }
+  };
+
+  // Start the stopwatch
+  const startWatchTimer = () => {
+    intervalRef.current = setInterval(() => {
+      setElapsedTime((prevElapsedTime) => prevElapsedTime + 1);
+    }, 1000);
+  };
+
+  // Stop the stopwatch
+  const stopWatchTimer = () => {
+    clearInterval(intervalRef.current);
+  };
+
+
+  // function to handle mute and unmute
+  const toggleMute = () => {
+    if (recording) {
+      const audioTracks = audioStream.getAudioTracks();
+      audioTracks.forEach((track) => {
+        track.enabled = isMuted;
+      });
+    }
+    setMuted(!isMuted);
+  };
+
+  // Functions for dragging screen recording action menu
+
+  const handleMouseDownOptionDot = (event) => {
+    setIsActionDragging(true);
+    setActionOffset({
+      x: event.clientX - actionPosition.x,
+      y: event.clientY - actionPosition.y,
+    });
+  };
+
+  const handleMouseUpOptionDot = (event) => {
+    setIsActionDragging(false);
+  };
+
+  const handleMouseMoveOptionDot = (event) => {
+    if (isActionDragging) {
+      setActionPosition({
+        x: event.clientX - actionOffset.x,
+        y: event.clientY - actionOffset.y,
+      });
+    }
+  };
+
+   // Function to pause capturing the screen
+   const handlePauseRecording = () => {
+    if (mediaStreamRecord && !isPause) {
+        mediaStreamRecord.pause();
+      setIsPause(true);
+      stopWatchTimer();
+    }
+  };
+
+    // Screen recording functionality -----------
+  // function to start video recording
+  const startCaptureVideo = () => {
+    // Access the user's camera
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        setIsCapturing(true);
+        // Save the media stream reference to be used when capturing the video
+        mediaStreamRef.current = stream;
+
+        // Assign the stream to the video element
+        videoRef.current.srcObject = stream;
+      })
+      .catch((error) => {
+        setIsCapturing(false);
+        console.error("Error accessing camera:", error);
+      });
+  };
+
     return (
         <>
+
+            {recording && (
+                    <>
+                        <div className="recording-action-container" 
+                        onMouseDown={handleMouseDownOptionDot}
+                        onMouseUp={handleMouseUpOptionDot}
+                        onMouseMove={handleMouseMoveOptionDot}
+                        style={{transform: `translate(${actionPosition.x}px, ${actionPosition.y}px)`}}
+                        >
+                        <div className="btn-blinking"></div>
+                        <div className="time-pause-wrapper">
+                            <div className="video-time">{formatTime(elapsedTime)}</div> 
+                        { isPause ? <span className="btn-resume" onClick={handleResumeRecording}></span> : <span className="btn-pause" onClick={handlePauseRecording}></span>}
+                        </div>
+                        { isCapturing ?  <button onClick={stopCaptureVideo} className="btn-show-video"></button> : <button className="btn-hide-video" onClick={startCaptureVideo}></button>}
+                        <button className={`${isMuted ? 'btn-unmute' : 'btn-mute'}`} onClick={toggleMute}></button>
+                        <button onClick={() => mediaStreamRecord.stop()}>Stop Recording</button>
+                        </div>
+                    </>
+                    )}
+
+                <>
+                    <div
+                    className={`capture-video-container ${isMinimize ? "minimize-video" : ""}`}
+                    onMouseDown={handleMouseDownForVideo}
+                    onMouseUp={handleMouseUpForVideo}
+                    onMouseMove={handleMouseMoveForVideo}
+                    style={{
+                        transform: `translate(${position.x}px, ${position.y}px)`,
+                        display: !isCapturing && "none",
+                    }}
+                    >
+                    <div
+                        className="video-action-container"
+                        style={{ display: isMinimize && "none" }}
+                    >
+                        <div className="video-action">
+                        <span className="video-action-icon move">
+                            <span id="actionMove" className="action-move"></span>
+                            {/* <MoveIcon /> */}
+                        </span>
+                        <span className="video-action-icon minimize" onClick={handleMinimizeVideo}>
+                            <span className="action-minimize"></span>
+                            {/* <MinimizeIcon /> */}
+                        </span>
+                        <span className="video-action-icon close" onClick={handleCloseVideo}>
+                            <span className="action-close"></span>
+                            {/* <CloseIcon /> */}
+                        </span>
+                        </div>
+                        <video ref={videoRef} autoPlay height={150} />
+                    </div>
+                    <div
+                        className="minimize-screen"
+                        onClick={() => {
+                        setIsMinimize(false);
+                        }}
+                        style={{ display: !isMinimize && "none" }}
+                    >
+                        <button className="video-icon"></button>
+                        <span className="fullscreen-video">
+                        </span>
+                    </div>
+                    </div>
+                </>
 
             <div id="video-record-wrapper" className={"video-record-wrapper" + (!showLoadData ? ' main-wrap-position' : '') + (empty ? ' empty' : '')}>
 
                 {!showLoadData &&
                     <div className="timer-wrapper">
+                        {message === 'Record' && <div className="camere-icon-wrapper">
+                            <span
+                                className={isCapturing ? "video-icon" : "video-icon-with-cross"}
+                                onClick={() => {
+                                setIsCapturing(!isCapturing);
+                                }}
+                            >
+                            </span>
+                            <span className={isMuted ? 'mute-mic-icon' : 'mic-icon'} onClick={toggleMute}>
+                            </span>
+                            </div>}
 
                         <div className="timer-text">Taking Screen{message} in</div>
 
@@ -927,16 +1255,27 @@ const VideoRecord = ({ save, close, message }) => {
 
                         {message === 'Shot' && <div className="actions">
 
-                            {showTextBox && <div className="text-field"><input type={'text'} value={textBoxValue} onChange={onHandleInput} onKeyDown={onKeyDown}></input></div>}
+                            {showTextBox && <div className="text-field"><input type={'text'} value={textBoxValue} onChange={onHandleInput} onKeyDown={onKeyDown}></input>
+                                <span className="add-text-canvas" onClick={() => {
+
+                                handleTextAddOnCanvasTest('', false)
+                                setTextBoxValue('')
+                                }}>Add Text</span>
+                            </div>}
                             <button title="text" className="add-text" style={{ backgroundColor: showTextBox ? 'blue' : '', color: showTextBox ? 'white' : '' }} onClick={() => setShowTextBox(!showTextBox)}></button>
-                            <button title="draw" className="draw-arrow" style={{ backgroundColor: drawArrow ? 'blue' : '', color: drawArrow ? 'white' : '' }} onClick={() => setDrawArrow(!drawArrow)}></button>
-                            <button title="undo" className="undo" onClick={undo}></button>
-                            <button title="redo" className="redo" onClick={redo}></button>
+                            <button title="draw" className="draw-arrow" style={{ backgroundColor: drawArrow ? 'blue' : '', color: drawArrow ? 'white' : '' }} onClick={() =>{
+                            drawArrowTest.current = true
+                            setDrawArrow(true)
+                            }}></button>
+                            {undoStack.length > 0 && <button title="undo" className="undo" onClick={undo}></button>}
+                            {redoStack.length > 0 && <button title="redo" className="redo" onClick={redo}></button>}
                         </div>}
                     </div>
                     {message === 'Record' && <video src={videoUrl} controls id="iassist-vid-player"></video>}
 
-                    {message === 'Shot' && <div id="edit-image" className="image-edit" onMouseDown={onMouseDown} onMouseMove={handleMouseMove} onMouseOut={handleMouseOut} onMouseUp={handleMouseUp}></div>}
+                    {message === 'Shot' && enableCrop && <ScreenshotComponent selectedImage={selectedImage} setSelectedImage={setSelectedImage} imageRef={img} renderImage={renderCanvasText} setImageCrop={setEnableCrop}/>}
+
+                    {message === 'Shot' && !enableCrop && <div id="edit-image" className="image-edit" onMouseOut={handleMouseOut}></div>}
 
                 </div>}
 

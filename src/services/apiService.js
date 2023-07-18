@@ -72,7 +72,6 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
             'Authorization': headerAuthHeader,
             'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0'
         },
-        'Clear-Site-Data': '"cache", "cookies" ,"storage"',
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer' // no-referrer, *client
     }
@@ -146,12 +145,11 @@ const APIService = {
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'App-Version': Constants.IASSIST_SITE_VERSION || '0.0.0',
-                                    'Clear-Site-Data': '"cache", "cookies" ,"storage"'
-
                                 },
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client
                                 body: JSON.stringify(refreshPayload)
+                                
                             }
 
                             return fetch(Constants.API_BASE_URL+'/auth/rt1', apiOptions).then((response) => {

@@ -18,14 +18,12 @@ const SupportContainer = ({logOut, setLoader}) => {
     const btnId = useRef('btn-support-wrapper');
     const panelPosition = useRef('Right');
     const top = useRef('');
-    // const [storedTicket, setStoredTicket] = useState({Active : [], Resolved : []});
     const checkApptype = useRef(isElectron());
-    // const [configData, setConfigData] = useState('');
     const [configLoader, setConfigLoader] = useState(false);
 
-    const getConfigDetails = async (type) => {
+    const getConfigDetails = async () => {
 
-        // app_id=${AppId.current}
+
         setConfigLoader(true);
 
         if (AppId.current) {
@@ -51,6 +49,7 @@ const SupportContainer = ({logOut, setLoader}) => {
                 })
                 .catch(err => {
                     setConfigLoader(false);
+                    if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('error', err.msg);
                 });
         }
@@ -103,6 +102,7 @@ const SupportContainer = ({logOut, setLoader}) => {
                     changeValue(isUnread);
                 } if (received_msg.type === 'chat') {
                     changeValue(true);
+                    if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('info', `New Message Arrived on topic id: ${received_msg.topic_id}`);
                 }
             };
@@ -110,7 +110,6 @@ const SupportContainer = ({logOut, setLoader}) => {
             webSocket.onopen = function () {
                 console.log("websocket listen connected")
                 if (checkApptype.current) {
-
                     setOpenSupport(true);
                     setLoader(false);
                 }
@@ -158,6 +157,7 @@ const SupportContainer = ({logOut, setLoader}) => {
                 console.log("here4")
                 // getConfigDetails('onButtonClick');
                 if (!configLoader) getConfigDetails();
+                if (document.getElementsByClassName('toast-wrapper')[0]) return;
                 alertService.showToast('process', 'Loading...');
             }
         }
@@ -165,16 +165,9 @@ const SupportContainer = ({logOut, setLoader}) => {
 
     useEffect(() => {
 
-
-        // const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
-        // const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
-
-        // if (prevAppId !== AppId.current || !configDetails) {
         if (localStorage.length) {
             getConfigDetails();
         }
-
-        
 
         return (() => {
 
@@ -226,21 +219,6 @@ const SupportContainer = ({logOut, setLoader}) => {
             document.removeEventListener('click', supportButtonClick);
         }
     }, []) // eslint-disable-line 
-
-    const checkOnClick = async(url) => {
-
-        await fetch(url, {
-            headers: {
-                Pragma: 'no-cache',
-                Expires: '-1',
-                'Cache-Control': 'no-cache',
-            },
-        });
-        window.location.href = url;
-        // This is to ensure reload with url's having '#'
-        window.location.reload();
-
-    }
 
     return (
         <>

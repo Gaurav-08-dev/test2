@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
 
-window.IASSIST_SITE_VERSION='3.0.1';
+// window.IASSIST_SITE_VERSION='1.0.0';
 
 const bodyElement = document.getElementsByTagName('body')[0];
 const div = document.createElement('div')
@@ -36,5 +36,8 @@ headElement.append(metaTagThirdSetting);
 
 const root = ReactDOM.createRoot(document.getElementById('iassist-panel-wrapper'));
 root.render(
+    // <React.StrictMode>
     <App />
+    // </React.StrictMode>
+
 );

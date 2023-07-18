@@ -1,0 +1,34 @@
+$image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
+#iassist-recording-btn,#stop-audio-recording-button{
+
+    display: block;
+    content: "";
+    width: 24px;
+    height: 16px;
+    transition: 300ms all;
+}
+#iassist-recording-btn{
+    
+    &:hover {
+        background-color: #fff;
+    }
+    background-color: #b1b2b3;
+    mask: url($image-prefix + "icon-mic.svg") no-repeat
+      center center;
+    -webkit-mask: url($image-prefix + "icon-mic.svg")
+      no-repeat center center;
+    mask-size: 14px;
+    -webkit-mask-size: 14px;
+}
+
+
+#stop-audio-recording-button{
+    background-color: #FF0000;
+    mask: url($image-prefix + "icon-mic-mute.svg") no-repeat
+      center center;
+    -webkit-mask: url($image-prefix + "icon-mic-mute.svg")
+      no-repeat center center;
+    mask-size: 14px;
+    -webkit-mask-size: 14px;
+}
+
