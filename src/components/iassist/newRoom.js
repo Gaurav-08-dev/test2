@@ -1892,11 +1892,12 @@ const ChatRoom = ({
 
     const getTextWidth = (text) => {
         if (showExpand) {
+            const splittedText = getDescriptionBasedOnButton(text);
             const descriptionElement = document.getElementById('topic-description-chat');
             let ctx = document.createElement('canvas').getContext('2d');
             ctx.font = '11px "Poppins", sans-serif';
-            let width = ctx.measureText(text).width;
-            if (width >= descriptionElement?.clientWidth) {
+            let width = ctx.measureText(splittedText).width;
+            if (width >= descriptionElement?.clientWidth || splittedText.length > 1) {
                 return true;
             }
         }
@@ -1979,7 +1980,7 @@ const ChatRoom = ({
             let token = `Bearer ${jwt_token}`;
             let data = {
                 "name": title,
-                "description": descDetails
+                "description": topicDescription
             };
             // if (editName) {
             //     data = {
@@ -2255,12 +2256,14 @@ const ChatRoom = ({
             let getUpdatedStenoHtmlData = editorRef.current.innerHTML;
             getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll('&lt;a href', '<a href');
             getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll(`&gt;${getReplaceText} &lt;/a&gt;`, `>${getReplaceText} </a>`);
+            if (editorRef.current.textContent) storeChatDataInMemory(getUpdatedStenoHtmlData, 'message')
             setMessage(getUpdatedStenoHtmlData);
             applyFocusAtEnd(editorRef.current);
         } else if (type === 'reply') {
             let getUpdatedStenoHtmlData = replyEditorRef.current.innerHTML;
             getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll('&lt;a href', '<a href');
             getUpdatedStenoHtmlData = getUpdatedStenoHtmlData.replaceAll(`&gt;${getReplaceText} &lt;/a&gt;`, `>${getReplaceText} </a>`);
+            if (replyEditorRef.current.textContent) storeChatDataInMemory(undefined, 'reply', chatId, getUpdatedStenoHtmlData)
             setReplyMessage(getUpdatedStenoHtmlData);
             applyFocusAtEnd(replyEditorRef.current);
         } else if (type === 'edit' || type === 'replyedit') {
@@ -2471,6 +2474,16 @@ const ChatRoom = ({
         applyFocusAtEnd(editEditorRef.current);
     }, [editedMessage])
 
+
+    const getDescriptionBasedOnButton = (descriptionData, type) => {
+        let splitString = descriptionData.split('<p>');
+        splitString.length > 1 && splitString.shift();
+        splitString = splitString.map((segment) => "<p>" + segment);
+        if (type === 'showdescription' && !showExpand) return parse(splitString[0])
+        else if (type === 'showdescription' && showExpand) return parse(descriptionData)
+        else return splitString;
+    }
+
     return (
 
         <>
@@ -2646,7 +2659,7 @@ const ChatRoom = ({
                             </div>
                         }
 
-                        {!isEditTicket && <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'description', topic?.current?.description) : () => { }}>{topic.current && parse(topic?.current?.description, options)}
+                        {!isEditTicket && <div id='topic-description-chat' className={'description' + (showExpand ? ' full-description' : '')} onDoubleClick={checkPrevilegesForEdit() ? (e) => handleEditTicketOption(e, 'description', topic?.current?.description) : () => { }}>{topic.current && (getDescriptionBasedOnButton(topic?.current?.description, 'showdescription'))}
 
                         </div>}
 

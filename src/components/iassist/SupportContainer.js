@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Support from "./Support";
 import * as Constants from '../Constants';
 import { getTokenClient, getUserDetailsFromToken, setUserData, setUserToken } from "../../utils/Common";
@@ -6,10 +6,11 @@ import '../../style/Global.scss';
 import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
+import VersionMessage from "./VersionMessage";
 let webSocket;
 
-const SupportContainer = ({logOut, setLoader}) => {
 
+const SupportContainer = ({ logOut, setLoader }) => {
 
     const [openSupport, setOpenSupport] = useState(false);
     const [platformId, setPlatformId] = useState('');
@@ -20,37 +21,45 @@ const SupportContainer = ({logOut, setLoader}) => {
     const top = useRef('');
     const checkApptype = useRef(isElectron());
     const [configLoader, setConfigLoader] = useState(false);
+    const [isNewVersionAvailable, setIsNewVersionAvailable] = useState(false);
+    const [isButtonClick, setIsButtonClick] = useState(false);
+
+
+    const handleVersionAvailable = () => {
+        setIsNewVersionAvailable(true);
+    }
 
     const getConfigDetails = async () => {
-
 
         setConfigLoader(true);
 
         if (AppId.current) {
             const tokens = `Bearer ${AppId.current}`;
-            APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/`, null, false, 'GET', null, tokens)
+            APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/`, null, false, 'GET', null, tokens, handleVersionAvailable)
                 .then(response => {
 
+                    if (JSON.stringify(response) === "{}") {
+                        return;
+                    }
                     if (response) {
                         // setConfigData(response)
-                        tokenConstant.current = response.application_parameters.user_session_key;
-                        btnId.current = response.application_parameters.button_id;
-                        panelPosition.current = response.application_parameters.app_position;
-                        top.current = response.application_parameters.top_position;
+                        tokenConstant.current = response?.application_parameters.user_session_key;
+                        btnId.current = response?.application_parameters.button_id;
+                        panelPosition.current = response?.application_parameters.app_position;
+                        top.current = response?.application_parameters.top_position;
                         setPlatformId(response?.id);
 
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'platform', response?.application_parameters?.platform);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'buttonId', btnId.current);
                         sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'config_app_id', response?.id);
+
                         simplifyToken();
                         setConfigLoader(false);
-                        // if (type === 'onButtonClick') setOpenSupport(true)
+
                     }
                 })
                 .catch(err => {
                     setConfigLoader(false);
-                    if (document.getElementsByClassName('toast-wrapper')[0]) return;
-                    alertService.showToast('error', err.msg);
                 });
         }
     }
@@ -144,21 +153,24 @@ const SupportContainer = ({logOut, setLoader}) => {
         setOpenSupport(false);
     }
 
-    const supportButtonClick = (e) => {
+    const supportButtonClick =  (e) => {
 
+        setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
 
         if (triggerButton?.contains(e.target) && webSocket) {
             e.preventDefault();
             setOpenSupport(true);
+            setIsButtonClick(false)
+            setIsNewVersionAvailable(false)
         } else {
             if (!webSocket && triggerButton?.contains(e.target)) {
 
-                console.log("here4")
+                setIsButtonClick(true)
                 // getConfigDetails('onButtonClick');
-                if (!configLoader) getConfigDetails();
+                if (!configLoader)  getConfigDetails();
                 if (document.getElementsByClassName('toast-wrapper')[0]) return;
-                alertService.showToast('process', 'Loading...');
+                  alertService.showToast('process', 'Loading...');
             }
         }
     }
@@ -171,7 +183,9 @@ const SupportContainer = ({logOut, setLoader}) => {
 
         return (() => {
 
-            if (webSocket) {webSocket.close();}
+            if (webSocket) { webSocket.close(); }
+            setIsButtonClick(false)
+            setIsNewVersionAvailable(false)
             setOpenSupport(false)
         })
 
@@ -219,19 +233,45 @@ const SupportContainer = ({logOut, setLoader}) => {
             document.removeEventListener('click', supportButtonClick);
         }
     }, []) // eslint-disable-line 
-
     return (
         <>
-            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
+            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
 
-            {openSupport && 
-            <Support
-                closePane={closePane}
-                webSocket={webSocket}
-                panelPosition={panelPosition.current}
-                platformId={platformId}
-                logOut={logOut}
-            />}
+            {/* {isNewVersionAvailable && isButtonClick && <div className="iassist-version-change-message">
+                <p>New Version is available, please update app before start using it</p>
+                <p>To update:</p>
+                <ul>
+                    <li>Mac: Cmd + Shift + r</li>
+                    <li>Windows: Ctrl + Shift + r</li>
+                </ul>
+                <button className='iassist-header-close-message' onClick={() => setIsNewVersionAvailable(false)}></button>
+            </div>} */}
+
+            {openSupport &&
+                <Support
+                    closePane={closePane}
+                    webSocket={webSocket}
+                    panelPosition={panelPosition.current}
+                    platformId={platformId}
+                    logOut={logOut}
+                    // setIsNewVersionAvailable={setIsNewVersionAvailable}
+                />}
+
+            {isNewVersionAvailable && isButtonClick &&
+                <VersionMessage
+                    setIsNewVersionAvailable={setIsNewVersionAvailable}
+                />
+            }
+
+            {openSupport &&
+                <Support
+                    closePane={closePane}
+                    webSocket={webSocket}
+                    panelPosition={panelPosition.current}
+                    platformId={platformId}
+                    logOut={logOut}
+                />}
+
         </>
 
     )

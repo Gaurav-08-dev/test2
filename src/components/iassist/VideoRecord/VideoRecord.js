@@ -5,7 +5,7 @@ import './VideoRecord.scss';
 // import CanvasVideo from "./CanvasVideo";
 import APIService from "../../../services/apiService";
 import * as Constants from '../../Constants';
-import { getTokenClient } from "../../../utils/Common";
+import { displayTextWidth, getTokenClient } from "../../../utils/Common";
 import ScreenshotComponent from "./ScreenShotSomponent";
 
 
@@ -18,6 +18,7 @@ let closeInterval = false;
 const recordingClass = 'iassist-wrapper-recording';
 let removedChildForRecord;
 let mediaStreamRecord;
+const initialTextBoxWidth = 120;
 
 const VideoRecord = ({ save, close, message }) => {
 
@@ -84,7 +85,11 @@ const VideoRecord = ({ save, close, message }) => {
 
     const [enableCrop, setEnableCrop] = useState(false);
 
-    const [selectedImage, setSelectedImage] = useState('')
+    const [selectedImage, setSelectedImage] = useState('');
+
+    const [inputBoxWidth, setInputBoxWidth] = useState(initialTextBoxWidth);
+
+    const inputRef = useRef(null)
 
 
 
@@ -532,19 +537,19 @@ const VideoRecord = ({ save, close, message }) => {
 
         backspace = false;
 
-        if (e.key === 'Backspace') {
+        // if (e.key === 'Backspace') {
 
-            e.stopPropagation();
+        //     e.stopPropagation();
 
-            undoStack.pop();
+        //     undoStack.pop();
 
-            backspace = true;
+        //     backspace = true;
 
-            let textContent = getTextFromList(undoStack);
+        //     let textContent = getTextFromList(undoStack);
 
-            renderCanvasText(textContent.texts, 50, 100, textContent.arrow);
+        //     renderCanvasText(textContent.texts, 50, 100, textContent.arrow);
 
-        }
+        // }
 
     }
 
@@ -554,21 +559,56 @@ const VideoRecord = ({ save, close, message }) => {
 
         setTextBoxValue(e.target.value);
 
+        const fontFamily = window.getComputedStyle(inputRef.current).fontFamily
+        let textWidth = displayTextWidth(e.target.value, fontFamily);
+        if (textWidth > 100 && textWidth < 300) {
+            setInputBoxWidth(textWidth + 20)
+        }
+        
+
 
 
     }
-    const handleTextAddOnCanvasTest = (text, backspace) => {
 
-        if (!backspace) {
-
-            let stack = {
+    const splitTextIntoMultipleArray = (text) => {
+        const chunkSize = 55;
+        if (text.length > 60) {
+            let chunks = [];
+            for (let i = 0; i < text.length; i += chunkSize) {
+                let splitText = text.slice(i, i + chunkSize)
+              chunks.push(text.slice(i, i + chunkSize));
+              let stack = {
                 type: 'text',
-                text: textBoxValue,
+                text: splitText,
                 x: 50,
                 y: (undoStack.length === 0 || undoStack[undoStack.length - 1].type !== 'text') ? 100 : undoStack[undoStack.length - 1].y + 40
             }
-
             undoStack.push(stack);
+            }
+            
+
+        }
+    }
+
+    const handleTextAddOnCanvasTest = (text, backspace) => {
+
+        if (!backspace) {
+           let canvasDetail =  ctx.measureText(textBoxValue);
+           if (canvasDetail.width > 945) {
+            splitTextIntoMultipleArray(textBoxValue)
+            console.log(textBoxValue.length)
+
+           } else {
+                let stack = {
+                    type: 'text',
+                    text: textBoxValue,
+                    x: 50,
+                    y: (undoStack.length === 0 || undoStack[undoStack.length - 1].type !== 'text') ? 100 : undoStack[undoStack.length - 1].y + 40
+                }
+                undoStack.push(stack);
+            }
+
+            
 
         }
 
@@ -1117,6 +1157,10 @@ const VideoRecord = ({ save, close, message }) => {
       });
   };
 
+  useEffect(() => {
+    if (showTextBox && inputRef.current) inputRef.current.focus()
+  }, [showTextBox])
+
     return (
         <>
 
@@ -1255,14 +1299,16 @@ const VideoRecord = ({ save, close, message }) => {
 
                         {message === 'Shot' && <div className="actions">
 
-                            {showTextBox && <div className="text-field"><input type={'text'} value={textBoxValue} onChange={onHandleInput} onKeyDown={onKeyDown}></input>
-                                <span className="add-text-canvas" onClick={() => {
+                            {showTextBox && <div className="text-field"><input style={{width: inputBoxWidth}} type={'text'} value={textBoxValue} ref={inputRef} onChange={onHandleInput} onKeyDown={onKeyDown}></input>
+                                {textBoxValue.length > 0 && <span className="add-text-canvas" onClick={() => {
 
                                 handleTextAddOnCanvasTest('', false)
                                 setTextBoxValue('')
-                                }}>Add Text</span>
+                                }}>Add Text</span>}
                             </div>}
-                            <button title="text" className="add-text" style={{ backgroundColor: showTextBox ? 'blue' : '', color: showTextBox ? 'white' : '' }} onClick={() => setShowTextBox(!showTextBox)}></button>
+                            <button title="text" className="add-text" style={{ backgroundColor: showTextBox ? 'blue' : '', color: showTextBox ? 'white' : '' }} onClick={() => {
+                                setShowTextBox(!showTextBox)
+                            }}></button>
                             <button title="draw" className="draw-arrow" style={{ backgroundColor: drawArrow ? 'blue' : '', color: drawArrow ? 'white' : '' }} onClick={() =>{
                             drawArrowTest.current = true
                             setDrawArrow(true)

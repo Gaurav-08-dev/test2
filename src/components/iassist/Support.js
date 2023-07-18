@@ -18,6 +18,7 @@ import ClickOutsideListner from "./ClickOutsideListener";
 import parse from 'html-react-parser';
 
 
+
 let pageNumber = 1;
 let pageNumber_resolved = 1;
 const pageSize = 10;
@@ -54,7 +55,6 @@ const options = {
         }
     },
 };
-
 
 
 const actionType = {
@@ -111,7 +111,7 @@ const reducer = (state, action) => {
 }
 
 
-const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, logOut }) => {
+const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, logOut, newVersionAvailable }) => {
 
 
     const initialState = {
@@ -137,8 +137,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         readUnreadStatus: { read: true, unRead: true }
     }
 
+    
     const [state, dispatch] = useReducer(reducer, initialState);
-
 
     const controller = new AbortController();
     const fetchTicketsController = new AbortController()
@@ -444,6 +444,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         APIService.apiRequest(url, null, false, 'GET', fetchTicketsController, token)
             .then(response => {
 
+                
                 if (response) {
 
                     const result = response;
@@ -1157,6 +1158,13 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     }
 
+    const getDescriptionBasedOnButton = (descriptionData) => {
+        let splitString = descriptionData.split('<p>');
+        splitString.length > 1 && splitString.shift();
+        splitString = splitString.map((segment) => "<p>" + segment);
+        return parse(splitString[0])
+    }
+
     return (
 
         <>
@@ -1378,6 +1386,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                                 </div>
 
+                                
+
                             </div>
 
                             {state.statusTab === 'resolved' &&
@@ -1396,8 +1406,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                         {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
                                                     </div>
 
-                                                    <div className='iassist-topic-description'>{parse(topic?.description.substr(0, 100), options)}{topic?.description?.length > 102 && '...'}</div>
-
+                                                    <div className='iassist-topic-description'>{getDescriptionBasedOnButton(topic?.description)}
+                                                    </div>
+{/* {parse(topic?.description.substr(0, 100), options)}{topic?.description?.length > 102 && '...'} */}
                                                     <Detail topic={topic} type={ticketTypeList.current} allUser={allUser_resolved.current.length ? allUser_resolved.current : reportersList.current} allAccount={allAccount_resolved.current} />
 
                                                 </div>}
@@ -1503,7 +1514,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                         {showUnreadNotification(topic.id) && <span className='topic-chat-notify-layer'></span>}
                                                     </div>
 
-                                                    <div className='iassist-topic-description'>{parse(topic?.description.substr(0, 100))}{topic?.description?.length > 102 && '...'}</div>
+                                                    <div className='iassist-topic-description'>{getDescriptionBasedOnButton(topic?.description)}
+                                                    {/* {parse(topic?.description.substr(0, 100))}{topic?.description?.length > 102 && '...'} */}
+                                                    </div>
 
                                                     <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
 

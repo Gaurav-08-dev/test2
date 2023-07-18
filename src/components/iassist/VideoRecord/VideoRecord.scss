@@ -212,15 +212,19 @@ $image-prefix: 'https://iassist-assets.s3.us-east-2.amazonaws.com/images/';
 
                         .add-text-canvas {
                             color: blue;
-                            font-weight: 600;
+                            font-weight: 800;
+                            font-size: 9px;
                             margin: 5px;
                             cursor: pointer;
+                            border: 1px solid #646464;
+                            padding: 1px 4px;
+                            border-radius: 2px;
                         }
 
                         .text-field{
                             input{
                                 line-height: 14px;
-                                padding: 0 5px;
+                                padding: 1px 5px;
                                 border: 1px solid #b1b2b3;
                                 border-radius: 2px;
                                 font-size: 10px;

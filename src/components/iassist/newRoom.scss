@@ -361,7 +361,7 @@ $image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
         transform: rotate((90deg));
       }
     }
-    .description {
+    .description p {
       color: #b1b2b3;
       text-overflow: ellipsis;
       overflow: hidden;

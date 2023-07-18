@@ -1,0 +1,43 @@
+$image-prefix: "https://iassist-assets.s3.us-east-2.amazonaws.com/images/";
+
+.iassist-version-change-message {
+  width: 450px;
+  left: 450px;
+  top: 35px;
+  bottom: 5px;
+  right: 10px;
+  overflow: hidden;
+  background: #232931;
+  color: #fff;
+  border-radius: 2px 0 0 2px;
+  text-align: left;
+  z-index: 100000;
+  height: 100px;
+  padding: 11px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 500;
+
+  ul{
+    padding-left: 10px;
+    margin: 0;
+  }
+}
+.iassist-header-close-message {
+  position: absolute;
+  display: block;
+  width: 11px;
+  height: 11px;
+  mask: url($image-prefix + "icon-close.svg") no-repeat center center;
+  -webkit-mask: url($image-prefix + "icon-close.svg") no-repeat center center;
+
+  background: #b1b2b3;
+  &:hover {
+    background-color: #fff;
+  }
+
+  top: 6px;
+  right: 6px;
+}

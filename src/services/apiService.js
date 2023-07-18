@@ -1,8 +1,11 @@
 import AuthHeader from '../utils/AuthHeader';
 import * as Constants from '../components/Constants';
-import { removeUserSession, getUserDetailsFromToken, setUserSession, getUser, getToken, getDefaultHomePageURL } from '../utils/Common';
+import { removeUserSession, getUserDetailsFromToken, setUserSession, getUser, getToken } from '../utils/Common';
 import AlertSevice from './alertService';
 // import { sitePages } from '../components/Navigation';
+
+
+
 
 const errorMessages = {
     '400': 'Bad Request',
@@ -47,22 +50,21 @@ const errorMessages = {
     '511': 'Network Authentication Required'
 };
 
-function getResetTokenProcessStatus(){
+function getResetTokenProcessStatus() {
     let updatedResetTokenInProcess = localStorage.getItem(Constants.SITE_PREFIX + 'reset_token_inprocess');
     updatedResetTokenInProcess = updatedResetTokenInProcess ? parseInt(updatedResetTokenInProcess) : updatedResetTokenInProcess;
     return updatedResetTokenInProcess;
 }
 
-function forceLogout(msg){
+function forceLogout(msg) {
     AlertSevice.showToast('error', msg);
     removeUserSession();
     window.location.reload();
     return;
 }
 
-
-function getAPIRequestOptions(req_method, authHeader, data, controller){
-    let headerAuthHeader = (authHeader===null) ? AuthHeader() : authHeader;
+function getAPIRequestOptions(req_method, authHeader, data, controller) {
+    let headerAuthHeader = (authHeader === null) ? AuthHeader() : authHeader;
     let options = {
         method: req_method, // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
@@ -85,21 +87,19 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
     return options;
 }
 
-//  async function handleSitesListToggle(url) {
-//     // if (this.user.organization_id > 1) return;
-//     // this.setState({ toggleSitesNavigation: !this.state.toggleSitesNavigation });
 
+// async function handleHardReload(url) {
 //     await fetch(url, {
-//       headers: {
-//           Pragma: 'no-cache',
-//           Expires: '-1',
-//           'Cache-Control': 'no-cache, no-store, must-revalidate',
-//       },
-//   });
-//   window.location.href = url;
-//   // This is to ensure reload with url's having '#'
-//   window.location.reload();
-//   }
+//         headers: {
+//             Pragma: 'no-cache',
+//             Expires: '-1',
+//             'Cache-Control': 'no-cache, no-store, must-revalidate',
+//         },
+//     });
+//     window.location.href = url;
+//     // This is to ensure reload with url's having '#'
+//     window.location.reload();
+// }
 
 const updateScriptTag = () => {
     
@@ -108,14 +108,13 @@ const updateScriptTag = () => {
     new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1
     new_version = new_version.join('')
 
-    const newSrc='https://iassist-dev.bydata.com/script/sight-dev/index.js' + '?v=' + new_version;
-
-    console.log("query selector", document.querySelector(document.querySelector(`script[src=${newSrc}]`)))
-    if(document.querySelector(document.querySelector(`script[src=${newSrc}]`))) return;
+    const newSrc='https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
+    const query=document.querySelector(`script[src="${newSrc}"]`);
+    console.log("query selector",query )
+    if(query) return;
     
     const newScript = document.createElement('script');
-    newScript.src = 'https://iassist-dev.bydata.com/script/sight-dev/index.js' + '?v=' + new_version;
-
+    newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
 
 
     const linkTag=document.getElementById('iassist-css');
@@ -123,7 +122,9 @@ const updateScriptTag = () => {
     
     newScript.onload=()=>{
 
-        const oldScript = document.querySelector('script[src="https://iassist-dev.bydata.com/script/sight-dev/index.js"]') || document.querySelector(`script[src="https://iassist-dev.bydata.com/script/sight-dev/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+        const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+
+        console.log("oldScript", oldScript)
         if (oldScript) {
             document.head.removeChild(oldScript);
         }
@@ -133,8 +134,13 @@ const updateScriptTag = () => {
     
     document.head.appendChild(newScript);
 }
+
+
+
+
 const APIService = {
-    apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null) {
+
+    apiRequest(API_URL, data, showProgress = false, req_method = 'POST', controller = null, authHeader = null, callback) {
         let options = getAPIRequestOptions(req_method, authHeader, data, controller);
 
         return fetch(API_URL, options)
@@ -148,12 +154,12 @@ const APIService = {
 
                 if (!API_URL.includes('login') && (response.status === 401 || response.status === 403)) {
                     let resetTokenInProcess = getResetTokenProcessStatus();
-                    if(resetTokenInProcess===null || resetTokenInProcess===0){
+                    if (resetTokenInProcess === null || resetTokenInProcess === 0) {
                         localStorage.setItem(Constants.SITE_PREFIX + 'reset_token_inprocess', 1);
                         let userInfo = getUser();
-                        if(userInfo.rt!==undefined){
+                        if (userInfo.rt !== undefined) {
                             //call the api to get refreshed auth token based on refresh token and update it on localstorage
-                            let refreshPayload = {'at': getToken(), 'rt': userInfo.rt};
+                            let refreshPayload = { 'at': getToken(), 'rt': userInfo.rt };
                             let apiOptions = {
                                 method: 'PUT',
                                 mode: 'cors', // no-cors, *cors, same-origin
@@ -164,11 +170,11 @@ const APIService = {
                                 redirect: 'follow', // manual, *follow, error
                                 referrerPolicy: 'no-referrer', // no-referrer, *client
                                 body: JSON.stringify(refreshPayload)
-                                
+
                             }
 
-                            return fetch(Constants.API_BASE_URL+'/auth/rt1', apiOptions).then((response) => {
-                                if(response.status === 401){ //* comparator bug
+                            return fetch(Constants.API_BASE_URL + '/auth/rt1', apiOptions).then((response) => {
+                                if (response.status === 401) { //* comparator bug
                                     localStorage.setItem(Constants.SITE_PREFIX + 'reset_token_inprocess', 0); //reset to 0 so that it can process futther (other apis)
                                     forceLogout('Invalid Credentials.');
                                     return;
@@ -179,17 +185,17 @@ const APIService = {
                                 //Redirect to home page after succcessful login
                                 let user_details = getUserDetailsFromToken(parsedResponse.access_token);
                                 let user_info = user_details.identity;
-                                
+
                                 //set terminals & default terminal type
-                                if(parsedResponse.terminal){
+                                if (parsedResponse.terminal) {
                                     user_info['terminals'] = parsedResponse.terminal;
-                                    user_info['terminal_type'] = {id: parsedResponse.terminal[0]['display_name'], name: parsedResponse.terminal[0]['name'], orgid: parsedResponse.terminal[0]['id']};
+                                    user_info['terminal_type'] = { id: parsedResponse.terminal[0]['display_name'], name: parsedResponse.terminal[0]['name'], orgid: parsedResponse.terminal[0]['id'] };
                                 }
-                                
+
                                 //set default home url under local storage for future redirection
                                 user_info.default_home_url = '/';
 
-                                if(user_details){
+                                if (user_details) {
                                     setUserSession(parsedResponse.access_token, user_info); //Set token and user details in session
                                     localStorage.setItem(Constants.SITE_PREFIX + 'reset_token_inprocess', 0); //reset to 0 so that it can process futther (other apis)
                                     return this.apiRequest(API_URL, data, showProgress, req_method, controller, authHeader);
@@ -204,41 +210,41 @@ const APIService = {
                         } else {
                             forceLogout('Invalid Credentials.');
                         }
-                        
+
                     } else {
                         //wait for the flag to be 0
                         //then wait for api callback response
                         //return the response to apiservive caller
                         resetTokenInProcess = getResetTokenProcessStatus();
                         return new Promise((resolve) => {
-                            let interval = setInterval(()=>{
+                            let interval = setInterval(() => {
                                 resetTokenInProcess = getResetTokenProcessStatus();
-                                if(resetTokenInProcess===0){
+                                if (resetTokenInProcess === 0) {
                                     clearInterval(interval);
                                     resolve(1);
                                 }
-                            },50);
-                        }).then(()=>{
+                            }, 50);
+                        }).then(() => {
                             return this.apiRequest(API_URL, data, showProgress, req_method, controller, authHeader);
                         });
                     }
                 }
 
                 //Don't show alert message on user_preference 500 error
-                if(API_URL.includes('user_preference') && (response.status===500 || response.status===501)){
+                if (API_URL.includes('user_preference') && (response.status === 500 || response.status === 501)) {
                     return {};
                 }
 
                 //handle other errors
-                if (!API_URL.includes('login') && (response.status > 299 && (response.status!==401 || response.status!==403))) {
+                if (!API_URL.includes('login') && (response.status > 299 && (response.status !== 401 || response.status !== 403))) {
                     let errorMsg = response.statusText;
-                    if(errorMsg===''){
-                        errorMsg = (errorMessages[response.status]!==undefined ? errorMessages[response.status] : '');
+                    if (errorMsg === '') {
+                        errorMsg = (errorMessages[response.status] !== undefined ? errorMessages[response.status] : '');
                     }
 
                     return response.json()
                         .then((parsedResponse) => {
-                            AlertSevice.showToast('error', response.status + ' - '+errorMsg + (parsedResponse.message || parsedResponse.msg || parsedResponse.detail) ? ': '+(parsedResponse.message || parsedResponse.msg || parsedResponse.detail) : '');
+                            AlertSevice.showToast('error', response.status + ' - ' + errorMsg + (parsedResponse.message || parsedResponse.msg || parsedResponse.detail) ? ': ' + (parsedResponse.message || parsedResponse.msg || parsedResponse.detail) : '');
                             return parsedResponse;
                         });
                 }
@@ -259,13 +265,14 @@ const APIService = {
 
                 } else {
                     if (response.status === 207) {
+
                         // Special check - 207 indicates that a New version of app is available 
                         // so in this case, force reload the browser so that user gets the latest version of app
-                        // handleSitesListToggle(window.location.href)
                         // window.location.reload();
-                        // return {};
-
+                        // callback()
                         updateScriptTag()
+                        // handleVersionChange();
+                        // return {message:"version change"};
                     }
 
                     return response.json()
@@ -279,8 +286,8 @@ const APIService = {
             })
             .catch((e) => {
                 if (e.message !== 'The user aborted a request.') {
-                    if(e.message==='Failed to fetch'){
-                        AlertSevice.showToast('error', 'Request '+ e.message.toLowerCase() + ' due to network issue.');
+                    if (e.message === 'Failed to fetch') {
+                        AlertSevice.showToast('error', 'Request ' + e.message.toLowerCase() + ' due to network issue.');
                     } else {
                         AlertSevice.showToast('error', e.message || 'Some Error Occured');
                     }

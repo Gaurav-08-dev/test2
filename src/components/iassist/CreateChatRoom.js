@@ -8,6 +8,7 @@ import alertService from "../../services/alertService";
 import LoadingScreen from './loader/Loading';
 import APIService from '../../services/apiService';
 import VideoRecord from './VideoRecord/VideoRecord';
+import { Steno } from 'react-steno';
 import { 
     // isElectron, 
     convertFileSizeToMB } from './Utilityfunction';
@@ -53,6 +54,12 @@ const CreateChatRoom = ({ closePane, socketDetail, panelPosition, platformId, cl
     const [openPopUp, setOpenPopUp] = useState(false);
     // const checkApptype = useRef(isElectron());
     const [selectedFile, setSelectedFile] = useState([]);
+
+    const descriRef = useRef(null)
+
+    const descrifnRef = useRef(null)
+
+    const [descriptionSteno, setDescriptionSteno] = useState('')
 
 
 
@@ -761,10 +768,34 @@ return (
                                     {/* <span className='mandatory-mark'>*</span> */}
                                 </label>
                                 <div className='field textarea'>
-                                    <textarea
+                                    {/* <textarea
                                         value={topicDescriptions}
                                         // rows={totalRowsForTextarea}
-                                        onChange={(e) => handleInputChange(e, 'description')}></textarea>
+                                        onChange={(e) => handleInputChange(e, 'description')}></textarea> */}
+                                        <Steno
+                                            html={descriptionSteno}
+                                            disable={false} //indicate that the editor has to be in edit mode
+                                            onChange={(val) => {
+                                                setDescriptionSteno(val)
+                                                setTopicDescriptions(val)
+
+                                            }}
+                                            innerRef={descriRef} //ref attached to the editor
+                                            backgroundColor={'#232931'}
+                                            fontColor={'#fff'}
+                                            ref={descrifnRef} //Ref which let parent component to access the methods inside of editor component
+                                            isToolBarVisible={false} //to show/hide the toolbar options
+                                            toolbarPosition={"bottom"} //to place the toolbar either at top or at bottom 
+                                            formatStyle={false} //If true will let user to keep the style while pasting the content inside of editor
+                                            onChangeOfKeepStyle={() => { }} //handle to change the format style variable
+                                            showAddFileOption={false} //If true along with isToolBarVisible true will display the Add File option inside of toolbar
+                                            sendMsgOnEnter={false} //This will be used in case of chat application, where user wants to send msg on enter click.
+                                            autoHeight={true} //If autoHeight is true, then the editor area will grow from minEditorHeight to maxEditorHeight
+                                            minEditorHeight='55px' // Default will be 100px
+                                            maxEditorHeight="55px" // Default maxHeight will be 250px
+                                            fontSize={11}
+                                            borderWidth={0}                              
+                                        />
                                     {/* <div className={'max-length'}> {topicDescriptions !== '' ? topicDescriptions.length : 0}/{descriptionMaxChar}</div> */}
                                 </div>
                             </div>
