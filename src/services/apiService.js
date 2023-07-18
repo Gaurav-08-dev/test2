@@ -104,6 +104,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller){
 const updateScriptTag=()=>{
 
     const oldScriptTag=document.getElementById("iassist-html");
+    console.log(oldScriptTag)
     const newScriptTag=document.createElement("script")
     newScriptTag.setAttribute('data-version', Constants.IASSIST_SITE_VERSION + 1)
     newScriptTag.id='iassist-html'
