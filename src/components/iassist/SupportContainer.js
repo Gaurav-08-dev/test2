@@ -7,6 +7,7 @@ import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 import VersionMessage from "./VersionMessage";
+import { async } from "q";
 let webSocket;
 
 
@@ -32,13 +33,13 @@ const SupportContainer = ({ logOut, setLoader }) => {
 
     const getConfigDetails = async () => {
 
-
         setConfigLoader(true);
-
+        
         if (AppId.current) {
             const tokens = `Bearer ${AppId.current}`;
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/`, null, false, 'GET', null, tokens, handleVersionAvailable)
-                .then(response => {
+            .then(response => {
+                    console.log("inside config")
 
                     if (JSON.stringify(response) === "{}") {
                         return;
@@ -155,7 +156,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
         setOpenSupport(false);
     }
 
-    const supportButtonClick =  (e) => {
+    const supportButtonClick = async(e) => {
 
         setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
@@ -173,10 +174,13 @@ const SupportContainer = ({ logOut, setLoader }) => {
 
                 setIsButtonClick(true)
                 // getConfigDetails('onButtonClick');
-                if (!configLoader)  getConfigDetails();
-                const toast=document.getElementsByClassName('toast-wrapper');
-                if (toast && toast.length > 0 && toast[0]) return;
-                  alertService.showToast('process', 'Loading...');
+                if (!configLoader) {await getConfigDetails().then(()=>{
+                    const toast=document.getElementsByClassName('toast-wrapper');
+                    console.log("in toast")
+                    if (toast && toast.length > 0 && toast[0]) return;
+                    //   alertService.showToast('process', 'Loading...');
+
+                });}
             }
         }
     }
