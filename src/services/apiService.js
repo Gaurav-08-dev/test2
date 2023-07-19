@@ -103,6 +103,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 
 const updateScriptTag = () => {
     
+    console.log("init", document.head)
     const linkTag=document.getElementById('iassist-css');
     console.log("Linktag",linkTag);
     if(linkTag && document.head.contains(linkTag)) document.head.removeChild(linkTag)
@@ -115,22 +116,28 @@ const updateScriptTag = () => {
     const newSrc='https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
     const query=document.querySelector(`script[src="${newSrc}"]`);
     console.log("query selector",query );
-    if(query) return;
+    if(query){
+        console.log("inside if query")
+         return;}
     
+    console.log("before script creation")
     const newScript = document.createElement('script');
     newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
     newScript.id="iassist-html";
+    console.log("after script creation")
 
 
     // newScript.onload=()=>{
-        
+        console.log("before get old script")
         const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+        console.log("after get old script")
         
         if (oldScript && document.head.contains(oldScript)) {
             console.log("oldScript", oldScript)
             document.head.removeChild(oldScript);
             console.log("oldScript --- after", oldScript)
         }
+        console.log("after get old script -- 2")
         
         document.head.appendChild(newScript);
     // }
