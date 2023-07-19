@@ -104,6 +104,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 const updateScriptTag = () => {
     
     const linkTag=document.getElementById('iassist-css');
+    console.log("Linktag",linkTag);
     if(linkTag && document.head.contains(linkTag)) document.head.removeChild(linkTag)
     
     console.log("document-head", document.head);
