@@ -103,6 +103,8 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 
 const updateScriptTag = () => {
     
+    const linkTag=document.getElementById('iassist-css');
+    if(linkTag) document.head.removeChild(linkTag)
     
     console.log("document-head", document.head);
     let new_version = Constants.IASSIST_SITE_VERSION.split('');
@@ -128,8 +130,6 @@ const updateScriptTag = () => {
             console.log("oldScript", oldScript)
             document.head.removeChild(oldScript);
             console.log("oldScript --- after", oldScript)
-            const linkTag=document.getElementById('iassist-css');
-            if(linkTag) document.head.removeChild(linkTag)
         }
         
         document.head.appendChild(newScript);
