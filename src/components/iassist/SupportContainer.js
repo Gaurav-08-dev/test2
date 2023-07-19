@@ -31,6 +31,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
 
     const getConfigDetails = async () => {
 
+
         setConfigLoader(true);
 
         if (AppId.current) {
@@ -169,8 +170,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
             console.log(triggerButton,e.target,!webSocket, triggerButton?.contains(e.target))
             if (!webSocket && triggerButton?.contains(e.target)) {
 
-
-                // setIsButtonClick(true)
+                setIsButtonClick(true)
                 // getConfigDetails('onButtonClick');
                 if (!configLoader)  getConfigDetails();
                 const toast=document.getElementsByClassName('toast-wrapper');
