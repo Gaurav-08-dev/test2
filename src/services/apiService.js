@@ -104,7 +104,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 const updateScriptTag = () => {
 
 
-    
+
     console.log("init", document.head)
 
 
@@ -116,12 +116,12 @@ const updateScriptTag = () => {
     const newSrc = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
     const query = document.querySelector(`script[src="${newSrc}"]`);
     console.log("query selector", query);
-    if (query) {
-    console.log("document-head--3", document.head);
+    // if (query) {
+    // console.log("document-head--3", document.head);
 
-        console.log("inside if query")
-        return;
-    }
+    //     console.log("inside if query")
+    //     return;
+    // }
 
     const linkTag = document.getElementById('iassist-css');
     console.log("Linktag", linkTag, linkTag.parentNode);
