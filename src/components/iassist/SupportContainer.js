@@ -28,16 +28,16 @@ const SupportContainer = ({ logOut, setLoader }) => {
     const handleVersionAvailable = () => {
         setIsNewVersionAvailable(true);
     }
-    
+
 
     const getConfigDetails = async () => {
 
         setConfigLoader(true);
-        
+
         if (AppId.current) {
             const tokens = `Bearer ${AppId.current}`;
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/`, null, false, 'GET', null, tokens, handleVersionAvailable)
-            .then(response => {
+                .then(response => {
 
                     if (JSON.stringify(response) === "{}") {
                         return;
@@ -154,7 +154,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
         setOpenSupport(false);
     }
 
-    const supportButtonClick = async(e) => {
+    const supportButtonClick = (e) => {
 
         setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
@@ -167,21 +167,15 @@ const SupportContainer = ({ logOut, setLoader }) => {
             setIsNewVersionAvailable(false)
         } else {
 
-            console.log(triggerButton,e.target,!webSocket, triggerButton?.contains(e.target))
+
             if (!webSocket && triggerButton?.contains(e.target)) {
 
                 setIsButtonClick(true)
                 // getConfigDetails('onButtonClick');
-                if (!configLoader) {await getConfigDetails()
-                    
-                    .then((res)=>{
-
-                        console.log(res)
-                    const toast=document.getElementsByClassName('toast-wrapper');
-                    if (toast && toast.length > 0 && toast[0]) return;
-                    res?.status!==207 &&  alertService.showToast('process', 'Loading...');
-                });
-            }
+                if (!configLoader) getConfigDetails();
+                const toast = document.getElementsByClassName('toast-wrapper');
+                if (toast && toast.length > 0 && toast[0]) return;
+                //   alertService.showToast('process', 'Loading...');
             }
         }
     }
@@ -265,7 +259,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
                     panelPosition={panelPosition.current}
                     platformId={platformId}
                     logOut={logOut}
-                    // setIsNewVersionAvailable={setIsNewVersionAvailable}
+                // setIsNewVersionAvailable={setIsNewVersionAvailable}
                 />}
 
             {isNewVersionAvailable && isButtonClick &&

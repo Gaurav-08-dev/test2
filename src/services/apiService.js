@@ -106,48 +106,34 @@ const updateScriptTag = () => {
 
     try {
 
-        console.log("init", document.head)
 
-        console.log("document-head", document.head);
         let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
         new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
         new_version = new_version.join('');
 
         const newSrc = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
         const query = document.querySelector(`script[src="${newSrc}"]`);
-        console.log("query selector", query);
-        if (query) {
-            console.log("document-head--3", document.head);
 
-            console.log("inside if query")
+        if (query) {
             return;
         }
 
         const linkTag = document.getElementById('iassist-css');
-        console.log("Linktag", linkTag, linkTag.parentNode);
         if (linkTag && document.head.contains(linkTag)) linkTag.remove()
 
-
-        console.log("before script creation")
         const newScript = document.createElement('script');
         newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
         newScript.id = "iassist-html";
-        console.log("after script creation")
         document.head.appendChild(newScript);
 
 
         newScript.onload=()=>{
-        console.log("before get old script")
         const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
-        console.log("after get old script")
 
         if (oldScript && document.head.contains(oldScript)) {
-            console.log("oldScript", oldScript)
             oldScript.remove()
             // document.head.removeChild(oldScript);
-            console.log("oldScript --- after", oldScript)
         }
-        console.log("after get old script -- 2")
     }
 
     }
@@ -296,7 +282,6 @@ const APIService = {
                         // window.location.reload();
                         // callback()
                         updateScriptTag()
-                        return response;
                         // handleVersionChange();
                         // return {message:"version change"};
                     }
@@ -304,7 +289,6 @@ const APIService = {
                     return response.json()
                         .then((parsedResponse) => {
                             if (parsedResponse.status === 0 && parsedResponse.wait_time === undefined && !API_URL.includes('user_preference')) {
-                                console.log("inside error")
                                 AlertSevice.showToast('error', parsedResponse.message || parsedResponse.msg || 'Some error occured');
                             }
                             return parsedResponse;
@@ -313,7 +297,6 @@ const APIService = {
             })
             .catch((e) => {
 
-                console.log("e", e)
                 if (e.message !== 'The user aborted a request.') {
                     if (e.message === 'Failed to fetch') {
                         AlertSevice.showToast('error', 'Request ' + e.message.toLowerCase() + ' due to network issue.');
