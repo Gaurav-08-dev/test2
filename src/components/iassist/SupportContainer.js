@@ -169,8 +169,9 @@ const SupportContainer = ({ logOut, setLoader }) => {
                 setIsButtonClick(true)
                 // getConfigDetails('onButtonClick');
                 if (!configLoader)  getConfigDetails();
-                // if (document.getElementsByClassName('toast-wrapper')[0]) return;
-                //   alertService.showToast('process', 'Loading...');
+                const toast=document.getElementsByClassName('toast-wrapper');
+                if (toast && toast.length > 0 && toast[0]) return;
+                  alertService.showToast('process', 'Loading...');
             }
         }
     }
