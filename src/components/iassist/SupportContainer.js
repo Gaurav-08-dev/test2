@@ -176,7 +176,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
                 if (!configLoader)  getConfigDetails();
                 const toast=document.getElementsByClassName('toast-wrapper');
                 if (toast && toast.length > 0 && toast[0]) return;
-                //   alertService.showToast('process', 'Loading...');
+                  alertService.showToast('process', 'Loading...');
             }
         }
     }
