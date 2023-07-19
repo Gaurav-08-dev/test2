@@ -130,7 +130,7 @@ const updateScriptTag = () => {
     console.log("before script creation")
     const newScript = document.createElement('script');
     newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
-    newScript.id = "iassist-html-2";
+    newScript.id = "iassist-html";
     console.log("after script creation")
 
 
