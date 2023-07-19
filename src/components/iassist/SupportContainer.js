@@ -158,12 +158,15 @@ const SupportContainer = ({ logOut, setLoader }) => {
         setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
 
+
         if (triggerButton?.contains(e.target) && webSocket) {
             e.preventDefault();
             setOpenSupport(true);
             setIsButtonClick(false)
             setIsNewVersionAvailable(false)
         } else {
+
+            console.log(triggerButton,e.target,!webSocket, triggerButton?.contains(e.target))
             if (!webSocket && triggerButton?.contains(e.target)) {
 
                 setIsButtonClick(true)
@@ -175,7 +178,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
             }
         }
     }
-debugger
+
     useEffect(() => {
 
         if (localStorage.length) {
