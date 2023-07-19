@@ -14,7 +14,8 @@ const linkTag = document.createElement("link");
 linkTag.href = 'https://iassist-assets.s3.us-east-2.amazonaws.com/css/iassist.css';
 linkTag.rel = "stylesheet";
 linkTag.id = "iassist-css";
-headElement.append(linkTag);
+document.head.appendChild(linkTag)
+// headElement.append(linkTag);
 
 const metaTag = document.createElement("meta");
 metaTag.httpEquiv = 'cache-control';
