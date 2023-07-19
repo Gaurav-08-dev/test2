@@ -134,6 +134,7 @@ const updateScriptTag = () => {
         newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
         newScript.id = "iassist-html";
         console.log("after script creation")
+        document.head.appendChild(newScript);
 
 
         newScript.onload=()=>{
@@ -150,7 +151,6 @@ const updateScriptTag = () => {
         console.log("after get old script -- 2")
     }
 
-    document.head.appendChild(newScript);
     }
 
     catch (e) {
