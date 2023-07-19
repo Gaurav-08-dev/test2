@@ -104,10 +104,10 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 const updateScriptTag = () => {
     
     const linkTag=document.getElementById('iassist-css');
-    if(linkTag) document.head.removeChild(linkTag)
+    if(linkTag && document.head.contains(linkTag)) document.head.removeChild(linkTag)
     
     console.log("document-head", document.head);
-    let new_version = Constants.IASSIST_SITE_VERSION.split('');
+    let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
     new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
     new_version = new_version.join('');
 
@@ -121,12 +121,11 @@ const updateScriptTag = () => {
     newScript.id="iassist-html";
 
 
-    
     // newScript.onload=()=>{
         
         const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
         
-        if (oldScript) {
+        if (oldScript && document.head.contains(oldScript)) {
             console.log("oldScript", oldScript)
             document.head.removeChild(oldScript);
             console.log("oldScript --- after", oldScript)
