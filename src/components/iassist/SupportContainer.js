@@ -154,6 +154,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
     }
 
     const supportButtonClick =  (e) => {
+        console.log("e",e)
         setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
 
