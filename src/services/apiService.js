@@ -107,8 +107,7 @@ const updateScriptTag = () => {
     try {
 
         console.log("init", document.head)
-
-
+debugger
         console.log("document-head", document.head);
         let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
         new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
