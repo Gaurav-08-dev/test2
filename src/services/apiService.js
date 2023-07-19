@@ -115,15 +115,18 @@ const updateScriptTag = () => {
     const query = document.querySelector(`script[src="${newSrc}"]`);
     console.log("query selector", query);
     if (query) {
+    console.log("document-head--3", document.head);
+
         console.log("inside if query")
         return;
     }
 
     const linkTag = document.getElementById('iassist-css');
     console.log("Linktag", linkTag, linkTag.parentNode);
-    if (linkTag && document.head.contains(linkTag)) document.head.removeChild(linkTag)
+    // && document.head.contains(linkTag)
+    if (linkTag ) linkTag.remove()
 
-    
+
     console.log("before script creation")
     const newScript = document.createElement('script');
     newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
@@ -139,7 +142,8 @@ const updateScriptTag = () => {
 
     if (oldScript && document.head.contains(oldScript)) {
         console.log("oldScript", oldScript)
-        document.head.removeChild(oldScript);
+        oldScript.remove()
+        // document.head.removeChild(oldScript);
         console.log("oldScript --- after", oldScript)
     }
     console.log("after get old script -- 2")
