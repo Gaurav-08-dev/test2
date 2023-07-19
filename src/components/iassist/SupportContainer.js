@@ -174,10 +174,12 @@ const SupportContainer = ({ logOut, setLoader }) => {
                 // getConfigDetails('onButtonClick');
                 if (!configLoader) {await getConfigDetails()
                     
-                    .then(()=>{
+                    .then((res)=>{
+
+                        console.log(res)
                     const toast=document.getElementsByClassName('toast-wrapper');
                     if (toast && toast.length > 0 && toast[0]) return;
-                      alertService.showToast('process', 'Loading...');
+                    res?.status!==207 &&  alertService.showToast('process', 'Loading...');
                 });
             }
             }

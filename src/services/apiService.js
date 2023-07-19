@@ -296,6 +296,7 @@ const APIService = {
                         // window.location.reload();
                         // callback()
                         updateScriptTag()
+                        return response;
                         // handleVersionChange();
                         // return {message:"version change"};
                     }
