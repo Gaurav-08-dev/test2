@@ -104,18 +104,19 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 const updateScriptTag = () => {
     
     
+    console.log("document-head", document.head);
     let new_version = Constants.IASSIST_SITE_VERSION.split('');
-    new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1
-    new_version = new_version.join('')
+    new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
+    new_version = new_version.join('');
 
     const newSrc='https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
     const query=document.querySelector(`script[src="${newSrc}"]`);
-    console.log("query selector",query )
+    console.log("query selector",query );
     if(query) return;
     
     const newScript = document.createElement('script');
     newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
-    newScript.id="iassist-html"
+    newScript.id="iassist-html";
 
 
     
