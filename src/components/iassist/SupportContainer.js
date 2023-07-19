@@ -154,7 +154,6 @@ const SupportContainer = ({ logOut, setLoader }) => {
     }
 
     const supportButtonClick =  (e) => {
-debugger
         setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
 
@@ -175,7 +174,7 @@ debugger
             }
         }
     }
-
+debugger
     useEffect(() => {
 
         if (localStorage.length) {
