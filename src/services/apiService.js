@@ -101,64 +101,63 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 //     window.location.reload();
 // }
 
-// const updateScriptTag = () => {
+const updateScriptTag = () => {
 
 
-// try{
+    try {
 
-//     console.log("init", document.head)
-
-
-//     console.log("document-head", document.head);
-//     let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
-//     new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
-//     new_version = new_version.join('');
-
-//     const newSrc = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
-//     const query = document.querySelector(`script[src="${newSrc}"]`);
-//     console.log("query selector", query);
-//     // if (query) {
-//     // console.log("document-head--3", document.head);
-
-//     //     console.log("inside if query")
-//     //     return;
-//     // }
-
-//     const linkTag = document.getElementById('iassist-css');
-//     console.log("Linktag", linkTag, linkTag.parentNode);
-//     // && document.head.contains(linkTag)
-//     if (linkTag ) linkTag.remove()
+        console.log("init", document.head)
 
 
-//     console.log("before script creation")
-//     const newScript = document.createElement('script');
-//     newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
-//     newScript.id = "iassist-html";
-//     console.log("after script creation")
+        console.log("document-head", document.head);
+        let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
+        new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
+        new_version = new_version.join('');
+
+        const newSrc = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
+        const query = document.querySelector(`script[src="${newSrc}"]`);
+        console.log("query selector", query);
+        if (query) {
+            console.log("document-head--3", document.head);
+
+            console.log("inside if query")
+            return;
+        }
+
+        const linkTag = document.getElementById('iassist-css');
+        console.log("Linktag", linkTag, linkTag.parentNode);
+        if (linkTag && document.head.contains(linkTag)) linkTag.remove()
 
 
-//     // newScript.onload=()=>{
-//     document.head.appendChild(newScript);
-//     console.log("before get old script")
-//     const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
-//     console.log("after get old script")
+        console.log("before script creation")
+        const newScript = document.createElement('script');
+        newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
+        newScript.id = "iassist-html";
+        console.log("after script creation")
 
-//     if (oldScript && document.head.contains(oldScript)) {
-//         console.log("oldScript", oldScript)
-//         oldScript.remove()
-//         // document.head.removeChild(oldScript);
-//         console.log("oldScript --- after", oldScript)
-//     }
-//     console.log("after get old script -- 2")
-// }
 
-// catch(e){
-//     console.log(e)
-// }
-//     // }
-//     // const oldScriptTag=document.getElementById("iassist-html");
+        // newScript.onload=()=>{
+        document.head.appendChild(newScript);
+        console.log("before get old script")
+        const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+        console.log("after get old script")
 
-// }
+        if (oldScript && document.head.contains(oldScript)) {
+            console.log("oldScript", oldScript)
+            oldScript.remove()
+            // document.head.removeChild(oldScript);
+            console.log("oldScript --- after", oldScript)
+        }
+        console.log("after get old script -- 2")
+    }
+
+    catch (e) {
+        console.log(e)
+    }
+    // }
+    // const oldScriptTag=document.getElementById("iassist-html");
+
+}
 
 
 
@@ -295,7 +294,7 @@ const APIService = {
                         // so in this case, force reload the browser so that user gets the latest version of app
                         // window.location.reload();
                         // callback()
-                        window?.updateScriptTag()
+                        updateScriptTag()
                         // handleVersionChange();
                         // return {message:"version change"};
                     }
@@ -312,7 +311,7 @@ const APIService = {
             })
             .catch((e) => {
 
-                console.log("e",e)
+                console.log("e", e)
                 if (e.message !== 'The user aborted a request.') {
                     if (e.message === 'Failed to fetch') {
                         AlertSevice.showToast('error', 'Request ' + e.message.toLowerCase() + ' due to network issue.');
