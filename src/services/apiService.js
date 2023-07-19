@@ -103,6 +103,8 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 
 const updateScriptTag = () => {
 
+
+    
     console.log("init", document.head)
 
 
