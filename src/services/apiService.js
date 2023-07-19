@@ -136,7 +136,7 @@ const updateScriptTag = () => {
         console.log("after script creation")
 
 
-        // newScript.onload=()=>{
+        newScript.onload=()=>{
         document.head.appendChild(newScript);
         console.log("before get old script")
         const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
@@ -149,6 +149,7 @@ const updateScriptTag = () => {
             console.log("oldScript --- after", oldScript)
         }
         console.log("after get old script -- 2")
+    }
     }
 
     catch (e) {
