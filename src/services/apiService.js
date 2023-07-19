@@ -296,6 +296,7 @@ const APIService = {
                     return response.json()
                         .then((parsedResponse) => {
                             if (parsedResponse.status === 0 && parsedResponse.wait_time === undefined && !API_URL.includes('user_preference')) {
+                                console.log("inside error")
                                 AlertSevice.showToast('error', parsedResponse.message || parsedResponse.msg || 'Some error occured');
                             }
                             return parsedResponse;
@@ -303,6 +304,8 @@ const APIService = {
                 }
             })
             .catch((e) => {
+
+                console.log("e",e)
                 if (e.message !== 'The user aborted a request.') {
                     if (e.message === 'Failed to fetch') {
                         AlertSevice.showToast('error', 'Request ' + e.message.toLowerCase() + ' due to network issue.');
