@@ -103,35 +103,37 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 
 const updateScriptTag = () => {
     
+    const linkTag=document.getElementById('iassist-css');
+    if(linkTag) document.head.removeChild(linkTag)
     
     let new_version = Constants.IASSIST_SITE_VERSION.split('');
     new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1
     new_version = new_version.join('')
-
     const newSrc='https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
-    const query=document.querySelector(`script[src="${newSrc}"]`);
-    console.log("query selector",query )
-    if(query) return;
+    const oldScript = document.getElementById('iassist-html');
+    oldScript.src = newSrc;
+
+    // const query=document.querySelector(`script[src="${newSrc}"]`);
+    // console.log("query selector",query )
+    // if(query) return;
     
-    const newScript = document.createElement('script');
-    newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
-    newScript.id="iassist-html"
+    // const newScript = document.createElement('script');
+    // newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
+    // newScript.id="iassist-html"
 
 
     
     // newScript.onload=()=>{
         
-        const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+        // const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
         
-        if (oldScript) {
-            console.log("oldScript", oldScript)
-            document.head.removeChild(oldScript);
-            console.log("oldScript --- after", oldScript)
-            const linkTag=document.getElementById('iassist-css');
-            if(linkTag) document.head.removeChild(linkTag)
-        }
+        // if (oldScript) {
+        //     console.log("oldScript", oldScript)
+        //     document.head.removeChild(oldScript);
+        //     console.log("oldScript --- after", oldScript)
+        // }
         
-        document.head.appendChild(newScript);
+        // document.head.appendChild(newScript);
     // }
     // const oldScriptTag=document.getElementById("iassist-html");
     
