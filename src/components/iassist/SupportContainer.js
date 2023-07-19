@@ -240,7 +240,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
     }, []) // eslint-disable-line 
     return (
         <>
-            {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>}
+            {/* {btnId.current === 'btn-support-wrapper' && <div id="btn-support-wrapper"> <button>Open</button></div>} */}
 
             {/* {isNewVersionAvailable && isButtonClick && <div className="iassist-version-change-message">
                 <p>New Version is available, please update app before start using it</p>
