@@ -106,12 +106,15 @@ const updateScriptTag = () => {
 
     try {
 
+        const scriptLink=Constants.API_IASSIST_BASE_URL
+
+        console.log("script-link",scriptLink)
 
         let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
         new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
         new_version = new_version.join('');
 
-        const newSrc = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
+        const newSrc = `${scriptLink}` + '?v=' + new_version;
         const query = document.querySelector(`script[src="${newSrc}"]`);
 
         if (query) {
@@ -122,13 +125,13 @@ const updateScriptTag = () => {
         if (linkTag && document.head.contains(linkTag)) linkTag.remove()
 
         const newScript = document.createElement('script');
-        newScript.src = 'https://gaurav-08-dev.github.io/test2/index.js' + '?v=' + new_version;
+        newScript.src = `${scriptLink}` + '?v=' + new_version;
         newScript.id = "iassist-html";
         document.head.appendChild(newScript);
 
 
         newScript.onload=()=>{
-        const oldScript = document.querySelector('script[src="https://gaurav-08-dev.github.io/test2/index.js"]') || document.querySelector(`script[src="https://gaurav-08-dev.github.io/test2/index.js?v=${Constants.IASSIST_SITE_VERSION}"]`);
+        const oldScript = document.querySelector(`script[src="${scriptLink}"]`) || document.querySelector(`script[src="${scriptLink}"v=${Constants.IASSIST_SITE_VERSION}"]`);
 
         if (oldScript && document.head.contains(oldScript)) {
             oldScript.remove()
