@@ -106,13 +106,11 @@ const updateScriptTag = () => {
 
     try {
 
-        const scriptLink=Constants.API_IASSIST_BASE_URL
+        const scriptLink=Constants.IASSIST_APPLICATION_URL
 
-        console.log("script-link",scriptLink)
-
-        let new_version = Constants.IASSIST_SITE_VERSION.split(''); // ! for testing only
+        let new_version = Constants.IASSIST_SITE_VERSION.split('.'); // ! for testing only
         new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
-        new_version = new_version.join('');
+        new_version = new_version.join('.');
 
         const newSrc = `${scriptLink}` + '?v=' + new_version;
         const query = document.querySelector(`script[src="${newSrc}"]`);
