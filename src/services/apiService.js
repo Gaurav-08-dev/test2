@@ -106,7 +106,8 @@ const updateScriptTag = () => {
 
     try {
 
-        const scriptLink=Constants.IASSIST_APPLICATION_URL
+        const scriptLink='https://gaurav-08-dev.github.io/test2/index.js';
+        // Constants.IASSIST_APPLICATION_URL
 
         let new_version = Constants.IASSIST_SITE_VERSION.split('.'); // ! for testing only
         new_version[new_version.length - 1] = +new_version[new_version.length - 1] + 1;
