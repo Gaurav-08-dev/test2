@@ -115,6 +115,11 @@ const SupportContainer = ({ logOut, setLoader }) => {
                     if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('info', `New Message Arrived on topic id: ${received_msg.topic_id}`);
                 }
+                if (received_msg.type === 'version') {
+                    const { version } = received_msg.data;
+                    console.log(version, Constants.IASSIST_SITE_VERSION)
+                    alertService.showToast('info','New update available')
+                }
             };
 
             webSocket.onopen = function () {
