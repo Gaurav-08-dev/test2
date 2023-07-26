@@ -215,7 +215,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
 
     useEffect(() => {
 
-        alertService.showToast('info', `New Message Arrived on topic id: ${''}`,{autoClose:true},10000)
+        // alertService.showToast('info', `New Message Arrived on topic id: ${''}`,{autoClose:true},10000)
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
