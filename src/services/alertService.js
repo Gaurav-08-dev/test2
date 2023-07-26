@@ -21,9 +21,9 @@ function onToastHide() {
  * @param {string} message 
  * @param {{autoClose : true}} options 
  */
-function showToast(type, message, options={autoClose:true}) {
+function showToast(type, message, options={autoClose:true},timeout) {
   alertId = alertId + 1;
-  toastShowSubject.next({ id: alertId, type, message, ...options });
+  toastShowSubject.next({ id: alertId, type, message, ...options,timeout});
   return alertId;
 }
 

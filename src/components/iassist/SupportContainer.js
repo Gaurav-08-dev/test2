@@ -7,8 +7,8 @@ import alertService from '../../services/alertService';
 import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 import VersionMessage from "./VersionMessage";
-let webSocket;
 import { updateScriptTag } from "../../services/apiService";
+let webSocket;
 
 
 const SupportContainer = ({ logOut, setLoader }) => {
@@ -119,12 +119,15 @@ const SupportContainer = ({ logOut, setLoader }) => {
                 }
                 if (received_msg.type === 'version') {
                     const { version } = received_msg.data;
+
+                    console.log(version , Constants.IASSIST_SITE_VERSION)
                     if (version !== Constants.IASSIST_SITE_VERSION) {
-                        alertService.showToast('info', 'iAssist New update is available, Please Refresh');
-                        
+
+                        alertService.showToast('info', 'iAssist New update is available, Please Refresh',{autoClose:true},5000);
+
                         setTimeout(()=>{
                             updateScriptTag()
-                        },[5000])
+                        },[6000])
                     }
 
                     console.log(version, Constants.IASSIST_SITE_VERSION)
@@ -212,6 +215,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
 
     useEffect(() => {
 
+        alertService.showToast('info', `New Message Arrived on topic id: ${''}`,{autoClose:true},10000)
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 

@@ -601,11 +601,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         }
         else if (received_msg.type === 'version') {
             const { version } = received_msg.data;
+            console.log(version , Constants.IASSIST_SITE_VERSION)
             if (version !== Constants.IASSIST_SITE_VERSION) {
-                alertService.showToast('info', 'iAssist New update is available, Please Refresh')
+                alertService.showToast('info', 'iAssist New update is available, Please Refresh',{autoClose:true},5000)
                 setTimeout(() => {
                     updateScriptTag()
-                }, [5000])
+                }, [6000])
             }
             // console.log(version, Constants.IASSIST_SITE_VERSION)
             // alertService.showToast('info','New update available')

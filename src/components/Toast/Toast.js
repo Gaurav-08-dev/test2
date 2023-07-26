@@ -22,11 +22,10 @@ export default class Toast extends React.Component {
       this.setState({
         toasts: [...this.state.toasts, toast]
       });
-
       if (toast.autoClose) {
         setTimeout(() => {
           this.remove(toast.id);
-        }, TOAST_TIMEOUT);
+        }, toast.timeout?toast.timeout:TOAST_TIMEOUT);
       }
     });
 
