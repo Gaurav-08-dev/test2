@@ -117,8 +117,10 @@ const SupportContainer = ({ logOut, setLoader }) => {
                 }
                 if (received_msg.type === 'version') {
                     const { version } = received_msg.data;
+                    if(version !== Constants.IASSIST_SITE_VERSION) {
+                        alertService.showToast('info','iAssist New update is available, Please Refresh')
+                    }
                     console.log(version, Constants.IASSIST_SITE_VERSION)
-                    alertService.showToast('info','New update available')
                 }
             };
 
