@@ -2,7 +2,7 @@ import { Subject } from "rxjs";
 
 const toastShowSubject = new Subject();
 
-console.log(toastShowSubject)
+
 const toastHideSubject = new Subject();
 
 let alertId = 0;

@@ -16,6 +16,7 @@ import MultiPeriodPickerPanel from '../MultiPeriodPicker/MultiPeriodPicker';
 import { formatDates, isElectron } from "./Utilityfunction";
 import ClickOutsideListner from "./ClickOutsideListener";
 import parse from 'html-react-parser';
+import { updateScriptTag } from '../../services/apiService';
 
 
 
@@ -137,7 +138,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         readUnreadStatus: { read: true, unRead: true }
     }
 
-    
+
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const controller = new AbortController();
@@ -265,7 +266,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         sessionStorage.removeItem(Constants.SITE_PREFIX_CLIENT + 'filterValue');
     }
 
-    const  getFilterValueFromSession = async () => {
+    const getFilterValueFromSession = async () => {
 
         const getFilterValue = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'filterValue');
 
@@ -444,7 +445,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         APIService.apiRequest(url, null, false, 'GET', fetchTicketsController, token)
             .then(response => {
 
-                
+
                 if (response) {
 
                     const result = response;
@@ -600,8 +601,11 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         }
         else if (received_msg.type === 'version') {
             const { version } = received_msg.data;
-            if(version !== Constants.IASSIST_SITE_VERSION) {
-                alertService.showToast('info','iAssist New update is available, Please Refresh')
+            if (version !== Constants.IASSIST_SITE_VERSION) {
+                alertService.showToast('info', 'iAssist New update is available, Please Refresh')
+                setTimeout(() => {
+                    updateScriptTag()
+                }, [5000])
             }
             // console.log(version, Constants.IASSIST_SITE_VERSION)
             // alertService.showToast('info','New update available')
@@ -743,7 +747,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     const showUnreadNotification = (id) => {
 
-        let unReadListTemp= state.statusTab === 'open'?unReadList.current:unReadList_resolved.current
+        let unReadListTemp = state.statusTab === 'open' ? unReadList.current : unReadList_resolved.current
 
         const unreadFlag = unReadListTemp.filter(read => {
             return read.topic_id === id
@@ -1092,14 +1096,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             // if (event.target.nodeName?.toLowerCase() === 'grammarly-popups') { // * handle grammarly plugin
             //     return;
             // }
-            
+
             if (state.topicClick) {
                 return;
             }
-            if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) { 
+            if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) {
                 iAssistOutsideClick = true;
-            //     closePanes();
-            //     clearData();
+                //     closePanes();
+                //     clearData();
             }
 
         })
@@ -1394,7 +1398,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                                 </div>
 
-                                
+
 
                             </div>
 
@@ -1416,7 +1420,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                                                     <div className='iassist-topic-description'>{getDescriptionBasedOnButton(topic?.description)}
                                                     </div>
-{/* {parse(topic?.description.substr(0, 100), options)}{topic?.description?.length > 102 && '...'} */}
+                                                    {/* {parse(topic?.description.substr(0, 100), options)}{topic?.description?.length > 102 && '...'} */}
                                                     <Detail topic={topic} type={ticketTypeList.current} allUser={allUser_resolved.current.length ? allUser_resolved.current : reportersList.current} allAccount={allAccount_resolved.current} />
 
                                                 </div>}
@@ -1523,7 +1527,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                     </div>
 
                                                     <div className='iassist-topic-description'>{getDescriptionBasedOnButton(topic?.description)}
-                                                    {/* {parse(topic?.description.substr(0, 100))}{topic?.description?.length > 102 && '...'} */}
+                                                        {/* {parse(topic?.description.substr(0, 100))}{topic?.description?.length > 102 && '...'} */}
                                                     </div>
 
                                                     <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />

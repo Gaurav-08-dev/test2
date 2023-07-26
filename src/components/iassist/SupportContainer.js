@@ -8,6 +8,7 @@ import APIService from '../../services/apiService';
 import { isElectron } from "./Utilityfunction";
 import VersionMessage from "./VersionMessage";
 let webSocket;
+import { updateScriptTag } from "../../services/apiService";
 
 
 const SupportContainer = ({ logOut, setLoader }) => {
@@ -110,16 +111,22 @@ const SupportContainer = ({ logOut, setLoader }) => {
                     let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
                     sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
                     changeValue(isUnread);
-                } if (received_msg.type === 'chat') {
+                }
+                if (received_msg.type === 'chat') {
                     changeValue(true);
                     if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('info', `New Message Arrived on topic id: ${received_msg.topic_id}`);
                 }
                 if (received_msg.type === 'version') {
                     const { version } = received_msg.data;
-                    if(version !== Constants.IASSIST_SITE_VERSION) {
-                        alertService.showToast('info','iAssist New update is available, Please Refresh')
+                    if (version !== Constants.IASSIST_SITE_VERSION) {
+                        alertService.showToast('info', 'iAssist New update is available, Please Refresh');
+                        
+                        setTimeout(()=>{
+                            updateScriptTag()
+                        },[5000])
                     }
+
                     console.log(version, Constants.IASSIST_SITE_VERSION)
                 }
             };

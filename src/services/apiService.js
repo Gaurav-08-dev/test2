@@ -101,7 +101,7 @@ function getAPIRequestOptions(req_method, authHeader, data, controller) {
 //     window.location.reload();
 // }
 
-const updateScriptTag = () => {
+export const updateScriptTag = () => {
 
 
     try {
