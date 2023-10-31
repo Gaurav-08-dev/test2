@@ -1,13 +1,18 @@
 
-export const SITE_TITLE = 'Sight byData';
+export const SITE_TITLE = 'iAssist byData';
 export const SITE_PREFIX = 'iassist_main_';
 export const DESKTOP_SITE_PREFIX = 'iassist_client_desktop_';
 export const SITE_PREFIX_CLIENT = 'iassist_client_';
-export const IASSIST_SITE_VERSION='1.2.6';
+export const IASSIST_SITE_VERSION='1.3.5';
 export const APPLICATION_NAME = process.env.REACT_APP_APPLICATION_NAME;
 export const API_BASE_URL = process.env.REACT_APP_API_URL; //Prod
 export const API_WEBSOCKET_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_WEBSOCKET_URL : "wss://support-dev-api.bydata.com/";
 export const API_IASSIST_BASE_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_IASSIST_API_URL : "https://support-dev-api.bydata.com/";
+
+
+export const IASSIST_APPLICATION_URL = process.env.NODE_ENV === 'production' ? "https://iassist-assets.s3.us-east-2.amazonaws.com/script/sight/isupport.js" : "https://iassist-assets.s3.us-east-2.amazonaws.com/script/sight/isupport-dev.js";
+// "https://support-dev-api.bydata.com/sight/";
+// export const LOADING_ICON = 'images/icon-loading.gif';
 export const months = ["January", "Febraury", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 

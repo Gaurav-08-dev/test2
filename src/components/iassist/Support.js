@@ -20,6 +20,7 @@ import { updateScriptTag } from '../../services/apiService';
 
 
 
+
 let pageNumber = 1;
 let pageNumber_resolved = 1;
 const pageSize = 10;
@@ -27,8 +28,8 @@ let totalPage = 0;
 let totalPage_resolved = 0;
 let tabData = 'open';
 let dateRange = ['Date'];
-const defType = { 'name': 'All', 'id': 'All' };
-const defReporter = { 'first_name': 'All', 'id': 'All' };
+// const defType = { 'name': 'All', 'id': 'All' };
+// const defReporter = { 'first_name': 'All', 'id': 'All' };
 let isDeleteClick = false;
 
 export let iAssistOutsideClick = false;;
@@ -112,7 +113,7 @@ const reducer = (state, action) => {
 }
 
 
-const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, logOut, newVersionAvailable }) => {
+const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, logOut, topPosition }) => {
 
 
     const initialState = {
@@ -165,6 +166,8 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
     const searchString = useRef('');
     const ticketTypeList = useRef([]);
+    const selectedType = useRef([]);
+    const selectReporter = useRef([])
     const reportersList = useRef([]);
 
     const unRead = useRef(true); // for URL 
@@ -184,17 +187,17 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
 
 
-    if (ticketTypeList.current.length > 0 && ticketTypeList.current[0].id !== 'All') {
+    // if (ticketTypeList.current.length > 0 && ticketTypeList.current[0].id !== 'All') {
 
-        ticketTypeList.current.unshift(defType);
+    //     ticketTypeList.current.unshift(defType);
 
-    }
+    // }
 
-    if (reportersList.current.length > 0 && reportersList.current[0].id !== 'All') {
+    // if (reportersList.current.length > 0 && reportersList.current[0].id !== 'All') {
 
-        reportersList.current.unshift(defReporter);
+    //     reportersList.current.unshift(defReporter);
 
-    }
+    // }
 
     const getUrl = (searchQuery) => {
 
@@ -209,15 +212,19 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         const unReadFlag = unRead.current ? '&unread=true' : '&unread=false'
         const readFlag = readCheckBoxStatus.current ? '&read=true' : '&read=false'
+        let ticketId = selectedType.current.map(item => item.id).join(',');
+        ticketId = ticketId ? `&type_id=${ticketId}` : '';
 
+        let reporterId = selectReporter.current.map(item => item.id).join(',');
+        reporterId = reporterId ? `&reporter=${reporterId}` : '';
 
         if (dateRange[0] === 'Date') {
 
-            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${tabData === 'open' ? pageNumber : pageNumber_resolved}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
+            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${tabData === 'open' ? pageNumber : pageNumber_resolved}&status_flag=${tab}&sort_order=descending${ticketId}${reporterId}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
 
         } else {
 
-            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${tabData === 'open' ? pageNumber : pageNumber_resolved}&status_flag=${tab}&sort_order=descending&type_id=${type_detail?.id}&date_from=${dateRange[0]}&date_to=${dateRange[1]}&reporter=${reporter_detail?.id}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
+            url = Constants.API_IASSIST_BASE_URL + `${platform}/topic/?page_size=${pageSize}&page_number=${tabData === 'open' ? pageNumber : pageNumber_resolved}&status_flag=${tab}&sort_order=descending&${ticketId}&date_from=${dateRange[0]}&date_to=${dateRange[1]}${reporterId}${searchStringFlag}${unReadFlag}${readFlag}&app_id=${platformId}`;
 
         }
 
@@ -300,7 +307,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                 dispatch({ type: actionType.read_unread_status, payload: { ...state.readUnreadStatus, ...filterValue?.readUnreadStatus } })
                 retainedStatus = { ...filterValue.readUnreadStatus };
-
 
             }
 
@@ -411,7 +417,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
     }
     const getTopicsBasedOnFilter = async (searchQuery, updatedPageNumber, filter, isDataExistsFlag) => {
 
-        // setUpdateApi(prev => !prev);
         updatedPageNumber = updatedPageNumber || 1;
 
         if (updatedPageNumber) { tabData === 'open' ? pageNumber = updatedPageNumber : pageNumber_resolved = updatedPageNumber; }
@@ -423,11 +428,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
             setShowLoader(true);
         }
-
-        // if (filter || searchQuery) {
-        //     setShowLoader(true);
-        //     // setDisableButton(true);
-        // }
 
         dispatch({ type: actionType.initial_load_status, payload: false })
 
@@ -473,12 +473,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                             if (tabData === 'open') {
 
                                 data['open'] = { result: result?.message ? [] : result, current_page_number: currentPageNumber };
-                                // data= {...data, 'open': { result: result, current_page_number: currentPageNumber } }
 
 
                             } else {
-
-                                // data= {...data, 'resolved': { result: result, current_page_number: currentPageNumber } }
                                 data['resolved'] = { result: result?.message ? [] : result, current_page_number: currentPageNumber };
 
                             }
@@ -510,12 +507,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                 setIsApiCallActive(false);
                 setShowLoader(false);
                 setDisableStatusButton(false);
-
-                // setUpdateApi(prev => !prev);
-
-
-                // alertService.showToast('error', err.msg);
-
             });
 
     }
@@ -586,7 +577,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
                         dispatch({ type: actionType.count_change })
 
-
                         return;
 
                     }
@@ -601,15 +591,12 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         }
         else if (received_msg.type === 'version') {
             const { version } = received_msg.data;
-            console.log(version , Constants.IASSIST_SITE_VERSION)
             if (version !== Constants.IASSIST_SITE_VERSION) {
-                alertService.showToast('info', 'iAssist New update is available, Please Refresh',{autoClose:true},5000)
+                alertService.showToast('info', 'iAssist New update is available, Please Refresh', { autoClose: true }, 5000)
                 setTimeout(() => {
                     updateScriptTag()
                 }, [6000])
             }
-            // console.log(version, Constants.IASSIST_SITE_VERSION)
-            // alertService.showToast('info','New update available')
         }
 
     };
@@ -670,18 +657,19 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `account_id/?account_id=${id}&app_id=${appConfigId}`, null, false, 'GET', controller, token)
             .then(response => {
 
+
                 if (response) {
 
                     const result = response;
-                    reportersList.current = result;
+
+                    reportersList.current = result?.length ? result:[];
                     sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'reporters', JSON.stringify(result));
-
-
                 }
 
             })
             .catch(err => {
 
+                reportersList.current=[]
                 // alertService.showToast('error', err.msg);
 
             });
@@ -758,50 +746,80 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         return unreadFlag && unreadFlag.length > 0 && unreadFlag[0].unread_count > 0 ? true : false;
     }
 
-    //For filter drop down changes
-    const ondropDownChange = (value, type) => {
+    const checkFilterIsSame = (array1, array2) => {
 
+        return (array1.length === array2.length) && array1.every(function (element, index) {
+            return element.id === array2[index].id;
+        })
+    }
 
+    const ondropDownChange = (value, type) => { //* handles selection of any type from filter section
 
+        let flag = false;
+        if (!type || !value) return;
 
-        if (type === 'reporter' && ((reporter_detail.id !== value.id && value.first_name !== 'All') || (value.first_name === 'All' && reporter_detail.id !== 0))) {
+        switch (type) {
+            case 'reporter':
+                flag = checkFilterIsSame(selectReporter.current, value);
+                selectReporter.current = value;
+                break;
 
-            dispatch({ type: actionType.reporters_label, payload: value })
-            setFilterValueInSession(value, 'reporter')
-            if (value.id === 'All') {
+            case 'ticketType':
+                flag = checkFilterIsSame(selectedType.current, value);
 
-                reporter_detail = { id: 0, name: 'All' };
+                selectedType.current = value;
+                break;
 
-            } else {
-
-                reporter_detail = value;
-
-            }
-
-            getTopicsBasedOnFilter(undefined, undefined, true);
-
-        } else if (type === 'ticketType' && ((type_detail?.id !== value.id && value.name !== 'All') || (value.name === 'All' && type_detail?.id !== 0))) {
-
-
-            dispatch({ type: actionType.ticket_type_label, payload: value })
-            setFilterValueInSession(value, 'ticketType')
-
-            if (value.name === 'All') {
-
-                type_detail = { id: 0, name: 'All' };
-
-            } else {
-
-
-                type_detail = value;
-
-            }
-
-            getTopicsBasedOnFilter(undefined, undefined, true);
-
+            default:
+                break;
         }
 
+        if (!flag) getTopicsBasedOnFilter() && alertService.showToast('success', 'Filter Applied');
+
     }
+
+
+    //For filter drop down changes
+    // const ondropDownChange = (value, type) => {
+
+    //     if (type === 'reporter' && ((reporter_detail.id !== value.id && value.first_name !== 'All') || (value.first_name === 'All' && reporter_detail.id !== 0))) {
+
+    //         dispatch({ type: actionType.reporters_label, payload: value })
+    //         setFilterValueInSession(value, 'reporter')
+    //         if (value.id === 'All') {
+
+    //             reporter_detail = { id: 0, name: 'All' };
+
+    //         } else {
+
+    //             reporter_detail = value;
+
+    //         }
+
+    //         getTopicsBasedOnFilter(undefined, undefined, true);
+
+    //     } else if (type === 'ticketType' && ((type_detail?.id !== value.id && value.name !== 'All') || (value.name === 'All' && type_detail?.id !== 0))) {
+
+
+    //         dispatch({ type: actionType.ticket_type_label, payload: value })
+    //         setFilterValueInSession(value, 'ticketType')
+
+    //         if (value.name === 'All') {
+
+    //             type_detail = { id: 0, name: 'All' };
+
+    //         } else {
+
+
+    //             type_detail = value;
+
+    //         }
+
+    //         getTopicsBasedOnFilter(undefined, undefined, true);
+
+    //     }
+
+    // }
 
     const openFilterList = (e) => {
 
@@ -816,14 +834,15 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
         retainedStatus = { ...retainedStatus, read: true, unread: true };
 
-        if (reporter_detail.id !== 0 || type_detail?.id !== 0 || dateRange[0] !== 'Date' || !unRead.current || !readCheckBoxStatus.current) {
+        if (selectReporter.current.length !== 0 || selectedType.current.length !== 0 || dateRange[0] !== 'Date' || !unRead.current || !readCheckBoxStatus.current) {
 
             tabData === 'open' ? pageNumber = 1 : pageNumber_resolved = 1;
             unRead.current = true;
             readCheckBoxStatus.current = true;
             reporter_detail = { id: 0, name: 'All' };
             type_detail = { id: 0, name: 'All' };
-
+            selectReporter.current = [];
+            selectedType.current = [];
             dateRange = ['Date'];
             dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
             dispatch({ type: actionType.ticket_type_label, payload: 'All' });
@@ -910,7 +929,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
 
 
-            console.log(tabData, totalPage, pageNumber, isApiCallActive)
+
             if (tabData === 'open' && totalPage > pageNumber && !isApiCallActive) {
                 pageNumber += 1;
                 setIsApiCallActive(true);
@@ -1037,14 +1056,15 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         }
         getUsers();
 
-        const subheaderAvailable = document.getElementById('app-sub-header');
+        // const subheaderAvailable = document.getElementById('app-sub-header');
 
-        if (subheaderAvailable) {
+        // if (subheaderAvailable) {
 
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+        let conatinerWrapper = document.getElementsByClassName('iassist-panel');
 
-            conatinerWrapper[0].style.top = '65px';
-            conatinerWrapper[0].style.maxHeight = '92.5%';
+        if (topPosition !== "NULL") {
+            conatinerWrapper[0].style.top = topPosition + 'px';
+            // conatinerWrapper[0].style.maxHeight = '92.5%';
         }
 
 
@@ -1076,38 +1096,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
 
 
 
-        document.addEventListener("mouseup", (event) => {
-
-            iAssistOutsideClick = false;
-
-            const calendar = document.getElementById('calendar-wrapper');
-
-            if (calendar && !(calendar.contains(event.target))) {
-
-                dispatch({ type: actionType.is_open_calendar })
-
-            }
-
-            const pane = document.getElementById('menu');
-
-            if (pane && !pane.contains(event.target)) setOpenDesktopMenu(false);
-
-            const home = document.getElementById('iassist-panel');
-
-            // if (event.target.nodeName?.toLowerCase() === 'grammarly-popups') { // * handle grammarly plugin
-            //     return;
-            // }
-
-            if (state.topicClick) {
-                return;
-            }
-            if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) {
-                iAssistOutsideClick = true;
-                //     closePanes();
-                //     clearData();
-            }
-
-        })
+        document.addEventListener("mouseup", handleMouseUpForSupport)
         window.addEventListener('online', onOnline)
 
         window.addEventListener('offline', onOffline)
@@ -1117,11 +1106,46 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
             dispatch({ type: actionType.initial_load_status, payload: true })
             dispatch({ type: actionType.read_unread_status, payload: { read: true, unRead: true } })
             // tabData = 'open';
-
+            window.removeEventListener('online', onOnline);
+            window.removeEventListener('offline', onOffline);
+            document.removeEventListener('mouseup', handleMouseUpForSupport)
 
         }
 
     }, []) // eslint-disable-line
+
+    const handleMouseUpForSupport = (event) => {
+
+        iAssistOutsideClick = false;
+
+        const calendar = document.getElementById('calendar-wrapper');
+
+        if (calendar && !(calendar.contains(event.target))) {
+
+            dispatch({ type: actionType.is_open_calendar })
+
+        }
+
+        const pane = document.getElementById('menu');
+
+        if (pane && !pane.contains(event.target)) setOpenDesktopMenu(false);
+
+        const home = document.getElementById('iassist-panel');
+
+        // if (event.target.nodeName?.toLowerCase() === 'grammarly-popups') { // * handle grammarly plugin
+        //     return;
+        // }
+
+        if (state.topicClick) {
+            return;
+        }
+        if (home && !(home.contains(event.target)) && !checkApptype.current && !state.topic) {
+            iAssistOutsideClick = true;
+            //     closePanes();
+            //     clearData();
+        }
+
+    }
 
     useEffect(() => {
 
@@ -1131,12 +1155,14 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
         }
 
 
-        const subheaderAvailable = document.getElementById('app-sub-header');
-        if (subheaderAvailable) {
-            let conatinerWrapper = document.getElementsByClassName('iassist-panel');
-            conatinerWrapper[0].style.top = '65px';
-            conatinerWrapper[0].style.maxHeight = '92.5%';
+        // const subheaderAvailable = document.getElementById('app-sub-header');
+        // if (subheaderAvailable) {
+        let conatinerWrapper = document.getElementsByClassName('iassist-panel');
+        if (topPosition !== "NULL") {
+            conatinerWrapper[0].style.top = topPosition + 'px';
+            // conatinerWrapper[0].style.maxHeight = '92.5%';
         }
+        // }
 
 
         if (bodyRef.current && tabData === 'open') { bodyRef.current.addEventListener('scroll', onScroll); };
@@ -1230,7 +1256,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                             if (logOut) logOut();
                                             setOpenDesktopMenu(false)
                                         }}>Logout</li>
-
                                     </ul>
 
                                 }
@@ -1293,7 +1318,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                 maxHeight={100}
                                                 maxWidth={80}
                                                 uniqueKey='id'
+                                                multiple
                                                 displayKey='name'
+                                                selectedOption={selectedType.current}
                                                 onSelect={(value) => ondropDownChange(value, 'ticketType')}
                                             />
 
@@ -1311,7 +1338,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                 maxHeight={100}
                                                 maxWidth={80}
                                                 uniqueKey='id'
+                                                multiple
                                                 displayKey='first_name'
+                                                selectedOption={selectReporter.current}
                                                 onSelect={(value) => ondropDownChange(value, 'reporter')}
                                             />
 
@@ -1346,22 +1375,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                         disabled={disableStatusButton}
                                         onClick={() => {
                                             if (tabData !== 'open') {
-                                                // fetchTicketsController.abort();
                                                 tabData = 'open';
                                                 dispatch({ type: actionType.status_tab, payload: 'open' })
-
                                                 checkDataInSessionStorageOnTabSwitch('open')
-                                                // if (
-                                                // dateRange[0] !== 'Date' ||
-                                                // searchString.current !== '' ||
-                                                // prevSearchValue.current ||
-                                                // allTopics.current.length === 0 
-                                                // ||
-                                                // state.ticketTypeLabel !== 'All' ||
-                                                // state.reporterLabel !== 'Select' ||
-                                                /*  !(state.readUnreadStatus.read === true && state.readUnreadStatus.unRead === true) */
-                                                // ){console.log("here"); getTopicsBasedOnFilter();}
-
                                             }
                                         }}>
 
@@ -1374,22 +1390,9 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                         onClick={() => {
 
                                             if (tabData !== 'resolved') {
-
                                                 tabData = 'resolved';
                                                 dispatch({ type: actionType.status_tab, payload: 'resolved' })
                                                 checkDataInSessionStorageOnTabSwitch('resolved')
-
-                                                // if (
-                                                //     dateRange[0] !== 'Date' ||
-                                                //     searchString.current !== '' ||
-                                                //     prevSearchValue.current ||
-                                                //     allTopics_resolved.current.length === 0 ||
-                                                //     state.ticketTypeLabel !== 'All' ||
-                                                //     state.reporterLabel !== 'Select' ||
-                                                /* !(state.readUnreadStatus.read === true && state.readUnreadStatus.unRead === true))   {*/
-
-                                                //     getTopicsBasedOnFilter();
-                                                // }
                                             }
                                         }}>
 
@@ -1528,7 +1531,6 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                                                     </div>
 
                                                     <div className='iassist-topic-description'>{getDescriptionBasedOnButton(topic?.description)}
-                                                        {/* {parse(topic?.description.substr(0, 100))}{topic?.description?.length > 102 && '...'} */}
                                                     </div>
 
                                                     <Detail topic={topic} type={ticketTypeList.current} allUser={allUser.current.length ? allUser.current : reportersList.current} allAccount={allAccount.current} />
@@ -1631,6 +1633,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                     closePane={closePanes}
                     socketDetail={webSocket}
                     panelPosition={panelPosition}
+                    topPosition={topPosition}
                     platformId={platformId}
                     closeCreateTicket={closeChatRoom}
                     getTopicsBasedOnFilter={getTopicsBasedOnFilter}
@@ -1653,6 +1656,7 @@ const Support = ({ closePane, topicClick, webSocket, panelPosition, platformId, 
                 refreshState={state.refreshState}
                 socketDetail={webSocket}
                 panelPosition={panelPosition}
+                topPosition={topPosition}
                 platformId={platformId}
                 closeChatScreen={closeChatRoom}
                 getTopicsBasedOnFilter={getTopicsBasedOnFilter}

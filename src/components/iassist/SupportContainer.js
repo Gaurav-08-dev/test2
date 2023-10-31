@@ -25,11 +25,23 @@ const SupportContainer = ({ logOut, setLoader }) => {
     const [isNewVersionAvailable, setIsNewVersionAvailable] = useState(false);
     const [isButtonClick, setIsButtonClick] = useState(false);
 
+    const cacheImages = async(preloadImages) => {//Dont remove it requires in future implementation
+        const promises = await preloadImages.map((src) => {
+          return new Promise(function(resolve, reject){
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve();
+            img.onerror = reject();
+          });
+        });
+    
+        await Promise.all(promises);
+      }
+
 
     const handleVersionAvailable = () => {
         setIsNewVersionAvailable(true);
     }
-
 
     const getConfigDetails = async () => {
 
@@ -39,7 +51,6 @@ const SupportContainer = ({ logOut, setLoader }) => {
             const tokens = `Bearer ${AppId.current}`;
             APIService.apiRequest(Constants.API_IASSIST_BASE_URL + `config/`, null, false, 'GET', null, tokens, handleVersionAvailable)
                 .then(response => {
-
                     if (JSON.stringify(response) === "{}") {
                         return;
                     }
@@ -111,26 +122,23 @@ const SupportContainer = ({ logOut, setLoader }) => {
                     let isUnread = received_msg.unread_tickets_count > 0 ? true : false;
                     sessionStorage.setItem(Constants.SITE_PREFIX_CLIENT + 'unread', JSON.stringify(received_msg.unread_tickets))
                     changeValue(isUnread);
-                }
-                if (received_msg.type === 'chat') {
+                } if (received_msg.type === 'chat') {
                     changeValue(true);
                     if (document.getElementsByClassName('toast-wrapper')[0]) return;
                     alertService.showToast('info', `New Message Arrived on topic id: ${received_msg.topic_id}`);
                 }
+
                 if (received_msg.type === 'version') {
                     const { version } = received_msg.data;
 
-                    console.log(version , Constants.IASSIST_SITE_VERSION)
                     if (version !== Constants.IASSIST_SITE_VERSION) {
 
-                        alertService.showToast('info', 'iAssist New update is available, Please Refresh',{autoClose:true},5000);
+                        alertService.showToast('info', 'iAssist New update is available, Please Refresh', { autoClose: true }, 5000);
 
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             updateScriptTag()
-                        },[6000])
+                        }, [6000])
                     }
-
-                    console.log(version, Constants.IASSIST_SITE_VERSION)
                 }
             };
 
@@ -171,11 +179,10 @@ const SupportContainer = ({ logOut, setLoader }) => {
         setOpenSupport(false);
     }
 
-    const supportButtonClick = (e) => {
+    const supportButtonClick =  (e) => {
 
         setIsButtonClick(true)
         const triggerButton = document.getElementById(btnId.current);
-
 
         if (triggerButton?.contains(e.target) && webSocket) {
             e.preventDefault();
@@ -183,16 +190,13 @@ const SupportContainer = ({ logOut, setLoader }) => {
             setIsButtonClick(false)
             setIsNewVersionAvailable(false)
         } else {
-
-
             if (!webSocket && triggerButton?.contains(e.target)) {
 
                 setIsButtonClick(true)
                 // getConfigDetails('onButtonClick');
                 if (!configLoader) getConfigDetails();
-                const toast = document.getElementsByClassName('toast-wrapper');
-                if (toast && toast.length > 0 && toast[0]) return;
-                //   alertService.showToast('process', 'Loading...');
+                // if (document.getElementsByClassName('toast-wrapper')[0]) return;
+                // alertService.showToast('process', 'Loading...');
             }
         }
     }
@@ -215,7 +219,6 @@ const SupportContainer = ({ logOut, setLoader }) => {
 
     useEffect(() => {
 
-        // alertService.showToast('info', `New Message Arrived on topic id: ${''}`,{autoClose:true},10000)
         const prevAppId = sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'appid');
         const configDetails = JSON.parse(sessionStorage.getItem(Constants.SITE_PREFIX_CLIENT + 'config'));
 
@@ -277,7 +280,8 @@ const SupportContainer = ({ logOut, setLoader }) => {
                     panelPosition={panelPosition.current}
                     platformId={platformId}
                     logOut={logOut}
-                // setIsNewVersionAvailable={setIsNewVersionAvailable}
+                    topPosition={top.current}
+                    // setIsNewVersionAvailable={setIsNewVersionAvailable}
                 />}
 
             {isNewVersionAvailable && isButtonClick &&
@@ -286,14 +290,7 @@ const SupportContainer = ({ logOut, setLoader }) => {
                 />
             }
 
-            {openSupport &&
-                <Support
-                    closePane={closePane}
-                    webSocket={webSocket}
-                    panelPosition={panelPosition.current}
-                    platformId={platformId}
-                    logOut={logOut}
-                />}
+           
 
         </>
 
